@@ -1,0 +1,14 @@
+ion-content {
+    max-height: 80vh;  /* Restringe la altura del contenido a un 80% de la pantalla */
+    overflow-y: auto;  /* Permite el desplazamiento si el contenido es muy largo */
+  }
+
+  .alert-icon {
+    font-size: 55px;  /* Tamaño grande para el icono */
+    margin-bottom: 10px;  /* Espaciado entre el icono y los botones */
+    display: flex;      /* Activamos flexbox para el icono */
+    justify-content: center; /* Alineación horizontal */
+    align-items: center;    /* Alineación vertical */
+    width: 100%;        /* Aseguramos que ocupe el ancho completo del contenedor */
+    text-align: center; /* Alineación horizontal para elementos en línea */
+  }

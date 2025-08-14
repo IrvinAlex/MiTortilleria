@@ -1,0 +1,35 @@
+<app-header [isModal]="true" [title]=" user ? 'Editar producto': 'Editar producto' ">Editar producto</app-header>
+
+<ion-content>
+  <form [formGroup]="form" class="ion-padding ion-text-center" (ngSubmit)="submit()" (keypress.enter)="submit()">
+      
+    <!-- Input para nombre del producto -->
+    <app-custom-input 
+      autocomplete="nombre" 
+      [control]="form.controls.name"
+      type="text"
+      label="Nombre del insumo"
+      ></app-custom-input>
+    <div class="validators" *ngIf="form.controls.name.errors && form.controls.name.touched">
+      <div *ngIf="form.controls.name.errors?.['required']"> Este campo es requerido </div>
+    </div>
+
+    <!-- Input para unidades vendidas -->
+    <app-custom-input 
+    [control]="form.controls.soldUnits"
+    type="number"
+    label="Cantidad en almacen"
+    (ionInput)="setNumberInputs()"
+    ></app-custom-input>
+    <div class="validators" *ngIf="form.controls.soldUnits.errors && form.controls.soldUnits.touched">
+      <div *ngIf="form.controls.soldUnits.errors?.['required']"> Este campo es requerido </div>
+      <div *ngIf="form.controls.soldUnits.errors?.['min']"> La cantidad mínima debe ser 0</div>
+    </div>
+
+    <!-- Botón de envío -->
+    <ion-button class="ion-margin submit" type="submit" [disabled]="form.invalid">
+      {{ user ? 'Actualizar producto' : 'Actualizar producto' }}
+      <ion-icon slot="end" name="create-outline"></ion-icon>
+    </ion-button>
+  </form>
+</ion-content>

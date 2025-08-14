@@ -1,0 +1,35 @@
+.pieChart {
+    width: 100% !important; 
+    max-width: 250px; 
+    margin: 0 auto; 
+}
+  
+ion-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+  
+ion-card-header, ion-card-content {
+    flex-grow: 1;
+}
+
+.tittle-today{
+    margin-top: 4%;
+}
+
+.tittle-week{
+    margin-top: 10%;
+}
+
+.tittle-month{
+    margin-top: 10%;
+}
+
+.tittle-year{
+    margin-top: 10%;
+}
+
+.container{
+    margin: 2% 2% 2% 2%;
+}

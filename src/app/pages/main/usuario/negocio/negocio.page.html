@@ -1,0 +1,48 @@
+<app-header [showMenu]="true" title="Mi perfil"> </app-header>
+
+<ion-content class="ion-padding-top ion-text-center">
+  
+  <!-- Refresca el contenido cuando se hace un "pull to refresh" -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Muestra el avatar del usuario, si tiene imagen -->
+  <ion-avatar>
+    <img *ngIf="user()?.image" [src]="user()?.image" />  <!-- Si el usuario tiene imagen, se muestra -->
+    <ion-icon *ngIf="!user()?.image" class="empty-icon" name="person-circle-outline"></ion-icon>  <!-- Si no tiene imagen, muestra un ícono de persona -->
+  </ion-avatar>
+
+  <!-- Botón para permitir al usuario tomar una foto -->
+  <ion-button class="photo-btn" (click)="takeImage()" mode="ios" size="small" shape="round">
+    <ion-icon name="camera-outline"></ion-icon>  <!-- Icono de cámara -->
+  </ion-button>
+
+  <!-- Muestra el nombre del usuario -->
+  <h2>{{user().name}}</h2>
+  
+  <!-- Muestra el tipo de perfil del usuario (como admin o usuario normal) -->
+  <div>{{tipo_perfil}}</div>
+
+  <!-- Opción para editar el perfil -->
+  <ion-item button detail (click)="actualizarPerfilmodal()">
+    <ion-icon color="primary" slot="start" name="person-outline"></ion-icon> <!-- Icono de perfil -->
+    <ion-label>Editar Perfil</ion-label> <!-- Texto del botón -->
+  </ion-item>
+
+  <!-- Item de menú para ver o editar la dirección del usuario -->
+  <ion-item button (click)="direccion()" detail>
+    <ion-icon color="primary" slot="start" name="navigate-outline"></ion-icon>  <!-- Icono de ubicación -->
+    <ion-label>Mi dirección
+      <!-- Si la dirección está vacía, se muestra un ícono de alerta -->
+      <ion-icon *ngIf="isDireccionVacia" name="alert-circle-outline" color="danger"></ion-icon>
+    </ion-label>
+  </ion-item>
+
+  <!-- Item de menú para ver los términos y condiciones -->
+  <ion-item button detail (click)="terms()">
+    <ion-icon color="primary" slot="start" name="document-outline"></ion-icon>  <!-- Icono de documento -->
+    <ion-label>Términos y Condiciones</ion-label>  <!-- Texto del ítem -->
+  </ion-item>
+
+</ion-content>

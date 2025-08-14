@@ -1,0 +1,107 @@
+<app-header [showMenu]="true" title="Pedidos"></app-header>
+<ion-content>
+  <!-- Refrescado de la página -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Barra de búsqueda para filtrar pedidos -->
+  <ion-searchbar mode="ios" animated="true" placeholder="Cliente, productos, precio o código" [(ngModel)]="searchTerm" (ionInput)="filterPedidos()"></ion-searchbar>
+
+  <!-- Botón para abrir el modal de filtros -->
+  <ion-button expand="block" color="primary" (click)="openFilterModal()">Filtros <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon></ion-button>
+
+  <!-- Botón para quitar los filtros aplicados -->
+  <ion-button expand="block" color="light" *ngIf="filtersApplied" (click)="clearFilters()">
+    Quitar Filtros <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon>
+  </ion-button>
+
+  <!-- Muestra los pedidos filtrados si existen -->
+  <ng-container *ngIf="pedidosFiltrados.length > 0">
+    <ion-list *ngFor="let pedido of pedidosFiltrados">
+      <ion-item-sliding class="product-item">
+        <ion-item>
+          <ion-label>
+            <!-- Muestra el total del pedido con formato de dos decimales -->
+            <div class="name">
+              <h2>
+                <ion-icon slot="start" style="margin-right: 2rem;" color="danger" name="cash-outline"></ion-icon>
+                ${{ pedido.total | number:'1.2-2' }}
+              </h2>
+            </div>
+            <!-- Información del cliente y estado del pedido -->
+            <div class="data">
+              <strong><ion-icon slot="start" name="person-outline"></ion-icon> Cliente: {{pedido.nombre_cliente}}</strong>
+              <strong style="margin-left: 3rem;">
+                <ion-icon slot="start" [color]="getColorIcon(pedido.estatus)" [name]="getStatusIcon(pedido.estatus)"></ion-icon> {{getDisplayStatus(pedido)}}
+              </strong>
+            </div>
+            
+            <!-- Muestra el tipo de entrega del pedido (domicilio solo si hay ubicación) -->
+            <div class="data">
+              <strong>
+                <ion-icon
+                  slot="start"
+                  [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))"
+                  [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))">
+                </ion-icon>
+                {{ getEffectiveDeliveryType(pedido) }}
+              </strong>
+            </div>
+            
+            <!-- Fecha de entrega solo se muestra si el estado es 'En espera de recolección' -->
+            <div class="data" *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
+              <strong><ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de entrega: {{ pedido.fecha_entrega?.toDate() | date: 'dd/MM/yyyy HH:mm' }}</strong>
+            </div>
+            
+            <!-- Chip con el tipo de pago -->
+            <ion-chip color="primary" mode="ios" outline="true">
+              <ion-label>{{pedido.tipo_pago}}</ion-label>
+            </ion-chip>
+            
+            <!-- Chip con el tipo de entrega (domicilio solo si hay ubicación) -->
+            <ion-chip [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))" mode="ios" outline="true">
+              <ion-icon [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))"></ion-icon>
+              <ion-label>{{ getEffectiveDeliveryType(pedido) }}</ion-label>
+            </ion-chip>
+          </ion-label>
+        </ion-item>
+      
+        <!-- Opciones de acción para cada pedido -->
+        <ion-item-options>
+          <!-- Opción para ver los detalles del pedido -->
+          <ion-item-option color="secondary" (click)="openPedidoDetalle(pedido)">
+            <ion-icon class="option-btn" style="margin-right: 0.5rem;" name="eye-outline"></ion-icon> Ver Detalle
+          </ion-item-option>
+          <!-- Opción para cancelar el pedido, solo si el estado no es 'Cancelado' ni 'Entregado' -->
+          <ion-item-option color="danger" (click)="cancelarPedido(pedido)" *ngIf="pedido.estatus.toLowerCase() !== 'cancelado' && pedido.estatus.toLowerCase() !== 'entregado'">
+            <ion-icon class="option-btn" style="margin-right: 0.5rem;" name="close-circle-outline"></ion-icon> Cancelar
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </ng-container>
+
+  <!-- Cargando, muestra los skeleton loaders -->
+  <ion-list *ngIf="loading">
+    <ion-item class="product-item" *ngFor="let p of [1,1,1,1,1,1,1,1]">
+      <!-- Avatar con skeleton loader -->
+      <ion-avatar slot="start">
+        <ion-skeleton-text animated style="width: 100%; height: 100%;"></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <!-- Skeleton para el nombre y el estado del pedido -->
+        <div><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></div>
+        <div><ion-skeleton-text animated style="width: 30%"></ion-skeleton-text></div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mensaje cuando no hay pedidos disponibles -->
+  <div *ngIf="!loading && !pedidosFiltrados.length" class="empty">
+    <ion-icon name="shield-outline"></ion-icon>
+    <h3>No hay pedidos disponibles</h3>
+  </div>
+  
+</ion-content>
+

@@ -1,0 +1,545 @@
+.c-pointer{
+    cursor: pointer;
+    text-align: end;
+}
+
+.google-button {
+    margin-top: 1rem;
+    --background: #ffffff;
+    --color: #757575;
+    --border-radius: 1rem;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --border: 1px solid #dcdcdc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    height: 48px;
+    text-transform: none;
+  }
+  
+  .google-button:hover {
+    --background: #f7f7f7;
+    --color: white;
+  }
+  
+  .google-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+  }
+
+.facebook-button {
+  margin-top: 1rem;
+  --background: #3b5998;
+  --color: #ffffff;
+  --border-radius: 1rem;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  height: 48px;
+  text-transform: none;
+}
+
+.facebook-button ion-icon {
+  margin-right: 12px;
+}
+
+.facebook-button:hover {
+  --background: #365492;
+}
+
+// Estilos personalizados para la alerta de sesión bloqueada
+.custom-alert-session {
+  --width: 90%;
+  --max-width: 400px;
+  
+  .alert-wrapper {
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+  
+  .alert-button {
+    &.alert-button-understand {
+      --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --color: white;
+      font-weight: 600;
+      border-radius: 25px;
+      min-height: 44px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+      margin-right: 10px;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+    }
+    
+    &.alert-button-help {
+      --background: transparent;
+      --color: #6c757d;
+      border: 2px solid #6c757d;
+      font-weight: 500;
+      border-radius: 25px;
+      min-height: 44px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        --background: #6c757d;
+        --color: white;
+        transform: translateY(-1px);
+      }
+    }
+  }
+  
+  .alert-content-session {
+    text-align: center;
+    padding: 15px 10px;
+    
+    .blocked-header {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      color: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 10px 0;
+      
+      .block-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+      }
+      
+      h3 {
+        margin: 8px 0;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      
+      p {
+        margin: 5px 0;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+    }
+    
+    .device-info-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 4px solid #007bff;
+      
+      .device-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        
+        .device-name {
+          font-weight: bold;
+          color: #2c3e50;
+        }
+        
+        .status-active {
+          background: #28a745;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 10px;
+          font-size: 12px;
+        }
+      }
+      
+      .device-detail {
+        margin: 4px 0;
+        font-size: 13px;
+        color: #6c757d;
+      }
+    }
+    
+    .security-warning {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: #856404;
+      }
+    }
+    
+    .instructions-section {
+      .instructions-title {
+        margin: 15px 0 5px 0;
+        font-size: 14px;
+        color: #495057;
+      }
+      
+      .instructions-list {
+        background: #e3f2fd;
+        border-radius: 8px;
+        padding: 12px;
+        text-align: left;
+        
+        p {
+          margin: 5px 0;
+          font-size: 13px;
+          color: #1976d2;
+        }
+      }
+    }
+  }
+}
+
+// Estilos para la alerta de ayuda
+.custom-alert-help {
+  --width: 90%;
+  --max-width: 450px;
+  
+  .alert-wrapper {
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+  
+  .alert-button {
+    &.alert-button-primary {
+      --background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      --color: white;
+      font-weight: 600;
+      border-radius: 25px;
+      min-height: 44px;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+      }
+    }
+  }
+  
+  .alert-content-help {
+    text-align: left;
+    padding: 15px 10px;
+    
+    .instruction-section {
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px 0;
+      
+      &.mobile {
+        background: #e8f4f8;
+      }
+      
+      &.web {
+        background: #f0f8e8;
+      }
+      
+      &.auto {
+        background: #fff3e6;
+        
+        h4 {
+          color: #e67e22;
+        }
+        
+        p {
+          color: #d35400;
+          font-size: 14px;
+          margin: 0;
+        }
+      }
+      
+      h4 {
+        margin: 0 0 10px 0;
+        color: #2c3e50;
+        font-size: 16px;
+      }
+      
+      ol {
+        margin: 0;
+        padding-left: 20px;
+        color: #34495e;
+        
+        li {
+          margin: 8px 0;
+        }
+      }
+    }
+    
+    .security-tip {
+      background: #f8f4ff;
+      border: 2px solid #8e44ad;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+      
+      p {
+        margin: 0;
+        color: #8e44ad;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Estilos para tarjeta flotante de sesión bloqueada
+.floating-card-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.floating-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+  position: relative;
+}
+
+.session-blocked-card {
+  .card-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    color: white;
+    padding: 25px 20px;
+    text-align: center;
+    position: relative;
+    
+    .block-icon {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      animation: pulse 2s infinite;
+    }
+    
+    h2 {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+    
+    p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin: 0;
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: white;
+      --color: white;
+      
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+  }
+  
+  .card-content {
+    padding: 20px;
+    
+    .warning-section {
+      text-align: center;
+      margin-bottom: 20px;
+      
+      h3 {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        margin: 0 0 8px 0;
+      }
+      
+      p {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+      }
+    }
+    
+    .device-info {
+      margin-bottom: 20px;
+      
+      .device-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        border-left: 4px solid #007bff;
+        
+        .device-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 10px;
+          
+          .device-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.9rem;
+          }
+          
+          .status-badge {
+            background: #28a745;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+          }
+        }
+        
+        .device-details {
+          p {
+            margin: 4px 0;
+            font-size: 0.8rem;
+            color: #6c757d;
+          }
+        }
+      }
+    }
+    
+    .security-warning {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #856404;
+      }
+    }
+    
+    .instructions {
+      .instructions-title {
+        font-size: 0.9rem;
+        color: #495057;
+        margin: 0 0 10px 0;
+      }
+      
+      .instructions-list {
+        background: #e3f2fd;
+        border-radius: 8px;
+        padding: 12px;
+        
+        p {
+          margin: 6px 0;
+          font-size: 0.8rem;
+          color: #1976d2;
+        }
+      }
+    }
+  }
+  
+  .card-actions {
+    padding: 15px 20px 20px;
+    display: flex;
+    gap: 10px;
+    
+    ion-button {
+      flex: 1;
+      height: 44px;
+      font-weight: 600;
+      
+      &[fill="outline"] {
+        --border-width: 2px;
+      }
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .floating-card-overlay {
+    padding: 10px;
+  }
+  
+  .floating-card {
+    max-width: 100%;
+    border-radius: 15px;
+  }
+  
+  .session-blocked-card {
+    .card-header {
+      padding: 20px 15px;
+      
+      .block-icon {
+        font-size: 3rem;
+      }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+    
+    .card-content {
+      padding: 15px;
+    }
+    
+    .card-actions {
+      padding: 10px 15px 15px;
+      flex-direction: column;
+      
+      ion-button {
+        margin: 5px 0;
+      }
+    }
+  }
+}

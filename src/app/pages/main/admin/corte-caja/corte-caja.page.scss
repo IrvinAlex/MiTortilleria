@@ -1,0 +1,357 @@
+.modern-content {
+  --background: #ffffff;
+  position: relative;
+}
+
+// Hero Section
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  backdrop-filter: blur(10px);
+  padding: 2rem 1rem;
+  text-align: center;
+  border-radius: 0 0 2rem 2rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content {
+  .hero-icon {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+  
+  .hero-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .hero-subtitle {
+    color: rgba(255,255,255,0.9);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 300;
+  }
+}
+
+// Stats Cards
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+  }
+  
+  ion-icon {
+    font-size: 2.5rem;
+    padding: 1rem;
+    border-radius: 50%;
+  }
+  
+  .stat-info {
+    h3 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    p {
+      margin: 0;
+      color: #64748b;
+      font-weight: 500;
+    }
+  }
+  
+  &.success-card ion-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+  }
+  
+  &.primary-card ion-icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+  }
+  
+  &.warning-card ion-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+  }
+}
+
+// Action Section
+.action-section {
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modern-button {
+  --border-radius: 1rem;
+  --box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  height: auto;
+  min-height: 4rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  
+  &:not([disabled]):hover {
+    transform: translateY(-2px);
+    --box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+  }
+  
+  .button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    
+    .button-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    
+    .button-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      font-weight: 400;
+    }
+  }
+  
+  &.open-button {
+    --background: linear-gradient(135deg, #10b981, #059669);
+  }
+  
+  &.close-button {
+    --background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+}
+
+// Search Section
+.search-section {
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+}
+
+.modern-searchbar {
+  --background: white;
+  --border-radius: 1rem;
+  --box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+// Table Container
+.table-container {
+  background: white;
+  margin: 0 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  
+  h2 {
+    margin: 0;
+    color: #1e293b;
+    font-weight: 700;
+  }
+}
+
+// Modern Table
+.modern-table {
+  .table-scroll {
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    thead {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      
+      th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background-color: #e2e8f0;
+        }
+        
+        ion-icon {
+          margin-right: 0.5rem;
+          color: #64748b;
+        }
+      }
+    }
+    
+    tbody {
+      .table-row {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background-color: #f8fafc;
+        }
+        
+        td {
+          padding: 1rem;
+          vertical-align: middle;
+          
+          &.amount-cell {
+            font-weight: 600;
+            color: #059669;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Cards View
+.cards-view {
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.operation-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .card-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    
+    ion-icon {
+      color: #3b82f6;
+    }
+  }
+  
+  .amounts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    
+    .amount-item {
+      text-align: center;
+      
+      .amount-label {
+        display: block;
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      
+      .amount-value {
+        display: block;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      
+      &.highlight .amount-value {
+        color: #059669;
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+// Status Badges
+ion-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  
+  &.status-open {
+    --background: linear-gradient(135deg, #10b981, #059669);
+    --color: white;
+  }
+  
+  &.status-closed {
+    --background: linear-gradient(135deg, #64748b, #475569);
+    --color: white;
+  }
+}
+
+// Pagination
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  
+  .page-info {
+    font-weight: 600;
+    color: #475569;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .amounts-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

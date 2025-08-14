@@ -1,0 +1,107 @@
+<app-header [showMenu]="true" title="Usuarios"></app-header>
+
+<ion-content class="ion-padding-top ion-text-center">
+
+  <!-- Ion Refresher: Permite actualizar los datos al hacer "pull to refresh" -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Título de la página -->
+  <h2>Administración de usuarios</h2>
+
+  <!-- Barra de búsqueda y botón para agregar un usuario -->
+  <ion-grid>
+    <ion-row>
+      <ion-col size="8">
+        <!-- Barra de búsqueda para filtrar usuarios -->
+        <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar usuarios..."
+          (ionInput)="filterItems($event)"></ion-searchbar>
+      </ion-col>
+      <ion-col size="4" class="ion-text-right">
+        <!-- Botón para abrir el modal de agregar un usuario -->
+        <ion-button (click)="openAddUserModal()" color="success">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Agregar Usuario
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="table-header">
+    <h2></h2>
+    <!-- Botón para alternar la visibilidad de las columnas de la tabla -->
+    <ion-button (click)="toggleColumns()" color="light" class="toggle-columns-button">
+      <ion-icon slot="start" [name]="areColumnsVisible ? 'eye-off' : 'eye'"></ion-icon>
+      {{ areColumnsVisible ? 'Ocultar tabla completa' : 'Mostrar tabla completa' }}
+    </ion-button>
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <ion-grid>
+    <!-- Fila de encabezado de la tabla donde se definen las columnas -->
+    <ion-row class="header-row">
+      <ion-col (click)="sortTable('name')">Nombre</ion-col>
+      <ion-col (click)="sortTable('father_Last_Name')">Apellido Paterno</ion-col>
+      <ion-col (click)="sortTable('mother_Last_Name')">Apellido Materno</ion-col>
+      <ion-col (click)="sortTable('type_profile')">Tipo de Perfil</ion-col>
+      <ion-col *ngIf="showEmail" (click)="sortTable('email')">Correo</ion-col>
+      <ion-col *ngIf="showImage" (click)="sortTable('image')">Imagen</ion-col>
+      <ion-col>Acciones</ion-col>
+    </ion-row>
+
+    <!-- Fila para cada usuario -->
+    <ion-row *ngFor="let item of paginatedData" class="data-row">
+      <ng-container *ngFor="let field of fields">
+        <!-- Fila de datos editable solo si el campo es visible y no es la imagen -->
+        <ion-col class="pointer-on" *ngIf="shouldShowField(field.key) && field.key !== 'image'">
+          <!-- Permite editar el campo al hacer click -->
+          <ion-input class="cololetra" *ngIf="editingFieldKey === field.key && editingField === item"
+            [(ngModel)]="item[field.key]" (keyup.enter)="finishEditing()" (blur)="finishEditing()"></ion-input>
+          <!-- Muestra el valor si no está siendo editado -->
+          <span *ngIf="!(editingFieldKey === field.key && editingField === item)">
+            {{ item[field.key] }}
+          </span>
+        </ion-col>
+      </ng-container>
+
+      <!-- Muestra la imagen del usuario si está visible -->
+      <ion-col *ngIf="showImage" style="display: flex; justify-content: center; align-items: center;">
+        <ion-img [src]="item['image']" style="width: 50px; height: auto;"></ion-img>
+      </ion-col>
+
+      <!-- Acciones: Editar y eliminar -->
+      <ion-col>
+        <ion-button (click)="editItem(item)" color="warning">
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+
+        <!-- Solo mostrar el botón eliminar si es perfil 3 -->
+        <ion-button *ngIf="item.type_profile === 'cliente'" (click)="deleteItem(item)" color="danger">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+  <!-- Paginación de la tabla -->
+  <div class="pagination">
+    <!-- Botón de "Anterior" para cambiar de página -->
+    <ion-button color="light" [disabled]="currentPage === 1" (click)="previousPage()" expand="full"
+      class="pagination-button">
+      <ion-icon slot="start" name="arrow-back"></ion-icon>
+      Anterior
+    </ion-button>
+
+    <!-- Información de la página actual -->
+    <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
+
+    <!-- Botón de "Siguiente" para cambiar de página -->
+    <ion-button color="light" [disabled]="currentPage === totalPages" (click)="nextPage()" expand="full"
+      class="pagination-button">
+      Siguiente
+      <ion-icon slot="end" name="arrow-forward"></ion-icon>
+    </ion-button>
+  </div>
+</ion-content>

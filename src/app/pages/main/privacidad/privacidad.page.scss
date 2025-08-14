@@ -1,0 +1,63 @@
+ion-content {
+    --background: linear-gradient(to bottom, #ffffff, #f3f4f5);
+  }
+  
+  .header-animation {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    animation: fadeInDown 1s ease-in-out;
+  }
+  
+  .header-animation .icon {
+    font-size: 3rem;
+    color: #1ad436;
+  }
+  
+  .header-animation .title {
+    font-size: 1.5rem;
+    color: #222;
+    font-weight: bold;
+  }
+  
+  .content p {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #555;
+  }
+  
+  ion-item {
+    --color: #1ad436;
+    --background-hover: rgba(26, 212, 54, 0.1);
+    animation: fadeInUp 1s ease-in-out;
+  }
+  
+  .cta {
+    margin-top: 1.5rem;
+  }
+  
+  .cta ion-button {
+    --background: #1ad436;
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

@@ -1,0 +1,59 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+
+<ion-buttons slot="start">
+
+  <!--============= Back Button ==============-->
+  <ion-back-button *ngIf="backButtonShow"  [defaultHref]="backButton" ></ion-back-button>
+  
+
+   <!--============= Dismiss Modal ==============-->
+  <ion-button (click)="dismissModal()" *ngIf="isModal">
+    <ion-icon name="close-circle-outline"></ion-icon>
+  </ion-button>
+
+    <ion-menu-button menu="menu-content" *ngIf="showMenu"></ion-menu-button>
+</ion-buttons>
+
+  <div style="display: inline-flex;">
+    <img *ngIf="showLogo" style="width: 85px; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; border-radius: 50%;" src="../../../../assets/img/Logo.png" alt="">
+      <ion-title>
+        <strong>{{title}}</strong>
+        <div *ngIf="showNombre" class="admin">Tortilleria Plata Jaimes</div>
+      
+      </ion-title>
+  </div>
+
+    <ion-buttons *ngIf="buttonsMenu" slot="end">
+      <ion-button (click)="signin()">
+        Iniciar Sesión
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons *ngIf="buttonsMenu" slot="end">
+      <ion-button (click)="signup()">
+        Registrate
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons *ngIf="buttonCart" slot="end">
+      <ion-button (click)="cart()" class="cart-button">
+        <ion-icon class="icones" name="cart-outline" style="font-size: 30px;"></ion-icon>
+        <div class="cart-badge" *ngIf="cartCount >= 0">{{ cartCount }}</div>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons *ngIf="buttonCartEvents" slot="end">
+      <ion-button (click)="cartEvents()" class="cart-button">
+        <ion-icon class="icones" name="cart-outline" style="font-size: 30px;"></ion-icon>
+        <div class="cart-badge" *ngIf="cartCount >= 0">{{ cartCount }}</div>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons *ngIf="buttonCartNegocio" slot="end">
+      <ion-button (click)="cartNegocio()" class="cart-button">
+        <ion-icon class="icones" name="cart-outline" style="font-size: 30px;"></ion-icon>
+        <div class="cart-badge" *ngIf="cartCount >= 0">{{ cartCount }}</div>
+      </ion-button>
+    </ion-buttons>
+    
+  </ion-toolbar>
+</ion-header>

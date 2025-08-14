@@ -1,0 +1,62 @@
+<app-header [showMenu]="true" title="Eventos" buttonCartEvents="true" [cartCount]="getCartCount()"></app-header>
+
+<!--<ion-searchbar mode="ios" animated="true" placeholder="Cliente, productos, precio o código" [(ngModel)]="searchTerm" (ionInput)="filterPedidos()"></ion-searchbar>-->
+<ion-content [fullscreen]="true"> <!-- Configura el contenido para ocupar toda la altura disponible de la pantalla -->
+    <!-- Barra de búsqueda -->
+    <ion-searchbar 
+    mode="ios" 
+    animated="true" 
+    placeholder="Buscar producto" 
+    [(ngModel)]="searchTerm" 
+    (ionInput)="filterProductos()">
+  </ion-searchbar>
+  
+  <!-- Contenedor de las tarjetas -->
+  <div class="card-container">
+
+    <!-- Tarjetas generadas dinámicamente -->
+    <ion-card *ngFor="let producto of productos" class="target">
+      
+      <!-- Contenedor de la imagen del producto -->
+      <div class="contimg">
+        <img [src]="producto.imagen" style="width: 250px;" /> <!-- Imagen dinámica del producto -->
+      </div>
+      
+      <!-- Encabezado de la tarjeta -->
+      <ion-card-header>
+        <ion-card-title>{{ producto.nombre }}</ion-card-title> <!-- Nombre dinámico del producto -->
+      </ion-card-header>
+      
+      <!-- Contenido de la tarjeta -->
+      <ion-card-content class="text">
+        {{ producto.descripcion }} <!-- Descripción dinámica del producto -->
+
+        <!-- Precio del producto -->
+        <div class="precio">
+          <strong>Precio: </strong>{{ producto.precio_mostrador | currency:'USD':true }} <!-- Precio dinámico del producto -->
+        </div>
+
+        <!-- Botón condicional para agregar al carrito o ver en carrito -->
+        <ion-button 
+          *ngIf="!isProductInCart(producto)" 
+          (click)="modalCarrito(producto)" 
+          class="btntarget" 
+          expand="block">
+          Agregar al carrito <ion-icon name="cart-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button 
+          *ngIf="isProductInCart(producto)" 
+          (click)="goToCart()" 
+          class="btntarget" 
+          expand="block" 
+          color="success">
+          Ver en carrito <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-card-content>
+      
+    </ion-card>
+
+  </div>
+
+</ion-content>

@@ -1,0 +1,46 @@
+<app-header [isModal]="true" [title]=" gasto ? 'Actualizar gasto': 'Agregar gasto' ">Agregar gasto</app-header>
+
+<ion-content>
+  <form [formGroup]="form" class="ion-padding ion-text-center" (ngSubmit)="submit()" (keypress.enter)="submit()">
+      
+    <!-- Input para unidades vendidas -->
+    <app-custom-input 
+      [control]="form.controls.name" type="string" label="Descrpipción del gasto" (ionInput)="setNumberInputs()">
+    </app-custom-input>
+    <div class="validators" *ngIf="form.controls.name.errors && form.controls.name.touched">
+      <div *ngIf="form.controls.name.errors?.['required']"> Este campo es requerido </div>
+      <div *ngIf="form.controls.name.errors?.['min']"> La cantidad mínima debe ser 1</div>
+    </div>
+
+
+    <!-- Input para unidades vendidas -->
+    <app-custom-input 
+      [control]="form.controls.pago" type="number" label="Pago" (ionInput)="setNumberInputs()">
+    </app-custom-input>
+    <div class="validators" *ngIf="form.controls.pago.errors && form.controls.pago.touched">
+      <div *ngIf="form.controls.pago.errors?.['required']"> Este campo es requerido </div>
+      <div *ngIf="form.controls.pago.errors?.['min']"> La cantidad mínima debe ser 0</div>
+    </div>
+
+    <!-- Input para unidades vendidas -->
+    <ion-item>
+      <ion-label>Fecha y hora</ion-label>
+      <ion-datetime
+        [formControl]="form.controls.fecha"
+        presentation="date"
+        [max]="maxDate"
+        (ionChange)="onDateChange($event)">
+      </ion-datetime>
+    </ion-item>
+    <div class="validators" *ngIf="form.controls.fecha.errors && form.controls.fecha.touched">
+      <div *ngIf="form.controls.fecha.errors?.['required']">Este campo es requerido</div>
+      <div *ngIf="form.get('fecha').hasError('dateTooLate')">La fecha no puede ser posterior al día de hoy</div>
+    </div>
+
+    <!-- Botón de envío -->
+    <ion-button class="ion-margin submit" type="submit" [disabled]="form.invalid">
+      {{ gasto ? 'Actualizar gasto' : 'Agregar gasto' }}
+      <ion-icon slot="end" name="checkmark-circle-outline"></ion-icon>
+    </ion-button>
+  </form>
+</ion-content>

@@ -1,0 +1,173 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <strong>Confirmar Dirección</strong>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container">
+    <!-- Improved Header Section -->
+    <div class="header-section">
+      <div class="header-content">
+        <div class="icon-container">
+          <div class="icon-background">
+            <ion-icon name="location" class="header-icon"></ion-icon>
+          </div>
+        </div>
+        <div class="text-content">
+          <h2 class="main-title">¿Es correcta tu dirección?</h2>
+          <p class="subtitle">Confirma que la ubicación mostrada es donde quieres recibir tu pedido</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Preview -->
+    <div class="map-preview-section" *ngIf="userLocation">
+      <div class="map-container">
+        <!-- Map Element -->
+        <capacitor-google-map 
+          id="confirmMap" 
+          class="map-element"
+          style="width: 100%; height: 250px; display: block;"
+          [style.visibility]="isLoading || hasMapError ? 'hidden' : 'visible'">
+        </capacitor-google-map>
+        
+        <!-- Loading overlay -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <ion-spinner name="bubbles" color="primary"></ion-spinner>
+          <p>Cargando ubicación...</p>
+        </div>
+
+        <!-- Error overlay -->
+        <div *ngIf="hasMapError && !isLoading" class="error-overlay">
+          <ion-icon name="warning" color="warning"></ion-icon>
+          <p>Error al cargar el mapa</p>
+          <ion-button fill="clear" size="small" (click)="initializeMap()">
+            <ion-icon name="refresh" slot="start"></ion-icon>
+            Reintentar
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simple Location Display when no map -->
+    <div class="simple-location" *ngIf="userLocation && (hasMapError || isLoading)">
+      <ion-card class="location-preview-card">
+        <ion-card-content>
+          <div class="location-preview">
+            <div class="location-icon">
+              <ion-icon name="location" color="primary"></ion-icon>
+            </div>
+            <div class="location-text">
+              <h4>Tu ubicación registrada</h4>
+              <p>Lat: {{userLocation.lat | number:'1.6-6'}}</p>
+              <p>Lng: {{userLocation.lng | number:'1.6-6'}}</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Address Info Card -->
+    <ion-card class="address-card" *ngIf="userLocation">
+      <ion-card-header>
+        <div class="card-header">
+          <div class="card-icon">
+            <ion-icon name="location-outline" color="primary"></ion-icon>
+          </div>
+          <ion-card-title>Tu dirección de entrega</ion-card-title>
+        </div>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <div class="address-info">
+          <div class="coordinates">
+            <div class="coordinate-item">
+              <span class="label">Latitud:</span>
+              <span class="value">{{userLocation.lat | number:'1.6-6'}}</span>
+            </div>
+            <div class="coordinate-item">
+              <span class="label">Longitud:</span>
+              <span class="value">{{userLocation.lng | number:'1.6-6'}}</span>
+            </div>
+            <div class="coordinate-item">
+              <span class="label">Distancia:</span>
+              <span class="value">{{distanceFromBusiness}} km</span>
+            </div>
+          </div>
+          
+          <div class="address-status">
+            <ion-chip [color]="isWithinDeliveryRange ? 'success' : 'danger'">
+              <ion-icon [name]="isWithinDeliveryRange ? 'checkmark-circle' : 'close-circle'" slot="start"></ion-icon>
+              <ion-label>
+                {{ isWithinDeliveryRange ? 'Dentro del rango de entrega' : 'Fuera del rango de entrega' }}
+              </ion-label>
+            </ion-chip>
+          </div>
+
+          <!-- Delivery range warning -->
+          <div *ngIf="!isWithinDeliveryRange" class="delivery-warning">
+            <ion-icon name="warning" color="warning"></ion-icon>
+            <p>
+              <strong>No podemos entregar a tu ubicación</strong><br>
+              Tu dirección está a {{distanceFromBusiness}}km de nuestro negocio. 
+              El rango máximo de entrega es de 5km.
+            </p>
+          </div>
+
+          <!-- Delivery range info -->
+          <div *ngIf="isWithinDeliveryRange" class="delivery-info">
+            <ion-icon name="information-circle" color="primary"></ion-icon>
+            <p>
+              Perfecto! Tu ubicación está dentro de nuestro rango de entrega de 5km.
+            </p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Error State -->
+    <ion-card class="error-card" *ngIf="!userLocation && !isLoading">
+      <ion-card-content>
+        <div class="error-content">
+          <div class="error-icon-container">
+            <ion-icon name="warning" color="warning"></ion-icon>
+          </div>
+          <h3>No se encontró dirección</h3>
+          <p>Parece que no tienes una dirección registrada. Por favor, agrega una dirección para continuar.</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        size="large"
+        (click)="modifyAddress()"
+        class="modify-button">
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        Modificar dirección
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        size="large"
+        [disabled]="!userLocation || !isWithinDeliveryRange"
+        (click)="confirmAddress()"
+        [class.confirm-button]="isWithinDeliveryRange"
+        [class.disabled-button]="!isWithinDeliveryRange">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        {{ isWithinDeliveryRange ? 'Confirmar y continuar al pago' : 'Fuera del rango de entrega' }}
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

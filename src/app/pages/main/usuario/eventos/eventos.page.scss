@@ -1,0 +1,340 @@
+.tituloprin1{
+  font-family: Readex Pro, sans-serif ;
+  font-style: normal;
+  line-height: 60px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 45px;
+color: #00C089 ;
+  -webkit-background-clip: text;
+
+}
+
+.containerone{
+  margin-top: 1rem;
+  background: #000000;
+  padding: 2rem;
+  border-radius: 2rem;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 10px 14px 20px #101010;
+}
+
+
+
+.titleOne{
+  font-family: Readex Pro, sans-serif ;
+  font-style: normal;
+  line-height: 25px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 25px;
+}
+.powered{
+  font-size: 10px;
+  font-family: Readex Pro, sans-serif ;
+  text-align: center;
+}
+
+.powered img{
+  width: 1rem;
+}
+
+.titleTwo{
+  font-family: Readex Pro, sans-serif ;
+  font-style: normal;
+  line-height: 60px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 45px;
+  background: linear-gradient(to left, #05bff3, #004acd);
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: animationmain;
+  animation-duration: 0.8s;
+  animation-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes animationmain {
+  from{
+      transform: translateY(-50px);
+      opacity: 0;
+  }
+  to{
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
+
+.titleThree{
+  font-family: Readex Pro, sans-serif ;
+  font-style: normal;
+  line-height: 60px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 45px;
+  background: linear-gradient(rgb(192, 191, 191), white);
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: animationmain;
+  animation-duration: 0.8s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+
+
+.textmain{
+  font-family: Readex Pro, sans-serif ;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+}
+
+
+
+/* En este apartado es la segunda targeta despues de la foto */
+.tarjet2{
+  margin-top: 1rem;
+  background: #00C089;    
+  padding: 1rem;
+  border-radius: 2rem;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 10px 14px 20px #101010;
+  
+}
+
+.letrah1{
+  font-family: Readex Pro, sans-serif ;
+  font-style: normal;
+  line-height: 60px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 45px;
+  background: linear-gradient(rgb(192, 191, 191), rgb(25, 24, 24));
+  -webkit-background-clip: text;
+ 
+ 
+ 
+
+}
+
+.textmain2 {
+  font-size: 27px; /* Tamaño del texto  */
+  color: white;
+  
+}
+
+.icon-text ion-icon {
+  font-size: 27px; /* Tamaño del ícono (ajusta según necesites) */
+  margin-right: 10px; /* Espacio entre el ícono y el texto */
+  color: white;
+  line-height: 2;
+  vertical-align: middle;
+}
+.ml-2{
+  margin-left: 3rem;
+  margin-top: 1rem;
+
+}
+
+.viñetaletra{
+  font-size: 18px;
+  color: white;
+  margin-left: 50px;
+
+}
+
+.btnSubscription{
+  margin-top: 1.5rem;
+  --background: linear-gradient(to right, #05bff3, #004acd);
+  --box-shadow: 3px 3px 3px #6c6a6a;   
+  
+}
+
+.btnSubscription h1{
+  font-family: Readex Pro, sans-serif;
+  font-weight: 600;
+}
+
+.cont-button{
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.imgprinc{
+  border-radius: 2rem;
+  box-shadow: 3px 3px 3px 3px #004acd; 
+}
+
+
+
+.glow::before, .glow::after{
+  content: "";
+  position: absolute;
+  border-radius: 2rem;
+  left: -2px;
+  top: -2px;
+  background: linear-gradient(
+      -45deg,
+      #00ff66,
+      #00ffff,
+      #ff00ff,
+      #ff0099,
+      #099fff
+  );
+  background-size: 400%;
+  height: calc(100% + 5px);
+  width: calc(100% + 5px);
+  z-index: -1;
+  animation: change 40s linear infinite;
+}
+
+@keyframes change {
+  0%{
+      background-position: 0 0;
+  }
+  50%{
+      background-position: 400% 0;
+  }
+  100%{
+      background-position: 0 0;
+  }
+  
+}
+
+.glow::after{
+  filter: blur(20px);
+  opacity: 1;
+}
+
+.menusection{
+  background: #eee;
+  margin-top: 3rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 3rem;
+  font-family: Readex Pro, sans-serif ;
+  
+}
+
+.menusection h1{
+  font-weight: 900;
+}
+
+.menusection h1 span{
+  color: #004acd;
+  
+}
+
+/* SM SIZE */
+@media(max-width: 576px) {
+  .titleThree, .titleTwo{
+      font-size: 25px;
+      line-height: 35px;
+  }
+}
+
+/* MD SIZE */
+@media(max-width: 768px) {
+  
+}
+
+/* LG SIZE */
+@media(max-width: 992px) {
+  
+}
+
+/* XL SIZE */
+@media(max-width: 1200px) {
+  
+}
+.text {
+  text-align: justify;
+  word-wrap: break-word;
+  padding: 15px; 
+  font-size: 14px; 
+  line-height: 1.5;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 27px;
+  justify-content: center; 
+  margin-top: 2rem; 
+}
+.target {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: space-between;
+  width: 50%; 
+  max-width: 400px;
+  min-width: 300px; 
+  margin: 10px; 
+  box-sizing: border-box; 
+  background-color: #fff;
+  border-radius: 8px; 
+  overflow: hidden; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.contimg { 
+  display: flex; justify-content: center; 
+  align-items: center; 
+   width: 100%; 
+}    
+.contimg img { width: 100%; 
+  height: auto; 
+ max-width: 300px; 
+ margin-bottom: 15px;
+ }
+.btntarget {
+margin-top: 15px;
+width: 100%; 
+}
+
+// Estilo para el botón de "Ver en carrito"
+.btntarget[color="success"] {
+  --background: #28a745;
+  --background-activated: #218838;
+  --background-hover: #218838;
+  --color: white;
+}
+
+ion-icon {
+  margin-left: 8px; 
+}
+
+.ion-icon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+
+@keyframes fly-to-cart {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(calc(50vw - 50%), -50px) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(90vw - 20px), -70vh) scale(0.2);
+  }
+}
+
+.fly {
+  position: absolute;
+  z-index: 1000;
+  animation: fly-to-cart 1s ease-in-out;
+  pointer-events: none;
+}

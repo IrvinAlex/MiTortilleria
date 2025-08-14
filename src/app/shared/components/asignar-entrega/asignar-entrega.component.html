@@ -1,0 +1,149 @@
+<app-header [isModal]="true" [showNombre]="false" [showLogo]="false" title="Detalles del pedido"></app-header>
+
+<ion-content>
+  <div class="ticket-container">
+    <h2 class="ticket-title">Ticket de Pedido</h2>
+    <div class="ticket-section">
+      <p><ion-icon name="storefront-outline"></ion-icon> Nombre del negocio: Tortilleria Plata Jaimes</p>
+      <p><ion-icon name="person-outline"></ion-icon> Cliente: {{ pedido.nombre_cliente }}</p>
+      <p *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
+        <ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de pedido: {{ pedido.fecha_entrega?.toDate() | date: 'dd/MM/yyyy HH:mm' }}</p>
+
+      <p *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
+        <ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de entrega: {{ pedido.fecha_recoger?.toDate() | date: 'dd/MM/yyyy HH:mm' }}
+      </p>
+
+      <!-- Delivery Type Information -->
+      <p>
+        <ion-icon [name]="getDeliveryTypeIcon()" [color]="getDeliveryTypeColor()"></ion-icon>
+        Tipo de entrega:
+        <ion-chip [color]="getDeliveryTypeColor()" mode="ios">
+          <ion-label>{{ pedido.tipo_entrega || 'No especificado' }}</ion-label>
+        </ion-chip>
+      </p>
+    </div>
+
+    <!-- Enhanced Map Section for Home Delivery -->
+    <div class="ticket-section" *ngIf="isHomeDelivery() && pedido.geopoint_entrega">
+      <h3 class="ticket-subtitle">
+        <ion-icon name="map-outline" color="primary"></ion-icon>
+        Ubicación de Entrega
+      </h3>
+
+      <!-- Map Controls -->
+      <div class="map-controls">
+        <ion-button
+          fill="outline"
+          size="small"
+          (click)="loadMapPreview()"
+          *ngIf="!showMapPreview"
+          class="map-preview-btn">
+          <ion-icon name="map-outline" slot="start"></ion-icon>
+          Ver mapa
+        </ion-button>
+
+        <ion-button
+          fill="outline"
+          size="small"
+          (click)="openLocationInMaps()"
+          class="external-maps-btn">
+          <ion-icon name="navigate-outline" slot="start"></ion-icon>
+          Abrir en Maps
+        </ion-button>
+      </div>
+
+      <!-- Map Container -->
+      <div class="map-container" *ngIf="showMapPreview">
+        <div #mapContainer class="map-canvas" *ngIf="!mapLoadError"></div>
+
+        <!-- Loading State -->
+        <div class="map-loading" *ngIf="showMapPreview && !isMapReady && !mapLoadError">
+          <ion-spinner name="circles"></ion-spinner>
+          <p>Cargando mapa...</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="map-error" *ngIf="mapLoadError">
+          <ion-icon name="warning-outline" color="warning"></ion-icon>
+          <p>No se pudo cargar el mapa</p>
+          <ion-button size="small" fill="clear" (click)="openLocationInMaps()">
+            Ver en Google Maps
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Location Details -->
+      <div class="delivery-info">
+        <p>
+          <ion-icon name="location-outline" color="primary"></ion-icon>
+          Coordenadas: {{ pedido.geopoint_entrega.latitude | number:'1.6-6' }}, {{ pedido.geopoint_entrega.longitude | number:'1.6-6' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Business Pickup Information -->
+    <div class="ticket-section" *ngIf="pedido.tipo_entrega?.toLowerCase() === 'negocio'">
+      <h3 class="ticket-subtitle">
+        <ion-icon name="storefront-outline" color="success"></ion-icon>
+        Recolección en Negocio
+      </h3>
+      <div class="pickup-info">
+        <p><ion-icon name="location-outline"></ion-icon> Dirección: Tortillería Plata Jaimes</p>
+        <p><ion-icon name="time-outline"></ion-icon> Horario de atención: 8:00 AM - 8:00 PM</p>
+        <p><ion-icon name="call-outline"></ion-icon> Teléfono: (555) 123-4567</p>
+      </div>
+    </div>
+
+    <!-- Products Section -->
+    <h3 class="ticket-subtitle">Productos Comprados</h3>
+    <ion-list>
+      <ion-item *ngFor="let producto of pedido.detalle_pedido">
+        <ion-avatar slot="start" class="avatar-icon">
+          <ion-icon name="pricetag-outline" color="success"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ producto.nombre }}</h2>
+          <p *ngIf="producto.tamano_tortilla">Tamaño de tortilla: <span class="subtotal">{{ producto.tamano_tortilla }}</span></p>
+          <p>Cantidad: {{ producto.cantidad }}</p>
+          <p>Subtotal: <span class="subtotal">{{ producto.subtotal | currency }}</span></p>
+        </ion-label>
+        <ion-badge slot="end" color="tertiary">
+          <ion-icon name="cube-outline"></ion-icon>
+          {{ producto.cantidad }}
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <div class="ticket-section">
+      <p>
+        <ion-icon [name]="getPaymentMethodIcon()"></ion-icon>
+        Tipo de Pago: {{ pedido.tipo_pago }}
+        <ion-chip [color]="getPaymentStatusColor()" mode="ios" style="margin-left: 0.5rem;">
+          <ion-icon [name]="getPaymentStatusIcon()" color="light"></ion-icon>
+          <ion-label>{{ getPaymentStatusText() }}</ion-label>
+        </ion-chip>
+      </p>
+      <p>
+        Estatus: {{pedido.estatus}}
+        <ion-icon style="margin-left: 0.5rem;" slot="start" [color]="getColorIcon(pedido.estatus)" [name]="getStatusIcon(pedido.estatus)"></ion-icon>
+      </p>
+    </div>
+
+    <div class="ticket-section">
+      <h2><ion-icon name="cash-outline"></ion-icon> Total: {{ pedido.total | number: '1.2-2' }}</h2>
+    </div>
+
+    <!-- Replace slider with action button -->
+    <div *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'" class="assign-action-container">
+      <button type="button" class="deliver-btn" (click)="markAsDelivered()">
+        <ion-icon name="checkmark-outline"></ion-icon>
+        <span>Marcar como Entregado</span>
+      </button>
+
+      <div *ngIf="showAnimation" class="success-animation">
+        <ion-icon name="checkmark-circle" color="primary"></ion-icon>
+        <p>Pedido entregado</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

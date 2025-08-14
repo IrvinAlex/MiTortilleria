@@ -1,0 +1,101 @@
+<ion-header class="ion-no-border">
+  <!-- Toolbar principal con color 'primary' -->
+  <ion-toolbar color="primary">
+
+    <ion-buttons slot="start">
+      <!-- Botón de retroceso que redirige a la página de perfil -->
+      <ion-back-button defaultHref="main/profile"></ion-back-button>
+    </ion-buttons>
+
+    <div style="display: inline-flex;">
+      <!-- Logo de la tortillería con estilo personalizado -->
+      <img 
+        style="width: 85px; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; border-radius: 50%;" 
+        src="../../../../assets/img/Logo.png" 
+        alt="Logo de Mi Tortillería">
+      
+      <ion-title>
+        <!-- Título principal de la página -->
+        <strong>Dirección</strong>
+        <!-- Subtítulo o nombre de la tortillería -->
+        <div class="admin">Tortilleria Plata Jaimes</div>
+      </ion-title>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Loader para cuando el mapa está cargando -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-content">
+      <ion-spinner name="bubbles" color="primary"></ion-spinner>
+      <p>Cargando mapa...</p>
+    </div>
+  </div>
+
+  <!-- Contenedor del mapa -->
+  <div class="map-container" [style.opacity]="isLoading ? '0' : '1'">
+    <!-- Mapa de Google integrado, con estilo para ocupar el espacio disponible -->
+    <capacitor-google-map id="map" style="width: 100%; height: 100%;"></capacitor-google-map>
+    
+    <!-- Overlay con información y controles -->
+    <div class="map-overlay">
+      <!-- Card con información de la ubicación -->
+      <ion-card class="location-info-card" *ngIf="selectedLocation">
+        <ion-card-content>
+          <div class="location-info">
+            <ion-icon name="location" color="primary"></ion-icon>
+            <div class="coordinates">
+              <p><strong>Lat:</strong> {{selectedLocation.lat | number:'1.6-6'}}</p>
+              <p><strong>Lng:</strong> {{selectedLocation.lng | number:'1.6-6'}}</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Instrucciones flotantes -->
+      <div class="floating-instructions" *ngIf="!selectedLocation">
+        <ion-card class="instructions-card">
+          <ion-card-content>
+            <div class="instructions-content">
+              <ion-icon name="hand-left" color="primary"></ion-icon>
+              <p>Arrastra el marcador o toca en el mapa</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Botón flotante para centrar en ubicación actual -->
+      <ion-fab class="center-location-fab" vertical="top" horizontal="end">
+        <ion-fab-button 
+          size="small" 
+          color="success"
+          (click)="centerOnCurrentLocation()">
+          <ion-icon name="navigate"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+
+      <!-- Tarjeta flotante del botón de guardar -->
+      <div class="save-location-card">
+        <ion-card class="save-card">
+          <ion-card-content>
+            <div 
+              class="save-button-content"
+              [class.disabled]="isLoading"
+              (click)="saveLocation()">
+              <div class="save-icon">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+              <div class="save-text">
+                <p class="save-title">{{buttonTitle}}</p>
+                <p class="save-subtitle">{{selectedLocation ? 'Toca para guardar la ubicación' : 'Selecciona una ubicación en el mapa'}}</p>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+

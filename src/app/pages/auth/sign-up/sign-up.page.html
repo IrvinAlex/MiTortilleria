@@ -1,0 +1,161 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+
+<ion-buttons slot="start">
+
+  <!--============= Back Button ==============-->
+  <ion-back-button defaultHref="/inicio" routerLink="/inicio" routerDirection="root"></ion-back-button>
+  
+</ion-buttons>
+
+  <div style="display: inline-flex;">
+    <img style="width: 85px; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; border-radius: 50%;" src="../../../../assets/img/Logo.png" alt="">
+      <ion-title>
+        <strong>Registrar</strong>
+        <div class="admin">Tortilleria Plata Jaimes</div>
+      
+      </ion-title>
+  </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+
+  <div class="d-flex-center">
+    <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()" (keypress.enter)="submit()">
+
+      <app-logo></app-logo>
+
+      <!----------Es negocio o taqueria---------->
+      <ion-item>
+        <ion-label slot="start" style="white-space: nowrap;">¿Es una taquería o negocio?</ion-label>
+        
+        <ion-checkbox
+          slot="end" 
+          mode="ios"
+          formControlName="isBusiness" 
+          [(ngModel)]="isTaqueriaChecked" 
+          (ionChange)="onIsBusinessChange($event)">
+        </ion-checkbox>
+      </ion-item>
+
+      <!-- Nombre o Nombre del negocio -->
+      <app-custom-input 
+        autocomplete="name" 
+        icon="person-circle-outline"
+        [control]="form.controls.name"
+        type="text"
+        [label]="nameLabel"
+        maxlength="30"
+        (ionInput)="onNameInput($event)"
+        (keydown)="preventExtraInput($event, 30)">
+      </app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.name.errors && form.controls.name.touched">
+        <div *ngIf="form.controls.name.errors?.['required']">Este campo es requerido</div>
+        <div *ngIf="form.controls.name.errors?.['minLenght']">Ingrese un nombre con al menos 4 caracteres</div>
+        <div *ngIf="form.controls.name.errors?.['maxlength']">El nombre no puede exceder 30 caracteres</div>
+      </div>
+
+      <div *ngIf="!isTaqueriaChecked">
+        <!----------Apellido Paterno ---------->
+        <app-custom-input
+        autocomplete="family-name"
+        icon="person-circle-outline"
+        [control]="form.controls.father_Last_Name"
+        type="text"
+        label="Apellido Paterno"
+        maxlength="30"
+        (ionInput)="onLastNameInput($event, 'father_Last_Name')"
+        (keydown)="preventExtraInput($event, 30)"
+      ></app-custom-input>
+      
+      <div
+        class="validators"
+        *ngIf="form.controls.father_Last_Name.errors && form.controls.father_Last_Name.dirty"
+      >
+        <div *ngIf="form.controls.father_Last_Name.errors?.['required']">
+            Este campo es requerido
+        </div>
+        <div *ngIf="form.controls.father_Last_Name.errors?.['maxlength']">
+            No puede exceder 30 caracteres
+        </div>
+      </div>
+
+        <!----------Apellido Materno ---------->
+        <app-custom-input
+        autocomplete="family-name"
+        icon="person-circle-outline"
+        [control]="form.controls.mother_Last_Name"
+        type="text"
+        label="Apellido Materno"
+        maxlength="30"
+        (ionInput)="onLastNameInput($event, 'mother_Last_Name')"
+        (keydown)="preventExtraInput($event, 30)"
+      ></app-custom-input>
+      
+      <div
+        class="validators"
+        *ngIf="form.controls.mother_Last_Name.errors && form.controls.mother_Last_Name.dirty"
+      >
+        <div *ngIf="form.controls.mother_Last_Name.errors?.['required']">
+          Este campo es requerido
+        </div>
+        <div *ngIf="form.controls.mother_Last_Name.errors?.['maxlength']">
+          No puede exceder 30 caracteres
+        </div>
+      </div>
+
+      </div>
+
+      <!----------Correo---------->
+      <app-custom-input 
+      autocomplete="email" 
+      icon="mail-outline"
+      [control]="form.controls.email"
+      type="email"
+      label="Correo"
+      (ionInput)="onEmailInput($event)"
+      maxlength="30"
+      (keydown)="preventExtraInput($event, 30)"
+      ></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.email.errors && form.controls.email.touched">
+        <div *ngIf="form.controls.email.errors?.['required']">El correo es requerido</div>
+        <div *ngIf="form.controls.email.errors?.['email']">Ingrese un correo valido</div>
+        <div *ngIf="form.controls.email.errors?.['maxlength']">El correo no puede exceder 30 caracteres</div>
+        <div *ngIf="form.controls.email.errors?.['emailNotExists']">Este correo electrónico no existe</div>
+      </div>
+  
+      <!----------Contraseña---------->
+      <app-custom-input 
+      [control]="form.controls.password"
+      icon="lock-closed-outline"
+      type="password"
+      label="Contraseña"
+      maxlength="30"
+      (ionInput)="onPasswordInput($event)"
+      (keydown)="preventExtraInput($event, 30)"
+      ></app-custom-input>
+
+      <div class="validators" *ngIf="form.controls.password.errors && form.controls.password.touched">
+        <div *ngIf="form.controls.password.errors?.['required']">La contraseña es requerida</div>
+        <div *ngIf="form.controls.password.errors?.['minLength']">La contraseña debe tener por lo menos 6 caracteres</div>
+        <div *ngIf="form.controls.password.errors?.['maxlength']">La contraseña no puede exceder 30 caracteres</div>
+      </div>
+
+      
+
+      <ion-button expand="block" mode="ios" class="submit" type="submit" [disabled]="form.invalid">
+        Registrar
+        <ion-icon slot="end" name="person-add-outline"></ion-icon>
+      </ion-button>
+
+
+
+    </form>
+  </div>
+
+  
+
+  
+</ion-content>

@@ -1,0 +1,383 @@
+.ticket-container {
+    padding: 16px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ticket-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .ticket-section {
+    background-color: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ticket-section p {
+    font-size: 1rem;
+    color: #444;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .ticket-section ion-icon {
+    margin-right: 8px;
+  }
+  
+  .ticket-subtitle {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: #666;
+  }
+  
+  .product-list ion-item {
+    background-color: #fafafa;
+    border-radius: 6px;
+    margin: 4px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-list ion-item ion-label {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .ticket-section .success {
+    color: #28a745;
+  }
+  
+  ion-content {
+    --ion-background-color: #e9ecef;
+  }
+  
+  .assign-slider-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+    text-align: center;
+  }
+  
+  .assign-slider {
+    width: 80%;
+    --knob-size: 36px; /* Aumenta el tamaño de la perilla */
+    --bar-height: 24px; /* Grosor de la barra */
+    --knob-background: var(--ion-color-primary);
+    --bar-background-active: var(--ion-color-primary);
+    --bar-background: #ddd;
+    --bar-border-radius: 50px; /* Bordes redondeados en la barra */
+  }
+  
+  /* Animación de éxito */
+  .success-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    animation: fadeInScale 0.5s ease forwards;
+  
+    ion-icon {
+      font-size: 50px;
+      color: var(--ion-color-primary);
+      animation: scaleUp 0.5s ease forwards;
+    }
+  
+    p {
+      font-size: 16px;
+      color: var(--ion-color-primary);
+      margin-top: 8px;
+    }
+  }
+  
+  @keyframes fadeInScale {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes scaleUp {
+    0% {
+      transform: scale(0.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  
+  ion-item {
+    --inner-padding-start: 10px;
+    border-bottom: 1px solid var(--ion-color-light);
+  }
+  
+  .avatar-icon {
+    background-color: var(--ion-color-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+  }
+  
+  .avatar-icon ion-icon {
+    font-size: 24px;
+  }
+  
+  ion-label h2 {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0;
+    color: var(--ion-color-dark);
+  }
+  
+  ion-label p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+  }
+  
+  .subtotal {
+    font-weight: bold;
+    color: var(--ion-color-success);
+  }
+  
+  ion-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  
+  .map-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .map-preview-btn,
+  .external-maps-btn {
+    --border-width: 1px;
+    --border-style: solid;
+    --border-color: var(--ion-color-primary);
+    height: 32px;
+  }
+  
+  .map-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin: 1rem 0;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .map-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+  
+  .map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border-radius: 8px;
+  }
+  
+  .map-loading ion-spinner {
+    margin-bottom: 1rem;
+    --color: var(--ion-color-primary);
+  }
+  
+  .map-error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff8e1;
+    color: #f57c00;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .map-error ion-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .map-error p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  
+  .delivery-info {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    border-left: 3px solid var(--ion-color-primary);
+  }
+  
+  .delivery-info p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+  }
+  
+  .delivery-info ion-icon {
+    margin-right: 0.5rem;
+  }
+  
+  .pickup-info {
+    background-color: #f0f8f0;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--ion-color-success);
+  }
+  
+  .pickup-info p {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+  
+  .pickup-info ion-icon {
+    margin-right: 0.75rem;
+    color: var(--ion-color-success);
+  }
+  
+  .assign-action-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 24px;
+    text-align: center;
+  }
+  
+  .deliver-btn {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: none;
+    color: #fff;
+    background: linear-gradient(145deg, #34c759, #2bb24f);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  
+    ion-icon {
+      font-size: 28px;
+      color: #fff;
+    }
+  
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+    }
+  
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.22);
+    }
+  
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
+    }
+  }
+  
+  // Custom icon styles for Leaflet markers
+  :global(.custom-div-icon) {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  // Mobile optimizations
+  @media (max-width: 768px) {
+    .map-container {
+      height: 200px;
+      margin: 0.75rem 0;
+    }
+    
+    .map-controls {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .map-preview-btn,
+    .external-maps-btn {
+      width: 100%;
+      justify-content: flex-start;
+    }
+    
+    .delivery-info {
+      padding: 0.5rem;
+      font-size: 0.85rem;
+    }
+  }
+  
+  // Ensure proper display on very small screens
+  @media (max-width: 480px) {
+    .map-container {
+      height: 180px;
+    }
+    
+    .ticket-container {
+      margin: 10px;
+      padding: 12px;
+    }
+  }
+
+
+

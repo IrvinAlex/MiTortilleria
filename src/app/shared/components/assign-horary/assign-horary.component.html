@@ -1,0 +1,219 @@
+<app-header [isModal]="true" [showNombre]="false" [showLogo]="false" title="Detalles del pedido"></app-header>
+
+<ion-content>
+  <!-- Status Bar con información de demanda -->
+  <ion-card [class]="isPeakHour() ? 'peak-hour-card' : 'normal-hour-card'">
+    <ion-card-content class="status-bar">
+      <div class="status-info">
+        <ion-icon 
+          [name]="currentDemandLevel?.level === 'irregular' ? 'warning' : 
+                  currentDemandLevel?.level === 'alta' || currentDemandLevel?.level === 'mediaalta' ? 'flame' : 
+                  'checkmark-circle'" 
+          [color]="currentDemandLevel?.color">
+        </ion-icon>
+        <div class="demand-info">
+          <span [class]="'demand-level-' + currentDemandLevel?.level">
+            {{ getDemandMessage() }}
+          </span>
+          <div class="demand-subtitle">
+            Nivel: {{ currentDemandLevel?.level?.toUpperCase() || 'CALCULANDO' }}
+          </div>
+        </div>
+      </div>
+      <div class="time-info">
+        <ion-icon name="time" color="medium"></ion-icon>
+        <span class="current-time">{{ formatCurrentTime() }}</span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Información destacada de demanda -->
+  <ion-card class="demand-info-card" [class]="'demand-' + currentDemandLevel?.level">
+    <ion-card-content>
+      <div class="demand-display">
+        <div class="demand-icon">
+          <ion-icon 
+            [name]="currentDemandLevel?.level === 'baja' ? 'flash' :
+                    currentDemandLevel?.level === 'normal' ? 'speedometer' :
+                    currentDemandLevel?.level === 'moderada' ? 'trending-up' :
+                    currentDemandLevel?.level === 'media' ? 'pulse' :
+                    currentDemandLevel?.level === 'alta' ? 'flame' :
+                    currentDemandLevel?.level === 'mediaalta' ? 'warning' :
+                    'alert-circle'"
+            [color]="currentDemandLevel?.color">
+          </ion-icon>
+        </div>
+        <div class="demand-text">
+          <h3>{{ getDemandDescription() }}</h3>
+          <p>Tiempo estimado: <strong>{{ estimatedTime }}</strong></p>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Asignar Horario de Recolección</ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <!-- Fecha y Hora -->
+      <ion-item>
+        <ion-label>Fecha y Hora de Recolección</ion-label>
+        <ion-datetime
+          display-format="YYYY-MM-DD HH:mm"
+          picker-format="YYYY-MM-DD HH:mm"
+          [(ngModel)]="fechaHoraRecoleccion"
+          [min]="fechaMinima"
+          placeholder="Selecciona fecha y hora"
+          (ionChange)="onDateTimeChange()">
+        </ion-datetime>
+      </ion-item>
+
+      <!-- Card para mostrar tiempo estimado y hora asignada -->
+      <ion-card class="time-assignment-card">
+        <ion-card-content>
+          <div class="time-row">
+            <span class="time-label">Tiempo estimado</span>
+            <span class="time-value success">{{ estimatedTime }}</span>
+          </div>
+          <div class="time-row">
+            <span class="time-label">Hora asignada</span>
+            <span class="time-value primary">{{ formatAssignedTime() }}</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Sistema de Asignación Automática -->
+      <div class="auto-assignment-section">
+        
+        <!-- Cronómetro Activo -->
+        <div *ngIf="isCountdownActive" class="countdown-container">
+          <div class="countdown-display" [class]="'countdown-' + currentDemandLevel?.level">
+            <ion-icon name="timer" class="countdown-icon"></ion-icon>
+            <h2>Asignación automática en:</h2>
+            <div class="countdown-number">{{ countdown }}</div>
+            
+            <!-- Información de asignación -->
+            <div class="auto-assignment-info">
+              <p><strong>Se asignará:</strong> {{ getDemandDescription() }}</p>
+              <p><strong>Tiempo:</strong> {{ estimatedTime }}</p>
+            </div>
+            
+            <!-- Barra de progreso -->
+            <ion-progress-bar 
+              [value]="getProgressPercentage() / 100" 
+              [color]="currentDemandLevel?.color"
+              class="countdown-progress">
+            </ion-progress-bar>
+            
+            <p class="countdown-text">
+              Se asignará automáticamente según la demanda actual
+            </p>
+          </div>
+          
+          <ion-button 
+            expand="block" 
+            color="danger" 
+            (click)="cancelCountdown()"
+            class="cancel-button">
+            <ion-icon name="close" slot="start"></ion-icon>
+            CANCELAR ASIGNACIÓN
+          </ion-button>
+        </div>
+
+        <!-- Botón para reiniciar -->
+        <ion-button 
+          *ngIf="!isCountdownActive && !isAssigned" 
+          expand="block" 
+          color="tertiary" 
+          (click)="restartCountdown()"
+          class="restart-button">
+          <ion-icon name="calendar" slot="start"></ion-icon>
+          REINICIAR ASIGNACIÓN AUTOMÁTICA
+        </ion-button>
+
+        <!-- Estado de asignación -->
+        <ion-button 
+          *ngIf="isAssigned" 
+          expand="block" 
+          color="medium" 
+          disabled="true"
+          class="assigning-button">
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+          Asignando...
+        </ion-button>
+      </div>
+
+      <!-- Información del Sistema -->
+      <ion-card class="system-info-card">
+        <ion-card-header>
+          <ion-card-subtitle>
+            <ion-icon name="information-circle" color="primary"></ion-icon>
+            Sistema Inteligente de Asignación
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="info-text">
+            El sistema ajusta automáticamente los tiempos según la demanda actual.
+          </p>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Estado del Sistema -->
+      <ion-card class="status-info-card">
+        <ion-card-header>
+          <ion-card-subtitle>Estado Actual del Sistema</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item lines="none">
+            <ion-label>Hora actual:</ion-label>
+            <ion-note slot="end">{{ formatCurrentTime() }}</ion-note>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>Nivel de demanda:</ion-label>
+            <ion-note slot="end" [color]="currentDemandLevel?.color">
+              {{ currentDemandLevel?.level?.toUpperCase() || 'CALCULANDO' }}
+            </ion-note>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>Tiempo estimado actual:</ion-label>
+            <ion-note slot="end" [color]="currentDemandLevel?.color">
+              {{ estimatedTime }}
+            </ion-note>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>Hora asignada:</ion-label>
+            <ion-note slot="end" color="primary">
+              {{ formatAssignedTime() }}
+            </ion-note>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Slider original (como alternativa) -->
+      <div *ngIf="pedido.estatus.toLowerCase() === 'en preparación' && !isCountdownActive" class="assign-slider-container">
+        <ion-label>Desliza para asignar manualmente</ion-label>
+        <ion-range
+          min="0"
+          max="100"
+          step="1"
+          pin="false"
+          [(ngModel)]="sliderValue"
+          (ionChange)="onSliderChange()"
+          class="assign-slider"
+          color="primary"
+        >
+          <ion-icon slot="start" name="arrow-forward" color="primary"></ion-icon>
+          <ion-icon slot="end" name="checkmark-circle" color="primary"></ion-icon>
+        </ion-range>
+      </div>
+
+      <!-- Animación de éxito -->
+      <div *ngIf="showAnimation" class="success-animation">
+        <ion-icon name="checkmark-circle" color="primary"></ion-icon>
+        <p>Pedido en espera de recolección</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

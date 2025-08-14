@@ -1,0 +1,460 @@
+.tituloprin1{
+    font-family: Readex Pro, sans-serif ;
+    font-style: normal;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 45px;
+  color: #00C089 ;
+    -webkit-background-clip: text;
+
+}
+
+.containerone{
+    margin-top: 1rem;
+    background: #000000;
+    padding: 2rem;
+    border-radius: 2rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 10px 14px 20px #101010;
+}
+
+
+
+.titleOne{
+    font-family: Readex Pro, sans-serif ;
+    font-style: normal;
+    line-height: 25px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 25px;
+}
+.powered{
+    font-size: 10px;
+    font-family: Readex Pro, sans-serif ;
+    text-align: center;
+}
+
+.powered img{
+    width: 1rem;
+}
+
+.titleTwo{
+    font-family: Readex Pro, sans-serif ;
+    font-style: normal;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 45px;
+    background: linear-gradient(to left, #05bff3, #004acd);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: animationmain;
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes animationmain {
+    from{
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.titleThree{
+    font-family: Readex Pro, sans-serif ;
+    font-style: normal;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 45px;
+    background: linear-gradient(rgb(192, 191, 191), white);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: animationmain;
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+
+
+.textmain{
+    font-family: Readex Pro, sans-serif ;
+    margin-top: 1.5rem;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+}
+
+
+
+/* En este apartado es la segunda targeta despues de la foto */
+.tarjet2{
+    margin-top: 1rem;
+    background: #00C089;    
+    padding: 1rem;
+    border-radius: 2rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 10px 14px 20px #101010;
+    
+}
+
+.letrah1{
+    font-family: Readex Pro, sans-serif ;
+    font-style: normal;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 45px;
+    background: linear-gradient(rgb(192, 191, 191), rgb(25, 24, 24));
+    -webkit-background-clip: text;
+   
+   
+   
+
+}
+
+.textmain2 {
+    font-size: 27px; /* Tamaño del texto  */
+    color: white;
+    
+}
+
+.icon-text ion-icon {
+    font-size: 27px; /* Tamaño del ícono (ajusta según necesites) */
+    margin-right: 10px; /* Espacio entre el ícono y el texto */
+    color: white;
+    line-height: 2;
+    vertical-align: middle;
+}
+.ml-2{
+    margin-left: 3rem;
+    margin-top: 1rem;
+
+}
+
+.viñetaletra{
+    font-size: 18px;
+    color: white;
+    margin-left: 50px;
+  
+}
+
+.btnSubscription{
+    margin-top: 1.5rem;
+    --background: linear-gradient(to right, #05bff3, #004acd);
+    --box-shadow: 3px 3px 3px #6c6a6a;   
+    
+}
+
+.btnSubscription h1{
+    font-family: Readex Pro, sans-serif;
+    font-weight: 600;
+}
+
+.cont-button{
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.imgprinc{
+    border-radius: 2rem;
+    box-shadow: 3px 3px 3px 3px #004acd; 
+}
+
+
+
+.glow::before, .glow::after{
+    content: "";
+    position: absolute;
+    border-radius: 2rem;
+    left: -2px;
+    top: -2px;
+    background: linear-gradient(
+        -45deg,
+        #00ff66,
+        #00ffff,
+        #ff00ff,
+        #ff0099,
+        #099fff
+    );
+    background-size: 400%;
+    height: calc(100% + 5px);
+    width: calc(100% + 5px);
+    z-index: -1;
+    animation: change 40s linear infinite;
+}
+
+@keyframes change {
+    0%{
+        background-position: 0 0;
+    }
+    50%{
+        background-position: 400% 0;
+    }
+    100%{
+        background-position: 0 0;
+    }
+    
+}
+
+.glow::after{
+    filter: blur(20px);
+    opacity: 1;
+}
+
+.menusection{
+    background: #eee;
+    margin-top: 3rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 3rem;
+    font-family: Readex Pro, sans-serif ;
+    
+}
+
+.menusection h1{
+    font-weight: 900;
+}
+
+.menusection h1 span{
+    color: #004acd;
+    
+}
+
+/* SM SIZE */
+@media(max-width: 576px) {
+    .titleThree, .titleTwo{
+        font-size: 25px;
+        line-height: 35px;
+    }
+}
+
+/* MD SIZE */
+@media(max-width: 768px) {
+    
+}
+
+/* LG SIZE */
+@media(max-width: 992px) {
+    
+}
+
+/* XL SIZE */
+@media(max-width: 1200px) {
+    
+}
+.text {
+  text-align: justify;
+  word-wrap: break-word;
+  padding: 15px; 
+  font-size: 14px; 
+  line-height: 1.5;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px;
+    justify-content: center; 
+    margin-top: 2rem; 
+    padding: 0 10px;
+  }
+  .target {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: space-between;
+  width: calc(50% - 10px); 
+  max-width: 350px;
+  min-width: 280px; 
+  min-height: 450px;
+  margin: 10px 0; 
+  box-sizing: border-box; 
+  background-color: #fff;
+  border-radius: 12px; 
+  overflow: hidden; 
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  }
+
+  .contimg { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    height: 200px;
+    overflow: hidden;
+    background-color: #ffffff;
+  }    
+  .contimg img { 
+    width: 180px; 
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  ion-card-header {
+    padding: 16px 16px 8px 16px;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-card-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 0;
+      line-height: 1.3;
+    }
+  }
+
+  ion-card-content {
+    padding: 8px 16px 16px 16px;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    &.text {
+      font-size: 16px;
+      font-weight: 400;
+      color: #34495e;
+      line-height: 1.4;
+      margin-bottom: 10px;
+      text-align: justify;
+      min-height: 120px;
+    }
+  }
+
+  .btntarget {
+    margin-top: 15px;
+    width: 100%;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    &.button-success {
+      --background: #28a745;
+      --background-activated: #218838;
+      --background-hover: #218838;
+    }
+    
+    &:hover {
+      transform: translateY(-1px);
+      --box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .precio {
+    font-size: 1.6em;
+    font-weight: 800;
+    color: #000000;
+    margin: 15px 0 10px 0;
+    padding: 12px 16px;
+    background-color: transparent;
+    border-radius: 0;
+    text-align: center;
+    box-shadow: none;
+    position: relative;
+    overflow: hidden;
+    
+    strong {
+      color: #000000;
+      text-shadow: none;
+    }
+  }
+
+// Estilos para mensaje de "no se encontraron productos"
+.no-results {
+  margin: 20px;
+  text-align: center;
+  
+  ion-item {
+    --background: #f8f9fa;
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin: 10px 0;
+    
+    ion-icon {
+      color: #6c757d;
+      font-size: 1.5rem;
+    }
+    
+    ion-label {
+      h2 {
+        color: #495057;
+        font-weight: 600;
+        margin: 0;
+      }
+      
+      p {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 4px 0 0 0;
+      }
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media(max-width: 576px) {
+  .target {
+    width: calc(100% - 20px);
+    min-width: 250px;
+    min-height: 400px;
+  }
+  
+  .contimg img {
+    width: 150px;
+    height: 150px;
+  }
+  
+  ion-card-header {
+    min-height: 50px;
+    
+    ion-card-title {
+      font-size: 1.2em;
+    }
+  }
+  
+  ion-card-content.text {
+    min-height: 100px;
+  }
+  
+  .precio {
+    font-size: 1.3em;
+    padding: 10px 14px;
+  }
+}
+
+@media(min-width: 992px) {
+  .target {
+    width: calc(33.333% - 20px);
+  }
+}
+
+
+@media(min-width: 992px) {
+  .target {
+    width: calc(33.333% - 20px);
+  }
+}

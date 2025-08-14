@@ -1,0 +1,99 @@
+<app-header [showMenu]="true" title="Horarios de entrega"></app-header>
+
+<ion-content>
+  <!-- Refresher para actualizar contenido -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Barra de búsqueda -->
+  <ion-searchbar 
+    mode="ios" 
+    animated="true" 
+    placeholder="Cliente, productos, precio o código" 
+    [(ngModel)]="searchTerm" 
+    (ionInput)="filterPedidos()">
+  </ion-searchbar>
+
+  <!-- Botón para abrir el modal de filtros -->
+  <ion-button expand="block" color="primary" (click)="openFilterModal()">
+    Filtros 
+    <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon>
+  </ion-button>
+
+  <!-- Botón para quitar filtros si están aplicados -->
+  <ion-button expand="block" color="light" *ngIf="filtersApplied" (click)="clearFilters()">
+    Quitar Filtros 
+    <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon>
+  </ion-button>
+
+  <!-- Lista de pedidos filtrados -->
+  <ng-container *ngIf="pedidosFiltrados.length > 0">
+    <ion-list *ngFor="let pedido of pedidosFiltrados">
+      <!-- Ítem deslizable para cada pedido -->
+      <ion-item-sliding *ngIf="pedido.estatus.toLowerCase()==='en preparación'" class="product-item">
+        <ion-item>
+          <ion-label>
+            <!-- Total del pedido -->
+            <div class="name">
+              <h2>
+                <ion-icon slot="start" style="margin-right: 2rem;" color="danger" name="cash-outline"></ion-icon>
+                ${{ pedido.total | number:'1.2-2' }} <!-- Muestra el total con dos decimales -->
+              </h2>
+            </div>
+            <!-- Información del cliente y estatus -->
+            <div class="data">
+              <strong>
+                <ion-icon slot="start" name="person-outline"></ion-icon> 
+                Cliente: {{pedido.nombre_cliente}}
+              </strong>
+              <strong style="margin-left: 3rem;">
+                <ion-icon slot="start" name="refresh-circle-outline"></ion-icon> 
+                {{pedido.estatus}}
+              </strong>
+            </div>
+            <!-- Etiqueta para el tipo de pago -->
+            <ion-chip color="primary" mode="ios" outline="true">
+              <ion-label>{{pedido.tipo_pago}}</ion-label>
+            </ion-chip>
+          </ion-label>
+        </ion-item>
+        <!-- Opciones deslizable del pedido -->
+        <ion-item-options>
+          <!-- Opción: Asignar horario -->
+          <ion-item-option (click)="openAsignarHorario(pedido)" color="primary">
+            Asignar horario 
+            <ion-icon class="option-btn" name="alarm-outline"></ion-icon>
+          </ion-item-option>
+          <!-- Opción: Cancelar pedido -->
+          <ion-item-option 
+            color="danger" 
+            (click)="cancelarPedido(pedido)" 
+            *ngIf="pedido.estatus.toLowerCase() !== 'cancelado' && pedido.estatus.toLowerCase() !== 'entregado'">
+            <ion-icon class="option-btn" style="margin-right: 0.5rem;" name="close-circle-outline"></ion-icon> 
+            Cancelar
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </ng-container>
+
+  <!-- Estado: Cargando datos -->
+  <ion-list *ngIf="loading">
+    <ion-item class="product-item" *ngFor="let p of [1,1,1,1,1,1,1,1]">
+      <ion-avatar slot="start">
+        <ion-skeleton-text animated style="width: 100%; height: 100%;"></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <div><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></div>
+        <div><ion-skeleton-text animated style="width: 30%"></ion-skeleton-text></div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mensaje si no hay pedidos disponibles -->
+  <div *ngIf="!loading && !pedidosFiltrados.length" class="empty">
+    <ion-icon name="shield-outline"></ion-icon>
+    <h3>No hay pedidos disponibles</h3>
+  </div>
+</ion-content>

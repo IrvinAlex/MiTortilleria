@@ -1,0 +1,116 @@
+<app-header [showMenu]="true" title="Carrito de negocio"></app-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Refrescado de la página -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content 
+      pulling-icon="chevron-down-circle-outline"
+      pulling-text="Arrastra para actualizar"
+      refreshing-spinner="circles"
+      refreshing-text="Actualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="content-container">
+    <!-- Cart Items -->
+    <ion-card *ngIf="cart && cartDetails.length" class="cart-items-card">
+      <ion-card-content>
+        <div class="cart-header">
+          <h2>Productos para Negocio</h2>
+          <span class="items-count">{{ cartDetails.length }} artículo(s)</span>
+        </div>
+        
+        <div class="cart-items">
+          <div 
+            *ngFor="let item of cartDetails; trackBy: trackByFn" 
+            class="cart-item"
+            [class.item-removing]="itemAnimations[item.id]">
+            
+            <div class="item-image">
+              <img [src]="item.product.imagen" [alt]="item.product.nombre" />
+            </div>
+            
+            <div class="item-details">
+              <div class="item-name">{{ item.product.nombre }}</div>
+              <div class="item-option">
+                <ion-icon name="options-outline"></ion-icon>
+                {{ item.option.nombre }}
+              </div>
+              <div class="item-quantity">
+                <ion-icon name="cube-outline"></ion-icon>
+                Cantidad: {{ item.cantidad }}
+              </div>
+              <div class="item-tortilla" *ngIf="item.tamano_tortilla">
+                <ion-icon name="resize-outline"></ion-icon>
+                Tamaño: {{ item.tamano_tortilla }}
+              </div>
+              <div class="item-price">{{ item.subtotal | currency }}</div>
+            </div>
+            
+            <div class="item-actions">
+              <ion-button fill="clear" size="small" (click)="editProduct(item)">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" size="small" (click)="deleteProduct(item)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Loading skeleton -->
+    <ion-card *ngIf="loading" class="loading-card">
+      <ion-card-content>
+        <div *ngFor="let p of [1,2,3]" class="skeleton-item">
+          <div class="skeleton-image">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </div>
+          <div class="skeleton-details">
+            <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 60%; height: 16px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40%; height: 16px;"></ion-skeleton-text>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && !cartDetails.length" class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="storefront-outline"></ion-icon>
+      </div>
+      <h3>Tu carrito de negocio está vacío</h3>
+      <p>¡Agrega algunos productos para tu negocio!</p>
+      <ion-button fill="outline" color="primary" routerLink="/main/productos">
+        <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+        Explorar Productos
+      </ion-button>
+    </div>
+  </div>
+
+</ion-content>
+
+<ion-footer *ngIf="cart && cartDetails.length" class="cart-footer">
+  <div class="footer-container">
+    <!-- Total Summary -->
+    <div class="total-section">
+      <div class="total-simple">
+        <span class="total-label">Total:</span>
+        <span class="total-value">{{ cart.total | currency }}</span>
+      </div>
+    </div>
+    
+    <!-- Continue Button -->
+    <div class="action-section">
+      <ion-button 
+        expand="block" 
+        (click)="continuePurchase()"
+        class="continue-button">
+        <ion-icon slot="start" name="card-outline"></ion-icon>
+        Continuar Compra
+      </ion-button>
+    </div>
+  </div>
+</ion-footer>

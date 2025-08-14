@@ -1,0 +1,33 @@
+<app-header [showMenu]="true" title="Perfil"></app-header>
+<ion-content class="ion-paddin-top ion-text-center">
+
+  <!-- Avatar del usuario: muestra la imagen si existe, de lo contrario muestra un icono por defecto -->
+  <ion-avatar>
+    <img *ngIf="user()?.image" [src]="user()?.image" /> <!-- Imagen del usuario -->
+    <ion-icon *ngIf="!user()?.image" name="person-circle-outline" class="empty-icon"></ion-icon> <!-- Icono por defecto si no tiene imagen -->
+  </ion-avatar>
+
+  <!-- Botón para tomar una foto de perfil -->
+  <ion-button class="photo-btn" (click)="takePicture()" mode="ios" size="small" shape="round">
+    <ion-icon name="camera-outline"></ion-icon> <!-- Icono de cámara -->
+  </ion-button>
+
+  <!-- Nombre del usuario -->
+  <h2>{{user().name}}</h2>
+
+  <!-- Tipo de perfil del usuario -->
+  <div>{{tipo_perfil}}</div>
+
+  <!-- Opción para editar el perfil -->
+  <ion-item button detail (click)="actualizarPerfilmodal()">
+    <ion-icon color="primary" slot="start" name="person-outline"></ion-icon> <!-- Icono de perfil -->
+    <ion-label>Editar Perfil</ion-label> <!-- Texto del botón -->
+  </ion-item>
+
+  <!-- Opción para ver los términos y condiciones -->
+  <ion-item button detail (click)="terms()">
+    <ion-icon color="primary" slot="start" name="document-outline"></ion-icon> <!-- Icono de documento -->
+    <ion-label>Términos y Condiciones</ion-label> <!-- Texto del botón -->
+  </ion-item>
+
+</ion-content>

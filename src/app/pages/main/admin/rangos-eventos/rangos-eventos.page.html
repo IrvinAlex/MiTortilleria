@@ -1,0 +1,101 @@
+<app-header [showMenu]="true" title="Rango de productos para ventas"></app-header>
+
+<ion-content class="ion-padding-top ion-text-center">
+
+  <!-- Ion Refresher: Permite actualizar los datos al hacer "pull to refresh" -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Título de la página -->
+  <h2>Administración de rangos de productos</h2>
+
+  <!-- Barra de búsqueda y botón para agregar un rango -->
+  <ion-grid>
+    <ion-row>
+      <ion-col size="8">
+        <!-- Barra de búsqueda para filtrar rangos -->
+        <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar rango..." (ionInput)="filterItems($event)"></ion-searchbar>
+      </ion-col>
+      <ion-col size="4" class="ion-text-right">
+        <!-- Botón para abrir el modal de agregar un rango -->
+        <ion-button (click)="openAddRangoModal()" color="success">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Agregar rango
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="table-header">
+    <h2></h2>
+  </div>
+
+  <!-- Tabla de rangos -->
+  <ion-grid>
+    <!-- Fila de encabezado de la tabla donde se definen las columnas -->
+    <ion-row class="header-row">
+      <ion-col (click)="sortTable('producto')">Producto</ion-col>
+      <ion-col (click)="sortTable('tipo')">Tipo de cliente o actividad</ion-col>
+      <ion-col (click)="sortTable('min_producto')">Minimo de compra (Kg)</ion-col>
+      <ion-col (click)="sortTable('max_producto')">Maximo de compra (Kg)</ion-col>
+      <ion-col>Acciones</ion-col>
+    </ion-row>
+
+    <!-- Fila para cada rango -->
+    <ion-row *ngFor="let item of paginatedData" class="data-row">
+      <ng-container *ngFor="let field of fields">
+        <!-- Fila de datos editable solo si el campo es visible y no es la imagen -->
+        <ion-col class="pointer-on" *ngIf="shouldShowField(field.key)">
+          <!-- Permite editar el campo al hacer click -->
+          <ion-input class="cololetra" *ngIf="editingFieldKey === field.key && editingField === item"
+                    [(ngModel)]="item[field.key]" 
+                    (keyup.enter)="finishEditing()" 
+                    (blur)="finishEditing()"></ion-input>
+          <!-- Muestra el valor si no está siendo editado -->
+          <span *ngIf="!(editingFieldKey === field.key && editingField === item)">
+            {{ item[field.key] }}
+          </span>
+        </ion-col>
+      </ng-container>
+      
+      <!-- Acciones: Editar y eliminar -->
+      <ion-col>
+        <ion-button (click)="editItem(item)" color="warning">
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+        <ion-button (click)="deleteItem(item)" color="danger">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Paginación de la tabla -->
+  <div class="pagination">
+    <!-- Botón de "Anterior" para cambiar de página -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPage === 1" 
+      (click)="previousPage()" 
+      expand="full" 
+      class="pagination-button">
+      <ion-icon slot="start" name="arrow-back"></ion-icon>
+      Anterior
+    </ion-button>
+    
+    <!-- Información de la página actual -->
+    <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    
+    <!-- Botón de "Siguiente" para cambiar de página -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPage === totalPages" 
+      (click)="nextPage()" 
+      expand="full" 
+      class="pagination-button">
+      Siguiente
+      <ion-icon slot="end" name="arrow-forward"></ion-icon>
+    </ion-button>
+  </div>
+</ion-content>

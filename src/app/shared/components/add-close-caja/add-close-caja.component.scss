@@ -1,0 +1,382 @@
+.elegant-content {
+  --background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.main-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// Header Card
+.header-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+
+  .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+
+    &.close-mode {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    ion-icon {
+      font-size: 2.5rem;
+      color: white;
+    }
+  }
+
+  .main-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .main-subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+}
+
+// Form Card
+.form-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+// Amount Sections
+.amount-section {
+  margin-bottom: 2rem;
+  
+  &:last-of-type {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .section-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &.start-icon {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    &.end-icon {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    ion-icon {
+      font-size: 1.5rem;
+      color: white;
+    }
+  }
+
+  .section-info {
+    h3 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+  }
+}
+
+// Input Styling
+.input-container {
+  margin-bottom: 1rem;
+  
+  &.readonly {
+    opacity: 0.7;
+  }
+}
+
+.custom-item {
+  --background: #f8fafc;
+  --border-radius: 12px;
+  --padding: 1rem;
+  --border-width: 2px;
+  --border-color: #e2e8f0;
+  --border-style: solid;
+  transition: all 0.3s ease;
+
+  &:not(.disabled):hover {
+    --border-color: #cbd5e1;
+  }
+
+  &.item-has-focus {
+    --border-color: #667eea;
+    --background: white;
+  }
+
+  &.disabled {
+    --background: #f1f5f9;
+    --color: #64748b;
+  }
+
+  ion-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .amount-input {
+    font-size: 1.125rem;
+    font-weight: 500;
+    --color: #1e293b;
+  }
+
+  ion-note {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+  }
+}
+
+// Amount Display
+.amount-display {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 2px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 1rem;
+
+  &.start-amount {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-color: #7dd3fc;
+  }
+
+  .currency-symbol {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #059669;
+    margin-right: 0.5rem;
+  }
+
+  .amount-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #047857;
+  }
+
+  .currency-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #065f46;
+    margin-left: 0.5rem;
+  }
+}
+
+// Calculation Card
+.calculation-card {
+  background: linear-gradient(135deg, #fefce8, #fef3c7);
+  border: 2px solid #fcd34d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  .calc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: #92400e;
+    font-weight: 600;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  .calc-body {
+    .calc-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+
+      .calc-label {
+        font-weight: 500;
+        color: #78350f;
+      }
+
+      .calc-value {
+        font-weight: 600;
+        color: #1c1917;
+
+        &.positive {
+          color: #059669;
+        }
+
+        &.negative {
+          color: #dc2626;
+        }
+      }
+
+      &.total {
+        font-size: 1.125rem;
+        font-weight: 700;
+        border-top: 2px solid #fcd34d;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+
+        .calc-value {
+          color: #92400e;
+          font-size: 1.25rem;
+        }
+      }
+    }
+
+    .calc-divider {
+      height: 1px;
+      background: #fcd34d;
+      margin: 0.5rem 0;
+    }
+  }
+}
+
+// Action Buttons
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.primary-action {
+  --background: linear-gradient(135deg, #10b981, #059669);
+  --color: white;
+  --border-radius: 12px;
+  --box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  height: 56px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:not([disabled]):hover {
+    --box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+.danger-action {
+  --background: linear-gradient(135deg, #ef4444, #dc2626);
+  --color: white;
+  --border-radius: 12px;
+  --box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  height: 56px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:not([disabled]):hover {
+    --box-shadow: 0 12px 30px rgba(239, 68, 68, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+.cancel-action {
+  --color: #6b7280;
+  --border-radius: 12px;
+  height: 48px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  &:hover {
+    --color: #374151;
+    transform: translateY(-1px);
+  }
+}
+
+// Disabled State
+ion-button[disabled] {
+  opacity: 0.5;
+  transform: none !important;
+  --box-shadow: none !important;
+}
+
+// Responsive Design
+@media (max-width: 480px) {
+  .main-container {
+    padding: 0.75rem;
+    gap: 1rem;
+  }
+
+  .header-card {
+    padding: 2rem 1.5rem;
+
+    .main-title {
+      font-size: 1.75rem;
+    }
+
+    .main-subtitle {
+      font-size: 0.9rem;
+    }
+  }
+
+  .form-card {
+    padding: 1.5rem;
+  }
+
+  .section-header {
+    .section-icon {
+      width: 45px;
+      height: 45px;
+
+      ion-icon {
+        font-size: 1.25rem;
+      }
+    }
+
+    .section-info h3 {
+      font-size: 1.125rem;
+    }
+  }
+
+  .amount-display {
+    padding: 1.25rem;
+
+    .amount-value {
+      font-size: 1.75rem;
+    }
+  }
+}

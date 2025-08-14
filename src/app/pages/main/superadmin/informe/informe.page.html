@@ -1,0 +1,122 @@
+<app-header [showMenu]="true" title="Informes de ventas"></app-header>
+
+<ion-content>
+
+  <!-- Refrescador para permitir la actualización de los informes -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Título principal de la página -->
+  <h2 class="ion-text-center tit">Informes de ventas</h2>
+
+  <!-- Contenedor principal de los informes -->
+  <div class="container">
+  
+    <!-- Informe de ventas diarias -->
+    <h1 class="tittle-today">Informes de ventas diarias</h1>
+    <div class="card-container-today">
+
+      <!-- Reporte en kilogramos -->
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="6">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Reporte en kilogramos</ion-card-title>
+              <ion-card-subtitle>Datos obtenidos en las ventas del dia de hoy.</ion-card-subtitle>
+            </ion-card-header>
+        
+            <!-- Contenedor del gráfico para ventas en kilogramos -->
+            <ion-card-content>
+              <canvas id="ChartDiarioK"></canvas>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+  
+        <!-- Reporte en pesos -->
+        <ion-col size="12" size-md="6" size-lg="6">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Reporte en pesos</ion-card-title>
+              <ion-card-subtitle>Datos obtenidos en las ventas del dia de hoy.</ion-card-subtitle>
+            </ion-card-header>
+        
+            <!-- Contenedor del gráfico para ventas en pesos -->
+            <ion-card-content>
+              <canvas id="ChartDiarioP"></canvas>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </div>
+
+    <!-- Informe de ventas semanales -->
+    <h1 class="tittle-week">Informes de ventas semanales</h1>
+    <div class="card-container-week">
+
+      <!-- Reporte semanal en pesos -->
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="6">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Reporte en pesos</ion-card-title>
+              <ion-card-subtitle>Datos obtenidos en las ventas de los últimos días del mes.</ion-card-subtitle>
+            </ion-card-header>
+        
+            <!-- Contenedor del gráfico para ventas semanales en pesos -->
+            <ion-card-content>
+              <canvas id="miGraficaSemanal"></canvas>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </div>
+
+    <!-- Informe de ventas mensuales -->
+    <h1 class="tittle-month">Informes de ventas mensuales</h1>
+    <div class="card-container-month">
+
+      <!-- Reporte mensual en pesos -->
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="6">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Reporte en pesos</ion-card-title>
+              <ion-card-subtitle>Datos obtenidos en las ventas de los meses anteriores.</ion-card-subtitle>
+            </ion-card-header>
+        
+            <!-- Contenedor del gráfico para ventas mensuales en pesos -->
+            <ion-card-content>
+              <canvas id="ChartMensual"></canvas>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </div>
+
+    <!-- Informe de ventas anuales -->
+    <h1 class="tittle-year">Informes de ventas anuales</h1>
+    <div class="card-container-year">
+
+      <!-- Reporte anual en pesos -->
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="6">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Reporte en pesos</ion-card-title>
+              <ion-card-subtitle>Datos obtenidos en las ventas de los años anteriores.</ion-card-subtitle>
+            </ion-card-header>
+        
+            <!-- Contenedor del gráfico para ventas anuales en pesos -->
+            <ion-card-content>
+              <canvas class="pieChart" id="ChartAnual"></canvas>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </div>
+    
+  </div>
+</ion-content>
+
+

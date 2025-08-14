@@ -1,0 +1,208 @@
+.thank-you-page {
+  background: linear-gradient(to bottom, #1ad436, #ffffff);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.loader {
+  border: 10px solid #f3f3f3;
+  border-top: 10px solid #1ad436;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.thank-you-message {
+  animation: fadeIn 1.5s ease-in-out;
+  margin-bottom: 20px;
+}
+
+.thank-you-message h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #333;
+  margin: 8px 0;
+}
+
+.thank-you-message p {
+  font-size: 1.2em;
+  color: #555;
+}
+
+.icon-check {
+  font-size: 5em;
+  color: #1ad436;
+  margin-bottom: 16px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animated-elements {
+  position: relative;
+  height: 200px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.additional-message p {
+  font-size: 1.2em;
+  margin: 10px 0;
+  color: #555;
+}
+
+.emoji {
+  font-size: 1.5em;
+  color: #1ad436;
+  margin-right: 8px;
+}
+
+.background-waves {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 100px;
+  background: #1ad43655;
+  opacity: 0.8;
+  border-radius: 50%;
+  animation: wave-animation 8s linear infinite;
+}
+
+.wave1 {
+  left: -50%;
+  animation-delay: 0s;
+}
+
+.wave2 {
+  left: -60%;
+  animation-delay: 2s;
+  background: #1ad43677;
+}
+
+.wave3 {
+  left: -70%;
+  animation-delay: 4s;
+  background: #1ad43699;
+}
+
+@keyframes wave-animation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.floating-icons {
+  position: relative;
+  height: 150px;
+  margin-bottom: 24px;
+}
+
+.icon {
+  position: absolute;
+  font-size: 2em;
+  color: #1ad436;
+  animation: float 4s ease-in-out infinite;
+}
+
+// Distribución más centrada y equilibrada de los iconos
+.icon-1 {
+  top: 25%;
+  left: 25%;
+  animation-delay: 0s;
+}
+
+.icon-2 {
+  top: 15%;
+  left: 50%;
+  animation-delay: 1s;
+}
+
+.icon-3 {
+  top: 65%;
+  left: 40%;
+  animation-delay: 2s;
+}
+
+.icon-4 {
+  top: 25%;
+  left: 75%;
+  animation-delay: 3s;
+}
+
+.icon-5 {
+  top: 65%;
+  left: 65%;
+  animation-delay: 4s;
+}
+
+.icon-6 {
+  top: 65%;
+  left: 15%;
+  animation-delay: 5s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

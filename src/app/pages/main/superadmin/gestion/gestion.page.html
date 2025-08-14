@@ -1,0 +1,254 @@
+<app-header [showMenu]="true" title="Gestión de productos"></app-header>
+
+<ion-content class="ion-padding-top ion-text-center">
+
+  <div class="ion-padding-top ion-text-center">
+      <!-- Refrescador para permitir la actualización de la lista -->
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <!-- Título de la página -->
+    <h2>Gestión de productos</h2>
+
+    <!-- Barra de búsqueda y botón para agregar un producto -->
+    <ion-grid>
+      <ion-row>
+        <!-- Barra de búsqueda para filtrar productos -->
+        <ion-col size="8">
+          <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar productos..." (ionInput)="filterItems($event)"></ion-searchbar>
+        </ion-col>
+        
+        <!-- Botón para abrir el modal y agregar un nuevo producto -->
+        <ion-col size="4" class="ion-text-right">
+          <ion-button (click)="openAddProductModal()" color="success">
+            <ion-icon name="add-circle-outline"></ion-icon>
+            Agregar producto
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Botón para mostrar/ocultar columnas de la tabla -->
+    <div class="table-header">
+    </div>
+
+    <!-- Tabla que muestra los productos -->
+    <ion-grid>
+      <ion-row class="header-row">
+        <!-- Columnas de la tabla con capacidad de ordenamiento -->
+        <ion-col (click)="sortTable('nombre')">Nombre</ion-col>
+        <ion-col (click)="sortTable('descripcion')">Descripcion</ion-col>
+        <ion-col (click)="sortTableSub('stock')">Cantidad disponible</ion-col>
+        <ion-col (click)="sortTable('disponible')">Disponibilidad</ion-col>
+        <ion-col (click)="sortTable('imagen')">Imagen</ion-col>
+
+        <!-- Columna de acciones (Eliminar) -->
+        <ion-col>Acciones</ion-col>
+      </ion-row>
+
+      <!-- Fila de datos que muestra los productos -->
+      <ion-row *ngFor="let item of paginatedData" class="data-row">
+        <ng-container *ngFor="let field of fields">
+          <!-- Mostrar cada campo de un producto, si debe mostrarse según el campo -->
+          <ion-col class="pointer-on" *ngIf="shouldShowField(field.key) && field.key !== 'imagen' && field.key !== 'disponible'">
+            <!-- Campo editable, muestra un input cuando el campo está siendo editado -->
+            <ion-input class="cololetra" *ngIf="editingFieldKey === field.key && editingField === item"
+                      [(ngModel)]="item[field.key]" 
+                      (keyup.enter)="finishEditing()"
+                      (blur)="finishEditing()"></ion-input>
+            
+            <!-- Mostrar el valor del campo si no está en modo edición -->
+            <span *ngIf="!(editingFieldKey === field.key && editingField === item)">
+              {{ item[field.key] }}
+            </span>
+          </ion-col>
+        </ng-container>
+
+        <!-- Mostrar disponibilidad con los íconos -->
+        <ion-col style="display: flex; justify-content: center; align-items: flex-start;">
+          <ion-icon 
+            *ngIf="item['disponible'] === true" 
+            name="checkmark-circle" 
+            color="success" 
+            size="large"
+            aria-label="Disponible">
+          </ion-icon>
+          
+          <ion-icon 
+            *ngIf="item['disponible'] === false" 
+            name="close-circle" 
+            color="danger" 
+            size="large"
+            aria-label="No disponible">
+          </ion-icon>
+        </ion-col>
+
+        <ion-col style="display: flex; justify-content: center; align-items: flex-start;">
+          <ion-img [src]="item['imagen']" style="width: 50px; height: auto;"></ion-img>
+        </ion-col>
+
+        <!-- Columna de acciones, con el botón para eliminar un producto -->
+        <ion-col>
+          <ion-button (click)="editItem(item)" color="warning">
+            <ion-icon name="create"></ion-icon>
+          </ion-button>
+          <ion-button (click)="deleteItem(item)" color="danger">
+            <ion-icon name="trash"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Paginación de los productos -->
+    <div class="pagination">
+      <!-- Botón para retroceder a la página anterior -->
+      <ion-button 
+        color="light" 
+        [disabled]="currentPage === 1" 
+        (click)="previousPage()" 
+        expand="full" 
+        class="pagination-button">
+        <ion-icon slot="start" name="arrow-back"></ion-icon>
+        Anterior
+      </ion-button>
+      
+      <!-- Información de la página actual y total -->
+      <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
+      
+      <!-- Botón para avanzar a la siguiente página -->
+      <ion-button 
+        color="light" 
+        [disabled]="currentPage === totalPages" 
+        (click)="nextPage()" 
+        expand="full" 
+        class="pagination-button">
+        Siguiente
+        <ion-icon slot="end" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="ion-padding-top ion-text-center" style="margin-top: 60px;">
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+  <!-- Título de la página -->
+  <h2>Gestión de categorias de venta para los productos</h2>
+
+  <!-- Barra de búsqueda y botón para agregar un producto -->
+  <ion-grid>
+    <ion-row>
+      <!-- Barra de búsqueda para filtrar productos -->
+      <ion-col size="8">
+        <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar productos..." (ionInput)="filterItemsSub($event)"></ion-searchbar>
+      </ion-col>
+      
+      <!-- Botón para abrir el modal y agregar un nuevo producto -->
+      <ion-col size="4" class="ion-text-right">
+        <ion-button (click)="openAddProductModalSub()" color="success">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Agregar producto
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Botón para mostrar/ocultar columnas de la tabla -->
+  <div class="table-header">
+  </div>
+
+  <!-- Tabla que muestra los productos -->
+  <ion-grid>
+    <ion-row class="header-row">
+      <!-- Columnas de la tabla con capacidad de ordenamiento -->
+      <ion-col (click)="sortTableSub('nombreProducto')">Producto</ion-col>
+      <ion-col (click)="sortTableSub('nombre')">Tipo de venta</ion-col>
+      <ion-col (click)="sortTableSub('precio')">Precio</ion-col>
+      <ion-col (click)="sortTableSub('granel')">Venta a granel</ion-col>
+
+      <!-- Columna de acciones (Eliminar) -->
+      <ion-col>Acciones</ion-col>
+    </ion-row>
+
+    <!-- Fila de datos que muestra los productos -->
+    <ion-row *ngFor="let item of paginatedDataSub" class="data-row">
+      <ng-container *ngFor="let field of fieldsSub">
+        <!-- Mostrar cada campo de un producto, si debe mostrarse según el campo -->
+        <ion-col class="pointer-on" *ngIf="shouldShowFieldSub(field.key) && field.key !== 'imagen' && field.key !== 'granel'">
+          <!-- Campo editable, muestra un input cuando el campo está siendo editado -->
+          <ion-input class="cololetra" *ngIf="editingFieldKey === field.key && editingField === item"
+                    [(ngModel)]="item[field.key]" 
+                    (keyup.enter)="finishEditing()"
+                    (blur)="finishEditing()"></ion-input>
+          
+          <!-- Mostrar el valor del campo si no está en modo edición -->
+          <span *ngIf="!(editingFieldKey === field.key && editingField === item)">
+            {{ item[field.key] }}
+          </span>
+        </ion-col>
+      </ng-container>
+
+      <!-- Mostrar disponibilidad con los íconos -->
+      <ion-col style="display: flex; justify-content: center; align-items: flex-start;">
+        <ion-icon 
+          *ngIf="item['granel'] === true" 
+          name="checkmark-circle" 
+          color="success" 
+          size="large"
+          aria-label="Granel">
+        </ion-icon>
+        
+        <ion-icon 
+          *ngIf="item['granel'] === false" 
+          name="close-circle" 
+          color="danger" 
+          size="large"
+          aria-label="No granel">
+        </ion-icon>
+      </ion-col>
+
+      <!-- Columna de acciones, con el botón para eliminar un producto -->
+      <ion-col>
+        <ion-button (click)="editItemSub(item)" color="warning">
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+        <ion-button (click)="deleteItemSub(item)" color="danger">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Paginación de los productos -->
+  <div class="pagination">
+    <!-- Botón para retroceder a la página anterior -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPageSub === 1" 
+      (click)="previousPageSub()" 
+      expand="full" 
+      class="pagination-button">
+      <ion-icon slot="start" name="arrow-back"></ion-icon>
+      Anterior
+    </ion-button>
+    
+    <!-- Información de la página actual y total -->
+    <span class="pagination-info">Página {{ currentPageSub }} de {{ totalPagesSub }}</span>
+    
+    <!-- Botón para avanzar a la siguiente página -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPageSub === totalPagesSub" 
+      (click)="nextPageSub()" 
+      expand="full" 
+      class="pagination-button">
+      Siguiente
+      <ion-icon slot="end" name="arrow-forward"></ion-icon>
+    </ion-button>
+  </div>
+</div>
+
+</ion-content>

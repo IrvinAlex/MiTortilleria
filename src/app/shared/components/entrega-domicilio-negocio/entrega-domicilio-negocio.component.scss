@@ -1,0 +1,186 @@
+.payment-card,
+.summary-card {
+  margin: 16px;
+  border-radius: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title,
+.summary-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  color: var(--ion-color-primary);
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.option-card.selected {
+  transform: scale(1.05);
+  background-color: var(--ion-color-primary-tint);
+}
+
+.option-icon {
+  font-size: 2rem;
+  color: var(--ion-color-primary);
+  margin-right: 8px;
+}
+
+.summary-card {
+  background-color: #f8f9fa; // Fondo gris claro
+  color: #343a40; // Texto gris oscuro
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 1rem;
+}
+
+.divider {
+  border-bottom: 1px solid #dee2e6;
+  margin: 8px 0;
+}
+
+.confirm-button-container {
+    margin: 16px;
+  }
+
+  .confirm-button-container-paypal {
+    margin: 16px;
+  }
+  
+  .confirm-button {
+    --background: var(--ion-color-primary);
+    color: white;
+    font-weight: bold;
+    border-radius: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease-in-out; /* Transición suave al final */
+  }
+
+  .complete {
+    --background: var(--ion-color-primary);
+    color: white;
+    font-weight: bold;
+    border-radius: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .confirm-button.animated::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%; /* Cubrir completamente durante la animación */
+    width: 0%;
+    background: linear-gradient(
+      to right,
+      var(--ion-color-primary),
+      var(--ion-color-secondary),
+      var(--ion-color-tertiary)
+    );
+    z-index: 1;
+    animation: slideIn 3s forwards;
+  }
+  
+  .confirm-button.animated {
+    color: transparent; /* Oculta el texto inicial durante la animación */
+  }
+  
+  .confirm-button.animated ion-icon {
+    color: white;
+  }
+  
+  .confirm-button.complete {
+    --background: var(--ion-color-primary); /* Asegura que regresa al color original */
+  }
+  
+  @keyframes slideIn {
+    0% {
+      width: 0%;
+    }
+    50% {
+      width: 100%;
+    }
+    100% {
+      width: 0%; /* Vuelve al estado original */
+    }
+  }
+  
+  
+.total-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.total-summary span {
+  margin: 4px 0;
+}
+
+.discounted-price {
+  color: green;
+  font-weight: bold;
+}
+
+.original-price {
+  color: gray;
+  text-decoration: line-through;
+  font-size: 17px;
+}
+
+.descuento {
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.free-shipping-message,
+.motivational-message {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.free-shipping-message {
+  background-color: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.motivational-message {
+  background-color: rgba(0, 123, 255, 0.1);
+  border: 1px solid rgba(0, 123, 255, 0.3);
+}
+
+.success-text {
+  color: var(--ion-color-success);
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.info-text {
+  color: var(--ion-color-primary);
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.total-item {
+  font-size: 1.1rem;
+  border-top: 2px solid var(--ion-color-primary);
+  padding-top: 12px;
+  margin-top: 8px;
+}
+

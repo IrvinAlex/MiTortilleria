@@ -1,0 +1,54 @@
+<app-header [isModal]="true" [title]=" 'Términos y Condiciones' "></app-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Política de Uso</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Bienvenido a nuestra aplicación de la tortillería. Al utilizar esta aplicación,
+        aceptas cumplir con los siguientes términos y condiciones. Por favor, léelos
+        atentamente.
+      </p>
+      
+      <h2>1. Información de la Cuenta</h2>
+      <p>
+        Los usuarios deben proporcionar información precisa y actualizada al registrarse
+        en la aplicación. No compartiremos tus datos personales con terceros sin tu consentimiento.
+      </p>
+
+      <h2>2. Uso de la Aplicación</h2>
+      <p>
+        Esta aplicación está diseñada para facilitar pedidos y gestionar tu experiencia con 
+        nuestra tortillería. Está prohibido el uso inapropiado de la misma, tales como fraude
+        o intento de acceso no autorizado a nuestros sistemas.
+      </p>
+
+      <h2>3. Política de Pedidos</h2>
+      <p>
+        Todos los pedidos realizados a través de la aplicación están sujetos a disponibilidad.
+        Nos reservamos el derecho de cancelar o modificar los pedidos según disponibilidad.
+      </p>
+
+      <h2>4. Cambios en los Términos</h2>
+      <p>
+        Nos reservamos el derecho de actualizar estos términos y condiciones en cualquier 
+        momento. Te notificaremos de los cambios a través de la aplicación.
+      </p>
+
+      <!-- Añade más secciones si es necesario -->
+      
+      <ion-item *ngIf="terms.length==0" lines="none">
+        <ion-checkbox slot="start" [(ngModel)]="acceptedTerms"></ion-checkbox>
+        <ion-label>Acepto los Términos y Condiciones</ion-label>
+      </ion-item>
+
+      <div *ngIf="terms.length==0" class="button-container">
+        <ion-button color="primary" expand="block" [disabled]="!acceptedTerms" (click)="acceptTerms()">
+          Aceptar y Continuar
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

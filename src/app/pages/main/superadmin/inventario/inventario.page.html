@@ -1,0 +1,128 @@
+<app-header [showMenu]="true" title="Inventario"></app-header>
+<ion-content class="ion-padding-top ion-text-center">
+  
+  <!-- Refrescador para actualizar la vista -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Título de la sección -->
+  <h2>Administrar inventario</h2>
+
+  <!-- Barra de búsqueda y botón para agregar un producto -->
+  <ion-grid>
+    <ion-row>
+      <!-- Barra de búsqueda para filtrar productos -->
+      <ion-col size="8">
+        <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar productos..." (ionInput)="filterItems($event)"></ion-searchbar>
+      </ion-col>
+      <!-- Botón para agregar un nuevo producto -->
+      <ion-col size="4" class="ion-text-right">
+        <ion-button (click)="openAddInventarioModal()" color="success">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Agregar Producto
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Encabezado de la tabla, vacío en este caso -->
+  <div class="table-header"></div>
+
+  <!-- Tabla con los datos de inventario -->
+  <ion-grid>
+    <ion-row class="header-row">
+      <!-- Encabezados de columnas que permiten ordenar por los campos -->
+      <ion-col (click)="sortTable('nombre')">Nombre</ion-col>
+      <ion-col (click)="sortTable('stock')">Cantidad (Toneladas)</ion-col>
+      <ion-col (click)="sortTable('costoUnidad')">Imagen</ion-col>
+      <ion-col>Acciones</ion-col>
+    </ion-row>
+    
+    <!-- Filas de productos, se muestran con los datos obtenidos -->
+    <ion-row *ngFor="let item of paginatedData" class="data-row">
+      <!-- Iteración para mostrar los campos de datos, excepto la imagen -->
+      <ng-container *ngFor="let field of fields">
+        <ion-col class="pointer-on" *ngIf="shouldShowField(field.key) && field.key !== 'image'">
+          <!-- Permite editar campos de manera interactiva -->
+          <ion-input class="cololetra" *ngIf="editingFieldKey === field.key && editingField === item"
+                     [(ngModel)]="item[field.key]" 
+                     (keyup.enter)="finishEditing()"
+                     (blur)="finishEditing()"></ion-input>
+          <span *ngIf="!(editingFieldKey === field.key && editingField === item)">
+            {{ item[field.key] }}
+          </span>
+        </ion-col>
+      </ng-container>
+
+      <!-- Columna para mostrar la imagen del producto -->
+      <ion-col class="pointer-on" style="display: flex; justify-content: center; align-items: center;">
+        <ion-img [src]="item['image']" style="width: 50px; height: auto;"></ion-img>
+      </ion-col>
+      
+      <!-- Columna con un botón de acción para editar el producto -->
+      <ion-col class="pointer-on">
+        <ion-button (click)="openUpdateInventarioModal(item['nombre'])" color="warning">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Paginación para navegar entre las páginas de productos -->
+  <div class="pagination">
+    <!-- Botón para ir a la página anterior -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPage === 1" 
+      (click)="previousPage()" 
+      expand="full" 
+      class="pagination-button">
+      <ion-icon slot="start" name="arrow-back"></ion-icon>
+      Anterior
+    </ion-button>
+    
+    <!-- Información de la página actual -->
+    <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    
+    <!-- Botón para ir a la siguiente página -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPage === totalPages" 
+      (click)="nextPage()" 
+      expand="full" 
+      class="pagination-button">
+      Siguiente
+      <ion-icon slot="end" name="arrow-forward"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Gráfico que muestra el inventario de la bodega -->
+  <div class="chart">
+    <h1 class="tittle-today">Inventario de bodega</h1>
+    <div class="card-container-today">
+      <ion-row>
+        <ion-col size="3" class="ion-text-right">
+          <ion-button [disabled]="isAsignarDisabled" (click)="openAsignarProductoModal()" color="success">
+            <ion-icon name="play-forward-circle-outline" style="margin-right: 5px;"></ion-icon>
+             Asignar producto
+          </ion-button>
+        </ion-col>
+        <ion-col size="12" size-md="7" size-lg="7">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Cantidad disponible actual de maíz y cal</ion-card-title>
+              <ion-card-subtitle>Inventario en cantidad de kilogramos.</ion-card-subtitle>
+            </ion-card-header>
+        
+            <ion-card-content>
+              <!-- Aquí se renderiza un gráfico con un canvas -->
+              <canvas id="ChartInventario"></canvas>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </div>
+  </div>
+
+</ion-content>

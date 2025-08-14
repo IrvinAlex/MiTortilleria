@@ -1,0 +1,373 @@
+<app-header title="Inicio" [showNombre]="true" [showLogo]="true" buttonsMenu="true"></app-header>
+<ion-content [fullscreen]="true">
+  <!-- Hero Section con fondo degradado naranja -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">La tradición del sabor ahora en tu celular</h1>
+        <p class="hero-subtitle">Ordena tortillas recién hechas sin hacer fila y recógelas cuando estén listas</p>
+
+        <!-- Botones de descarga -->
+        <div class="download-buttons">
+          <ion-button class="download-btn google-play" fill="solid">
+            <ion-icon name="logo-google-playstore" slot="start"></ion-icon>
+            Disponible en Google Play
+          </ion-button>
+          <ion-button class="download-btn app-store" fill="outline">
+            <ion-icon name="logo-apple-appstore" slot="start"></ion-icon>
+            Descarga en App Store
+          </ion-button>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <img src="../../../assets/img/Logo-Tortilleria-Final.png" alt="Tortillas Tradicionales" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Características -->
+  <div class="features-section">
+    <h2 class="section-title">Características de la App</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon green-bg">
+          <ion-icon name="basket-outline"></ion-icon>
+        </div>
+        <h3 class="feature-title">Ordena sin hacer fila</h3>
+        <p class="feature-description">Realiza tu pedido desde donde estés y recógelo cuando esté listo</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon green-bg">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <h3 class="feature-title">Historial de compras</h3>
+        <p class="feature-description">Consulta tus pedidos anteriores y repite tus favoritos con un clic</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon green-bg">
+          <ion-icon name="qr-code-outline"></ion-icon>
+        </div>
+        <h3 class="feature-title">Escaneo QR</h3>
+        <p class="feature-description">Recoge tu pedido rápidamente escaneando tu código QR único</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Productos - Sin botones de navegación -->
+  <div class="products-section">
+    <h2 class="section-title">Nuestros Productos</h2>
+    
+    <div class="products-carousel-container">
+      <div class="products-carousel" #productsCarousel>
+        <!-- Tortillas de Maíz -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../../../assets/img/Tortillas.png" alt="Tortillas de Maíz" />
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Tortillas de Maíz</h3>
+            <p class="product-description">Tortillas tradicionales hechas con maíz nixtamalizado</p>
+            <div class="product-price">$27.00 / kg</div>
+            <ion-button expand="block" class="order-btn">
+              Ver en la App
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Tortillas de Harina -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../../../assets/img/nixtamal.PNG" alt="Tortillas de Harina" />
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Nixtamal</h3>
+            <p class="product-description">Maíz cocido con cal que mejora sabor, nutrición y textura</p>
+            <div class="product-price">$16.00 / kg</div>
+            <ion-button expand="block" class="order-btn">
+              Ver en la App
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Tostadas -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../../../assets/img/Tostadas.png" alt="Tostadas" />
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Tostadas</h3>
+            <p class="product-description">Crujientes y doradas, para cualquier antojo</p>
+            <div class="product-price">$30.00 / do</div>
+            <ion-button expand="block" class="order-btn">
+              Ver en la App
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Totopos -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../../../assets/img/Totopos.png" alt="Totopos" />
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Totopos</h3>
+            <p class="product-description">Crujientes y deliciosos, ideales para botanear o acompañar tus comidas</p>
+            <div class="product-price">$17.00 / kg</div>
+            <ion-button expand="block" class="order-btn">
+              Ver en la App
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Masa -->
+        <div class="product-card">
+          <div class="product-image">
+            <img src="../../../assets/img/masa.png" alt="Masa" />
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Masa</h3>
+            <p class="product-description">Preparada diariamente, lista para que hagas tus propios antojitos en casa</p>
+            <div class="product-price">$20.00 / kg</div>
+            <ion-button expand="block" class="order-btn">
+              Ver en la App
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Sección Nuestra Tortillería -->
+<div class="gallery-section">
+  <h2 class="section-title">Nuestra Tortillería</h2>
+  
+  <div class="gallery-grid">
+    <!-- Imagen 1 - Proceso artesanal -->
+    <div class="gallery-card large-card">
+      <div class="gallery-image">
+        <img src="../../../assets/img/negocio.jpg" alt="Proceso artesanal de tortillas" />
+      </div>
+    </div>
+
+    <!-- Imagen 2 - Tortillas recién hechas -->
+    <div class="gallery-card">
+      <div class="gallery-image">
+        <img src="../../../assets/img/torti.jpg" alt="Tortillas recién hechas" />
+      </div>
+    </div>
+
+    <!-- Imagen 3 - Variedad de productos -->
+    <div class="gallery-card">
+      <div class="gallery-image">
+        <img src="../../../assets/img/maiz.jpg" alt="Variedad de productos" />
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <!-- Ubicación del negocio -->
+  <div class="location-section">
+    <h2 class="section-title">Ubicación</h2>
+    
+    <!-- Mapa con overlay de "Abrir en Maps" -->
+    <div class="map-container">
+      <div class="map-overlay">
+        <ion-button 
+          class="open-maps-btn" 
+          fill="solid"
+          href="https://www.google.com/maps/place/Papeler%C3%ADa+Garc%C3%ADa/@18.8991815,-100.1492332,19.82z/data=!4m6!3m5!1s0x85cd130e7b2f1993:0xda34fb4d315a877c!8m2!3d18.8992008!4d-100.1489542!16s%2Fg%2F11j4mhxbm_?entry=ttu" 
+          target="_blank" 
+          rel="noopener noreferrer">
+          Abrir en Maps
+        </ion-button>
+      </div>
+      <iframe
+        src="https://www.google.com/maps?q=Papelería+García,+Tejupilco+de+Hidalgo,+México&output=embed"
+        width="100%"
+        height="200"
+        style="border:0; border-radius: 1rem;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+
+    <!-- Información de ubicación -->
+    <div class="location-info">
+      <div class="info-item">
+        <ion-icon name="location-outline" class="info-icon"></ion-icon>
+        <span class="info-text">Av. Benito Juárez y Calle Alvertano Reyes, Tejupilco de Hidalgo, Estado de México</span>
+      </div>
+      
+      <div class="info-item">
+        <ion-icon name="time-outline" class="info-icon"></ion-icon>
+        <span class="info-text">Lunes a Sábado: 7:00 AM - 8:00 PM</span>
+      </div>
+      
+      <div class="info-item">
+        <ion-icon name="time-outline" class="info-icon"></ion-icon>
+        <span class="info-text">Domingo: 7:00 AM - 8:00 PM</span>
+      </div>
+    </div>
+
+    <!-- Botones adicionales -->
+    <div class="map-button-container">
+      <ion-button expand="block" class="map-button" href="https://www.google.com/maps/place/Papeler%C3%ADa+Garc%C3%ADa/@18.8991815,-100.1492332,19.82z/data=!4m6!3m5!1s0x85cd130e7b2f1993:0xda34fb4d315a877c!8m2!3d18.8992008!4d-100.1489542!16s%2Fg%2F11j4mhxbm_?entry=ttu" target="_blank" rel="noopener noreferrer">
+        Ver en Google Maps
+        <ion-icon name="navigate-outline" slot="end"></ion-icon>
+      </ion-button>
+
+      <ion-button expand="block" class="map-button outline" fill="outline" href="https://www.google.com/maps/@18.899185,-100.1488368,3a,75y,225.52h,90t/data=!3m7!1e1!3m5!1sJ4FMmkJU_XnPghxouoXbjQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3DJ4FMmkJU_XnPghxouoXbjQ%26yaw%3D225.52!7i16384!8i8192" target="_blank" rel="noopener noreferrer">
+        Ver en Street View
+        <ion-icon name="eye-outline" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Sección Nuestros Proveedores -->
+<div class="suppliers-section">
+  <h2 class="section-title">Nuestros Proveedores</h2>
+  <p class="section-subtitle">Trabajamos con los mejores para garantizar la calidad</p>
+  
+  <div class="suppliers-grid">
+    <!-- Maíz Orgánico Nacional -->
+    <div class="supplier-card">
+      <div class="supplier-image">
+        <img src="../../../assets/img/logo-p.png" alt="Maíz Orgánico Nacional" />
+      </div>
+      <div class="supplier-icon corn-bg">
+        <ion-icon name="leaf-outline"></ion-icon>
+      </div>
+      <h3 class="supplier-title">Maíz Orgánico Nacional</h3>
+      <div class="supplier-details">
+        <p class="supplier-description">
+          Nuestro maíz proviene directamente de <strong>agricultores de Sinaloa y Guerrero</strong>. 
+          Utilizamos tanto maíz <strong>tornado</strong> como <strong>criollo</strong>, asegurando un sabor auténtico, 
+          buena textura y un alto valor nutricional en nuestras tortillas.
+        </p>
+      </div>
+    </div>
+
+    <!-- Maquinaria Selorio -->
+    <div class="supplier-card">
+      <div class="supplier-image">
+        <img src="../../../assets/img/logo cel.png" alt="Maquinaria Selorio" />
+      </div>
+      <div class="supplier-icon machinery-bg">
+        <ion-icon name="construct-outline"></ion-icon>
+      </div>
+      <h3 class="supplier-title">Maquinaria Selorio</h3>
+      <div class="supplier-details">
+        <p class="supplier-description">
+          Toda nuestra maquinaria es proporcionada por la empresa <strong>Selorio</strong>, 
+          especialista en equipos industriales para el proceso de nixtamalización, 
+          prensado y cocción de tortillas.
+        </p>
+      </div>
+    </div>
+
+    <!-- Cal Tradicional -->
+    <div class="supplier-card">
+      <div class="supplier-image">
+        <img src="../../../assets/img/oxical.png" alt="Cal Tradicional" />
+      </div>
+      <div class="supplier-icon cal-bg">
+        <ion-icon name="flask-outline"></ion-icon>
+      </div>
+      <h3 class="supplier-title">Cal Tradicional</h3>
+      <div class="supplier-details">
+        <p class="supplier-description">
+          Utilizamos <strong>cal de grado alimenticio</strong> adquirida de 
+          <strong>proveedores certificados</strong>, garantizando un proceso de 
+          nixtamalización limpio y seguro.
+        </p>
+      </div>
+    </div>
+
+    <!-- Gas Imperial -->
+    <div class="supplier-card">
+      <div class="supplier-image">
+        <img src="../../../assets/img/gas.png" alt="Gas Imperial" />
+      </div>
+      <div class="supplier-icon gas-bg">
+        <ion-icon name="flame-outline"></ion-icon>
+      </div>
+      <h3 class="supplier-title">Gas Imperial</h3>
+      <div class="supplier-details">
+        <p class="supplier-description">
+          Trabajamos con <strong>Gas Imperial</strong> como proveedor de gas LP, 
+          asegurando un suministro constante y seguro para nuestras operaciones diarias.
+        </p>
+      </div>
+    </div>
+
+    <!-- Mi Sur - Productos derivados -->
+    <div class="supplier-card large-card">
+      <div class="supplier-image">
+        <img src="../../../assets/img/mi sur.jpg" alt="Mi Sur" />
+      </div>
+      <div class="supplier-content">
+        <div class="supplier-icon products-bg">
+          <ion-icon name="restaurant-outline"></ion-icon>
+        </div>
+        <div class="supplier-details">
+          <h3 class="supplier-title">Mi Sur</h3>
+          <p class="supplier-description">
+            Para la elaboración de nuestras <strong>tostadas</strong> y <strong>totopos</strong>, 
+            contamos con el respaldo de <strong>Mi Sur</strong>, un proveedor reconocido por la 
+            calidad y sabor de sus productos derivados del maíz.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historia Section -->
+  <div class="history-section">
+    <h2 class="section-title">Nuestra Historia</h2>
+    <div class="history-content">
+      <div class="history-image">
+        <img src="../../../assets/img/negocio.jpg" alt="Historia de la tortillería" />
+      </div>
+      <div class="history-text">
+        <p>
+          Desde hace más de 30 años, nuestra familia se ha dedicado a preservar la tradición 
+          de hacer tortillas artesanales. Con el paso del tiempo, hemos incorporado tecnología 
+          moderna sin perder la esencia del sabor tradicional que nos caracteriza.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-content">
+      <h2>¿Listo para probar la experiencia?</h2>
+      <p>Descarga la app y disfruta de tortillas frescas sin esperas</p>
+      <ion-button size="large" class="cta-button">
+        Descargar Ahora
+        <ion-icon name="download-outline" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <ion-footer class="ion-no-border">
+    <ion-toolbar>
+      <ion-title size="small" class="ion-text-center">
+        © 2025 Tortillería Plata Jaimes - Todos los derechos reservados
+      </ion-title>
+    </ion-toolbar>
+  </ion-footer>
+
+</ion-content>

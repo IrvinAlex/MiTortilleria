@@ -1,0 +1,82 @@
+<app-header [isModal]="true" title="Pago"></app-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Método de Pago -->
+  <ion-card class="payment-card">
+    <ion-card-header>
+      <h2 class="title">Método de Pago</h2>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-radio-group (ionChange)="onPaymentChange($event.detail.value)">
+        <ion-card class="option-card" button (click)="onPaymentChange('efectivo')" [class.selected]="selectedPayment === 'efectivo'">
+          <ion-item>
+            <ion-icon name="cash-outline" slot="start" class="option-icon"></ion-icon>
+            <ion-label>Efectivo en Negocio</ion-label>
+            <ion-radio slot="end" value="efectivo"></ion-radio>
+          </ion-item>
+        </ion-card>
+        <ion-card class="option-card" button (click)="onPaymentChange('paypal')" [class.selected]="selectedPayment === 'paypal'">
+          <ion-item>
+            <ion-icon name="card-outline" slot="start" class="option-icon"></ion-icon>
+            <ion-label>Tarjeta</ion-label>
+            <ion-radio slot="end" value="tarjeta"></ion-radio>
+          </ion-item>
+        </ion-card>
+      </ion-radio-group>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Resumen de Compra -->
+  <ion-card class="summary-card">
+    <ion-card-header>
+      <h3 class="summary-title">Resumen de compra</h3>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="summary-item">
+        <span>Productos ({{ cart?.detalle_carrito?.length || 0 }})</span>
+        <span>{{ cart?.total | currency }}</span>
+      </div>
+      <div *ngFor="let item of cart?.detalle_carrito" class="summary-item">
+        <span>{{ item.producto?.nombre || '' }} x{{ item.cantidad }}</span>
+        <span>{{ item.subtotal | currency }}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="summary-item" *ngIf="discountAmount > 0">
+        <span class="original-price">Total: </span>
+        <span class="original-price">{{ cart?.total | currency }}</span>
+      </div>
+      <div class="summary-item" *ngIf="discountAmount > 0">
+        <span class="descuento">Descuento: </span>
+        <span class="descuento">-{{porcentaje | number:'1.0-0' }}%</span>
+      </div>
+      <div class="summary-item" *ngIf="discountAmount > 0">
+        <span class="discounted-price ">Total con descuento:</span>
+        <span class="discounted-price ">{{ cart?.total- (cart?.total*(porcentaje/100)) | currency }}</span>
+      </div>
+      <div class="summary-item" *ngIf="discountAmount === 0">
+        <span>Pagas</span>
+        <span>{{ cart?.total | currency }}</span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botón Confirmar Pago tarjeta-->
+  <div *ngIf="selectedPayment === 'tarjeta'" class="confirm-button-container-paypal">
+    <!-- entrega-negocio.page.html -->
+    <div id="paypal-button-container"></div>
+
+  </div>
+
+  <!-- Botón Confirmar Pago -->
+  <div *ngIf="selectedPayment === 'efectivo'" class="confirm-button-container">
+    <ion-button 
+      expand="block" 
+      mode="ios"
+      [class.animated]="confirming" 
+      [disabled]="confirming || paymentConfirmed"
+      (click)="confirmPayment()">
+      <ion-icon *ngIf="paymentConfirmed" name="checkmark-outline" slot="start"></ion-icon>
+      {{ paymentConfirmed ? 'Pedido Confirmado' : 'Confirmar Pago' }}
+    </ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,57 @@
+<app-header [isModal]="true" [showNombre]="false" [showLogo]="false" title="Filtros"></app-header>
+
+<ion-content class="filter-content">
+  <!-- Filtros por Estado -->
+  <ion-list>
+    <ion-item-divider *ngIf="estatus" color="light">
+      <ion-label><strong>Estado</strong></ion-label>
+    </ion-item-divider>
+    <div *ngIf="estatus">
+      <ion-item *ngFor="let status of estatusOptions" button (click)="toggleStatusFilter(status)">
+        <ion-icon slot="start" [name]="getStatusIcon(status)" color="medium"></ion-icon>
+        <ion-label>{{ status | titlecase }}</ion-label>
+        <ion-checkbox slot="end" [(ngModel)]="selectedStatus[status]" (click)="$event.stopPropagation()">
+        </ion-checkbox>
+      </ion-item>
+    </div>
+
+
+    <!-- Filtros por Fecha -->
+    <ion-item-divider color="light">
+      <ion-label><strong>Fecha</strong></ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label>Desde</ion-label>
+      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="fechaInicio"></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label>Hasta</ion-label>
+      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="fechaFin"></ion-datetime>
+    </ion-item>
+
+    <!-- Filtros por Precio -->
+    <ion-item-divider color="light">
+      <ion-label><strong>Precio</strong></ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label>Mínimo</ion-label>
+      <ion-input type="number" [(ngModel)]="precioMin" placeholder="Mínimo"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Máximo</ion-label>
+      <ion-input type="number" [(ngModel)]="precioMax" placeholder="Máximo"></ion-input>
+    </ion-item>
+
+    <!-- Botones para Aplicar y Limpiar Filtros -->
+    <div class="filter-buttons">
+      <ion-button expand="block" color="primary" (click)="applyFilter()">
+        <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+        Aplicar Filtros
+      </ion-button>
+      <ion-button expand="block" color="danger" fill="outline" (click)="clearFilters()">
+        <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+        Limpiar Filtros
+      </ion-button>
+    </div>
+  </ion-list>
+</ion-content>

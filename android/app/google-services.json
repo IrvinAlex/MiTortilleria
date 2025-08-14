@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "711214583642",
+    "project_id": "tortilleria-1c58c",
+    "storage_bucket": "tortilleria-1c58c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711214583642:android:c20b30be6cefd2fbf26d63",
+        "android_client_info": {
+          "package_name": "com.mi.tortilleria"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoYrPCfn0BhrCLHGryTOg5J4uSonRPJvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711214583642:android:3f07b0ccbecc5d19f26d63",
+        "android_client_info": {
+          "package_name": "com.nxs.mi.tortilleria"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoYrPCfn0BhrCLHGryTOg5J4uSonRPJvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

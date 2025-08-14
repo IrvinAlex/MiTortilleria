@@ -1,0 +1,145 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+
+<ion-buttons slot="start">
+
+  <!--============= Back Button ==============-->
+  <ion-back-button defaultHref="/inicio" routerLink="/inicio" routerDirection="root"></ion-back-button>
+  
+</ion-buttons>
+
+  <div style="display: inline-flex;">
+    <img style="width: 85px; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; border-radius: 50%;" src="../../../../assets/img/Logo.png" alt="">
+      <ion-title>
+        <strong>Iniciar Sesión</strong>
+        <div class="admin">Tortilleria Plata Jaimes</div>
+      
+      </ion-title>
+  </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="d-flex-center">
+
+    <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()" (keypress.enter)="submit()">
+
+      <app-logo> </app-logo>
+ 
+      <app-custom-input
+        autocomplete="email"
+        icon="mail-outline"
+        [control]="form.controls.email"
+        type="email"
+        label="Correo"
+        (ionInput)="onEmailInput($event)"
+        maxlength="30"
+      ></app-custom-input>
+      <div class="validators" *ngIf="form.controls.email.errors && form.controls.email.touched">
+        <div *ngIf="form.controls.email.errors?.['required']">El correo es requerido</div>
+        <div *ngIf="form.controls.email.errors?.['email']">Ingrese un correo válido</div>
+        <div *ngIf="form.controls.email.errors?.['maxlength']">El correo no puede exceder 30 caracteres</div>
+      </div>
+
+      <app-custom-input
+        [control]="form.controls.password"
+        type="password"
+        label="Contraseña"
+        icon="lock-closed-outline"
+        (ionInput)="onPasswordInput($event)"
+        maxlength="30"
+      ></app-custom-input>
+      <div class="validators" *ngIf="form.controls.password.errors && form.controls.password.touched">
+        <div *ngIf="form.controls.password.errors?.['required']">La contraseña es requerida</div>
+        <div *ngIf="form.controls.password.errors?.['maxlength']">La contraseña no puede exceder 30 caracteres</div>
+      </div>
+
+      <p routerLink="forgot-password" class="ion-text-end c-pointer">¿Olvidaste tu contraseña?</p>
+
+      <ion-button expand="block" type="submit" mode="ios" class="submit" [disabled]="form.invalid">
+        Iniciar Sesión
+        <ion-icon slot="end" name="log-in-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button expand="block" type="button" mode="ios" class="google-button" (click)="loginGoogle()">
+        <img src="../../../assets/img/icons8-google.svg" class="google-logo" alt="Google logo">
+        Iniciar sesión con Google
+      </ion-button>
+
+      <ion-button expand="block" type="button" mode="ios" class="facebook-button" (click)="loginFacebook()">
+        <ion-icon name="logo-facebook"></ion-icon>
+        Iniciar sesión con Facebook
+      </ion-button>
+
+    </form>
+
+  </div>
+    
+
+</ion-content>
+
+<!-- Tarjeta flotante de sesión bloqueada -->
+<div class="floating-card-overlay" *ngIf="showSessionBlockedCard" (click)="closeSessionBlockedCard()">
+  <div class="floating-card session-blocked-card" (click)="$event.stopPropagation()">
+    <!-- Header de la tarjeta -->
+    <div class="card-header">
+      <div class="block-icon">🚫</div>
+      <h2>¡Acceso Denegado!</h2>
+      <p>Sesión activa detectada</p>
+      <ion-button 
+        fill="clear" 
+        class="close-btn" 
+        (click)="closeSessionBlockedCard()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="card-content">
+      <div class="warning-section">
+        <h3>🔒 Dispositivo ya conectado</h3>
+        <p>Tu cuenta está siendo utilizada en:</p>
+      </div>
+
+      <!-- Información del dispositivo -->
+      <div class="device-info" *ngIf="sessionBlockedData">
+        <div class="device-card">
+          <div class="device-header">
+            <span class="device-name">
+              {{sessionBlockedData.deviceInfo.icon}} {{sessionBlockedData.deviceInfo.name}}
+            </span>
+            <span class="status-badge">ACTIVO</span>
+          </div>
+          <div class="device-details">
+            <p><strong>Última actividad:</strong> {{sessionBlockedData.timeAgo}}</p>
+            <p><strong>Plataforma:</strong> {{sessionBlockedData.platform}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertencia de seguridad -->
+      <div class="security-warning">
+        <p><strong>⚠️ Por tu seguridad:</strong> Solo se permite una sesión activa por cuenta.</p>
+      </div>
+
+      <!-- Instrucciones -->
+      <div class="instructions">
+        <p class="instructions-title"><strong>Para continuar, debes:</strong></p>
+        <div class="instructions-list">
+          <p>• Cerrar sesión en el otro dispositivo</p>
+          <p>• Esperar 24 horas para que expire automáticamente</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="card-actions">
+      <ion-button 
+        fill="outline" 
+        color="medium" 
+        (click)="closeSessionBlockedCard()">
+        Entendido
+      </ion-button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+ion-grid {
+    border-radius: 15px; /* Bordes redondeados de la tabla */
+    overflow: hidden;
+    margin-top: 20px;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  
+  .header-row {
+    background-color: #1ad436;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-top-left-radius: 15px; /* Redondea las esquinas superiores */
+    border-top-right-radius: 15px;
+    cursor: pointer;
+  }
+  
+  .data-row {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #1ad436;
+    text-align: center;
+  }
+  
+  .data-row:last-child {
+    border-bottom-left-radius: 15px; /* Redondea las esquinas inferiores */
+    border-bottom-right-radius: 15px;
+  }
+  
+  ion-col {
+    padding: 10px;
+  }
+  
+  ion-button {
+    margin-top: 10px;
+  }
+  
+  ion-searchbar {
+    margin-top: 10px;
+  }
+  
+  .cololetra {
+    background-color: #d4fcd8; /* Un verde clarito */
+    border-radius: 5px;        /* Bordes redondeados opcionales */
+    padding: 8px;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 3rem;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+  }
+  
+  .pagination-button {
+    margin: 0 5px; /* Espaciado entre botones */
+    flex: 1; /* Los botones ocupan espacio equitativamente */
+    max-width: 150px; /* Limitar el ancho máximo de los botones */
+  }
+  
+  .table-header {
+    display: flex;
+    justify-content: space-between; /* Espacio entre el título y el botón */
+    align-items: center;
+    margin-bottom: 10px; /* Espacio entre el encabezado y la tabla */
+    margin-right: 4rem;
+  }
+  
+  .toggle-columns-button {
+    font-size: 14px; /* Tamaño de fuente más pequeño */
+    padding: 0; /* Sin relleno para un diseño más minimalista */
+  }
+  
+  .toggle-columns-button ion-icon {
+    font-size: 18px; /* Tamaño del ícono */
+  }
+  
+  
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    ion-grid {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  
+    ion-col {
+      font-size: 12px;
+      padding: 5px;
+    }
+  
+    .header-row {
+      font-size: 14px;
+    }
+  
+    .data-row {
+      font-size: 12px;
+    }
+  
+    ion-searchbar {
+      width: 100%;
+    }
+  
+    .pagination {
+      flex-direction: column;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .header-row, .data-row {
+      font-size: 10px;
+    }
+  
+    ion-button {
+      font-size: 10px;
+      padding: 5px;
+    }
+  
+    ion-searchbar {
+      width: 100%;
+      margin-top: 5px;
+    }
+  }
+  

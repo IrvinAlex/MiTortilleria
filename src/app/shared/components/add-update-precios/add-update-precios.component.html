@@ -1,0 +1,50 @@
+<app-header [isModal]="true" [title]="producto ? 'Actualizar tipo de venta' : 'Agregar tipo de venta'"></app-header>
+
+<ion-content>
+    <form [formGroup]="form" class="ion-padding ion-text-center" (ngSubmit)="submit()" (keypress.enter)="submit()">
+
+
+        <ion-select 
+            justify="space-between" 
+            fill="outline" 
+            formControlName="uidProducto" 
+            label="Tipo de producto"
+            placeholder="Selecciona un producto" 
+            (ionChange)="onProductChange($event)">
+            <ion-select-option *ngFor="let product of dataSelect" [value]="product.uidProducto">
+            {{ product.nombreProducto }}
+            </ion-select-option>
+        </ion-select>
+
+        <app-custom-input 
+            autocomplete="nombre" [control]="form.controls.nombre" type="text" label="Tipo de venta">
+        </app-custom-input>
+        <div class="validators" *ngIf="form.controls.nombre.errors && form.controls.nombre.touched">
+            <div *ngIf="form.controls.nombre.errors?.['required']"> Este campo es requerido </div>
+            <div *ngIf="form.controls.nombre.errors?.['min']"> La descripción debe tener al menos 4 caracteres </div>
+        </div>
+
+        <app-custom-input 
+            [control]="form.controls.precio" type="number" label="Precio" (ionInput)="setNumberInputs()">
+        </app-custom-input>
+        <div class="validators" *ngIf="form.controls.precio.errors && form.controls.precio.touched">
+            <div *ngIf="form.controls.precio.errors?.['required']"> Este campo es requerido </div>
+            <div *ngIf="form.controls.precio.errors?.['min']"> La cantidad mínima debe ser 0</div>
+        </div>
+
+        <!-- Checkbox para Granel -->
+        <ion-item>
+            <ion-label>Granel</ion-label>
+            <ion-checkbox
+                slot="start"
+                [checked]="form.controls.granel.value"
+                (ionChange)="form.controls.granel.setValue($event.detail.checked)">
+            </ion-checkbox>
+        </ion-item>
+
+        <ion-button class="ion-margin" mode="ios" class="submit" type="submit" [disabled]="form.invalid">
+            {{producto ? 'Actualizar tipo de venta' : 'Agregar tipo de venta'}}
+            <ion-icon slot="end" name="checkmark-circle-outline"></ion-icon>
+        </ion-button>
+    </form>
+</ion-content>

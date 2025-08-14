@@ -1,0 +1,81 @@
+<app-header [showMenu]="true" title="Mi perfil"> </app-header>
+
+<ion-content class="ion-padding-top ion-text-center">
+  
+  <!-- Refresca el contenido cuando se hace un "pull to refresh" -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Muestra el avatar del usuario, si tiene imagen -->
+  <ion-avatar>
+    <img *ngIf="user()?.image" [src]="user()?.image" />  <!-- Si el usuario tiene imagen, se muestra -->
+    <ion-icon *ngIf="!user()?.image" class="empty-icon" name="person-circle-outline"></ion-icon>  <!-- Si no tiene imagen, muestra un ícono de persona -->
+  </ion-avatar>
+
+  <!-- Botón para permitir al usuario tomar una foto -->
+  <ion-button class="photo-btn" (click)="takeImage()" mode="ios" size="small" shape="round">
+    <ion-icon name="camera-outline"></ion-icon>  <!-- Icono de cámara -->
+  </ion-button>
+
+  <!-- Muestra el nombre del usuario -->
+  <h2>{{user().name}}</h2>
+  
+  <!-- Muestra el tipo de perfil del usuario (como admin o usuario normal) -->
+  <div>{{tipo_perfil}}</div>
+
+  <!-- Opción para editar el perfil -->
+  <ion-item button detail (click)="actualizarPerfilmodal()">
+    <ion-icon color="primary" slot="start" name="person-outline"></ion-icon> <!-- Icono de perfil -->
+    <ion-label>Editar Perfil</ion-label> <!-- Texto del botón -->
+  </ion-item>
+
+  <!-- Notificaciones de cupones -->
+  <ion-item button detail (click)="toggleNotifications()">
+    <ion-icon color="primary" slot="start" name="notifications-outline"></ion-icon>
+    <ion-label>Notificaciones</ion-label>
+    <ion-badge slot="end" color="danger" *ngIf="notificationCount">{{ notificationCount }}</ion-badge>
+  </ion-item>
+  
+  <div *ngIf="showNotifications" class="coupon-list ion-padding-start ion-padding-end">
+    <ng-container *ngIf="coupons?.length; else emptyCoupons">
+      <ion-card *ngFor="let c of coupons; trackBy: trackByCouponId">
+        <ion-card-header>
+          <ion-card-title>{{ c.descripcion }}</ion-card-title>
+          <ion-card-subtitle>Código: {{ c.codigo }} • {{ c.porcentaje }}% de descuento</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content class="ion-text-start">
+          - Compra mínima: ${{ c.minimo_compra }}<br/>
+          - Requiere al menos {{ c.numero_compras }} compras acumuladas<br/>
+          - Expira: {{ c.expira | date:'dd/MM/yyyy' }}
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+    <ng-template #emptyCoupons>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Sin notificaciones</ion-card-title>
+          <ion-card-subtitle>No tienes cupones activos por ahora</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content class="ion-text-start">
+          Cuando recibas un cupón, aparecerá aquí con su fecha de expiración y condiciones.
+        </ion-card-content>
+      </ion-card>
+    </ng-template>
+  </div>
+
+  <!-- Item de menú para ver o editar la dirección del usuario -->
+  <ion-item button (click)="direccion()" detail>
+    <ion-icon color="primary" slot="start" name="navigate-outline"></ion-icon>
+    <ion-label>Mi dirección
+      <ion-icon *ngIf="isDireccionVacia" name="alert-circle-outline" color="danger"></ion-icon>
+    </ion-label>
+  </ion-item>
+
+  <!-- Item de menú para ver los términos y condiciones -->
+  <ion-item button detail (click)="terms()">
+    <ion-icon color="primary" slot="start" name="document-outline"></ion-icon>
+    <ion-label>Términos y Condiciones</ion-label>
+  </ion-item>
+
+</ion-content>

@@ -1,0 +1,21 @@
+<app-header [isModal]="true" title="Confirmación para corte de caja"></app-header>
+
+<ion-content>
+  <form [formGroup]="form" class="ion-padding ion-text-center" style="margin-top: 75px;">
+
+    <!-- Primer bloque (cuando no hay corte) -->
+    <h4>¿Seguro que se quiere hacer el corte de caja?</h4>
+
+    <ion-icon slot="end" name="alert-circle-outline" color="warning" class="alert-icon"></ion-icon>
+    <!-- Botón de envío -->
+    <ion-button color="success" class="ion-margin" mode="ios" (click)="confirmar()">
+      Aceptar
+      <ion-icon slot="end" name="checkmark-circle-outline"></ion-icon>
+    </ion-button>
+
+    <ion-button color="danger"  class="ion-margin" mode="ios" (click)="cancelar()">
+      Cancelar
+      <ion-icon slot="end" name="close-circle-outline"></ion-icon>
+    </ion-button>
+  </form>
+</ion-content>

@@ -1,0 +1,204 @@
+<app-header [showMenu]="true" title="Control de Caja"></app-header>
+
+<ion-content class="modern-content">
+  <!-- Refresher -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <ion-icon name="cash-outline" class="hero-icon"></ion-icon>
+      <h1 class="hero-title">Control de Caja</h1>
+      <p class="hero-subtitle">Gestiona las operaciones de apertura y cierre de caja</p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-container">
+    <div class="stat-card success-card">
+      <ion-icon name="trending-up-outline"></ion-icon>
+      <div class="stat-info">
+        <h3>{{ getTotalGanancias() | currency:'MXN':'symbol':'1.2-2' }}</h3>
+        <p>Ganancias Totales</p>
+      </div>
+    </div>
+    
+    <div class="stat-card primary-card">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <div class="stat-info">
+        <h3>{{ getOperacionesHoy() }}</h3>
+        <p>Operaciones Hoy</p>
+      </div>
+    </div>
+
+    <div class="stat-card warning-card">
+      <ion-icon name="time-outline"></ion-icon>
+      <div class="stat-info">
+        <h3>{{ getEstadoCaja() }}</h3>
+        <p>Estado Actual</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-section">
+    <div class="button-group">
+      <ion-button 
+        class="modern-button open-button"
+        [disabled]="corteCajaAbierta || corteCajaHoyExiste"
+        (click)="openAddCorteModal()" 
+        expand="block">
+        <ion-icon name="unlock-outline" slot="start"></ion-icon>
+        <div class="button-content">
+          <span class="button-title">Aperturar Caja</span>
+          <span class="button-subtitle">Iniciar operaciones del día</span>
+        </div>
+      </ion-button>
+      
+      <ion-button 
+        class="modern-button close-button"
+        [disabled]="!corteCajaAbierta"
+        (click)="openUpdateCorteModal(paginatedData)" 
+        expand="block">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <div class="button-content">
+          <span class="button-title">Cerrar Caja</span>
+          <span class="button-subtitle">Finalizar operaciones del día</span>
+        </div>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="search-section">
+    <ion-searchbar 
+      placeholder="Buscar operaciones..." 
+      (ionInput)="filterItems($event)"
+      class="modern-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Data Table -->
+  <div class="table-container">
+    <div class="table-header">
+      <h2>Historial de Operaciones</h2>
+      <ion-button fill="clear" (click)="toggleView()">
+        <ion-icon [name]="viewMode === 'table' ? 'grid-outline' : 'list-outline'"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Table View -->
+    <div *ngIf="viewMode === 'table'" class="modern-table">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th (click)="sortTable('fecha')">
+                <ion-icon name="calendar-outline"></ion-icon>
+                Fecha
+              </th>
+              <th (click)="sortTable('monto_inicio')">
+                <ion-icon name="arrow-up-outline"></ion-icon>
+                Inicial
+              </th>
+              <th (click)="sortTable('monto_final')">
+                <ion-icon name="arrow-down-outline"></ion-icon>
+                Final
+              </th>
+              <th (click)="sortTable('ganancias')">
+                <ion-icon name="cash-outline"></ion-icon>
+                Ganancias
+              </th>
+              <th (click)="sortTable('estatus')">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                Estado
+              </th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of paginatedData" class="table-row">
+              <td>{{ item.fecha }}</td>
+              <td>{{ item.monto_inicio | currency:'MXN':'symbol':'1.2-2' }}</td>
+              <td>{{ item.monto_final | currency:'MXN':'symbol':'1.2-2' }}</td>
+              <td class="amount-cell">{{ item.ganancias | currency:'MXN':'symbol':'1.2-2' }}</td>
+              <td>
+                <ion-badge [class]="getStatusClass(item.estatus)">
+                  {{ item.estatus }}
+                </ion-badge>
+              </td>
+              <td>
+                <ion-button 
+                  fill="clear" 
+                  size="small"
+                  (click)="editItem(item.monto_inicio, item.monto_final, item.uid)">
+                  <ion-icon name="create-outline"></ion-icon>
+                </ion-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Card View -->
+    <div *ngIf="viewMode === 'cards'" class="cards-view">
+      <div *ngFor="let item of paginatedData" class="operation-card">
+        <div class="card-header">
+          <ion-badge [class]="getStatusClass(item.estatus)">
+            {{ item.estatus }}
+          </ion-badge>
+          <ion-button 
+            fill="clear" 
+            size="small"
+            (click)="editItem(item.monto_inicio, item.monto_final, item.uid)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        
+        <div class="card-content">
+          <div class="card-date">
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ item.fecha }}
+          </div>
+          
+          <div class="amounts-grid">
+            <div class="amount-item">
+              <span class="amount-label">Inicial</span>
+              <span class="amount-value">{{ item.monto_inicio | currency:'MXN':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="amount-item">
+              <span class="amount-label">Final</span>
+              <span class="amount-value">{{ item.monto_final | currency:'MXN':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="amount-item highlight">
+              <span class="amount-label">Ganancias</span>
+              <span class="amount-value">{{ item.ganancias | currency:'MXN':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <ion-button 
+        fill="clear" 
+        [disabled]="currentPage === 1"
+        (click)="previousPage()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      
+      <span class="page-info">{{ currentPage }} de {{ totalPages }}</span>
+      
+      <ion-button 
+        fill="clear" 
+        [disabled]="currentPage === totalPages"
+        (click)="nextPage()">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,68 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.mi.tortilleria',
+  appName: 'MiTortilleria',
+  webDir: 'www',
+  server: {
+    androidScheme: 'https'
+  },
+  plugins: {
+    FacebookLogin: {
+      appId: '1238659450745177',
+      APP_NAME: 'MiTortilleria',
+      permissions : ['email', 'public_profile']
+    },
+    GoogleAuth: {
+      scopes: ['profile', 'email'],
+      serverClientId: "711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com",
+      androidClientId: '711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com',
+      clientId: '711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com',
+      forceCodeForRefreshToken: true
+    },
+    SplashScreen: {
+      launchShowDuration: 3000,
+      launchAutoHide: true,
+      backgroundColor: "#ffffffff",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: true,
+      androidSpinnerStyle: "large",
+      iosSpinnerStyle: "small",
+      spinnerColor: "#999999"
+    },
+    PushNotifications: {
+        presentationOptions: ["badge", "sound", "alert"]
+    },
+    GoogleMaps: {
+      apiKey: 'AIzaSyB5Zq3Y9PdVBkxPkG2FMF69Ti4zA0ZKjEE'
+    },
+    Geolocation: {
+      permissions: ['ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION']
+    }
+  },
+  android: {
+    "includePlugins": [
+      "@capacitor-mlkit/barcode-scanning",
+      "@capawesome/capacitor-file-picker",
+      "@capacitor/google-maps",
+      "@capacitor/geolocation",
+      "@capacitor/clipboard",
+      "@capacitor/app",
+      "@capacitor/browser",
+      "@capacitor/camera",
+      "@capacitor/filesystem",
+      "@capacitor/share",
+      "@capacitor-community/facebook-login",
+      "@capacitor-community/firebase-analytics",
+      "@capacitor-community/firebase-auth",
+      "@capacitor-community/firebase-core",
+      "@capacitor-community/firebase-firestore",
+      "@capacitor/push-notifications",
+      "@codetrix-studio/capacitor-google-auth"
+      
+    ]
+  }
+};
+
+export default config;

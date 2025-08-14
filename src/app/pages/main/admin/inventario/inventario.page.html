@@ -1,0 +1,108 @@
+<app-header [showMenu]="true" title="Inventario"></app-header>
+
+<ion-content class="ion-padding-top ion-text-center">
+  <!-- Encabezado principal -->
+  <h2>Administrar inventario</h2>
+
+  <!-- Barra de búsqueda y botón para agregar productos -->
+  <ion-grid>
+    <ion-row>
+      <!-- Barra de búsqueda con enlace bidireccional a `searchTerm` -->
+      <ion-col size="8">
+        <ion-searchbar [(ngModel)]="searchTerm" mode="ios" placeholder="Buscar productos..." (ionInput)="filterItems($event)">
+        </ion-searchbar>
+      </ion-col>
+      <!-- Botón para abrir el modal de agregar producto -->
+      <ion-col size="4" class="ion-text-right">
+        <ion-button mode="ios" (click)="openAddProductModal()" color="primary">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Agregar Producto
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Botón para alternar visibilidad de columnas -->
+  <div class="table-header">
+    <h2></h2>
+    <ion-button 
+      (click)="toggleColumns()" 
+      mode="ios"
+      color="light" 
+      class="toggle-columns-button">
+      <ion-icon slot="start" [name]="areColumnsVisible ? 'eye-off' : 'eye'"></ion-icon>
+      {{ areColumnsVisible ? 'Ocultar tabla completa' : 'Mostrar tabla completa' }}
+    </ion-button>
+  </div>
+
+  <!-- Tabla con encabezados dinámicos y filtros -->
+  <ion-grid>
+    <ion-row class="header-row">
+      <!-- Encabezados de la tabla con funcionalidad de ordenamiento -->
+      <ion-col (click)="sortTable('nombre')">Nombre</ion-col>
+      <ion-col (click)="sortTable('stock')">Stock</ion-col>
+      <ion-col (click)="sortTable('costoUnidad')">Costo Unidad</ion-col>
+      <ion-col (click)="sortTable('precioFinal')">Precio Final</ion-col>
+      <ion-col *ngIf="showGanancia" (click)="sortTable('ganancia')">Ganancia</ion-col>
+      <ion-col *ngIf="showCategoria" (click)="sortTable('categoria')">Categoría</ion-col>
+      <ion-col *ngIf="showProveedor" (click)="sortTable('proveedor')">Proveedor</ion-col>
+      <ion-col *ngIf="showMedida" (click)="sortTable('medida')">Medida</ion-col>
+      <ion-col *ngIf="showCodigo" (click)="sortTable('codigo')">Codigo</ion-col>
+      <ion-col *ngIf="showCodigoBarras" (click)="sortTable('codigoBarras')">Codigo de barras</ion-col>
+      <ion-col>Acciones</ion-col>
+    </ion-row>
+
+    <!-- Filas de la tabla que muestran los datos con funcionalidad editable -->
+    <ion-row *ngFor="let item of paginatedData" class="data-row">
+      <!-- Muestra los campos configurados dinámicamente según `fields` -->
+      <ng-container *ngFor="let field of fields">
+        <ion-col class="pointer-on" *ngIf="shouldShowField(field.key)" (click)="editField(item, field.key)">
+          <!-- Campo editable al hacer clic -->
+          <ion-input class="cololetra" *ngIf="editingFieldKey === field.key && editingField === item"
+                     [(ngModel)]="item[field.key]" 
+                     (keyup.enter)="finishEditing()"
+                     (blur)="finishEditing()">
+          </ion-input>
+          <!-- Campo de solo lectura -->
+          <span *ngIf="!(editingFieldKey === field.key && editingField === item)">
+            {{ item[field.key] }}
+          </span>
+        </ion-col>
+      </ng-container>
+      <!-- Columna para acciones específicas como eliminar un ítem -->
+      <ion-col>
+        <ion-button (click)="deleteItem(item)" color="danger">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Paginación de los datos -->
+  <div class="pagination">
+    <!-- Botón para ir a la página anterior -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPage === 1" 
+      (click)="previousPage()" 
+      expand="full" 
+      class="pagination-button">
+      <ion-icon slot="start" name="arrow-back"></ion-icon>
+      Anterior
+    </ion-button>
+    
+    <!-- Información de la página actual -->
+    <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    
+    <!-- Botón para ir a la página siguiente -->
+    <ion-button 
+      color="light" 
+      [disabled]="currentPage === totalPages" 
+      (click)="nextPage()" 
+      expand="full" 
+      class="pagination-button">
+      Siguiente
+      <ion-icon slot="end" name="arrow-forward"></ion-icon>
+    </ion-button>
+  </div>
+</ion-content>

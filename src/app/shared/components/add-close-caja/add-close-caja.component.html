@@ -1,0 +1,149 @@
+<app-header [isModal]="true" [title]="corte ? 'Cerrar Caja' : 'Aperturar Caja'"></app-header>
+
+<ion-content class="elegant-content">
+  <div class="main-container">
+    
+    <!-- Header Card -->
+    <div class="header-card">
+      <div class="icon-wrapper" [class.close-mode]="!!corte">
+        <ion-icon [name]="corte ? 'lock-closed-outline' : 'unlock-outline'"></ion-icon>
+      </div>
+      <h1 class="main-title">{{ corte ? 'Cierre de Caja' : 'Apertura de Caja' }}</h1>
+      <p class="main-subtitle">
+        {{ corte ? 'Registra el monto final y calcula las ganancias del día' : 'Registra el monto inicial para comenzar las operaciones' }}
+      </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        
+        <!-- Monto Inicial Section -->
+        <div class="amount-section">
+          <div class="section-header">
+            <div class="section-icon start-icon">
+              <ion-icon name="arrow-up-circle-outline"></ion-icon>
+            </div>
+            <div class="section-info">
+              <h3>Monto Inicial</h3>
+              <p>{{ corte ? 'Monto registrado al inicio del día' : 'Dinero en caja al iniciar' }}</p>
+            </div>
+          </div>
+          
+          <div class="input-container" [class.readonly]="!!corte">
+            <ion-item class="custom-item" [class.disabled]="!!corte">
+              <ion-label position="stacked">Cantidad en pesos mexicanos</ion-label>
+              <ion-input 
+                type="number" 
+                placeholder="0.00"
+                formControlName="monto_inicio"
+                [readonly]="!!corte"
+                class="amount-input">
+              </ion-input>
+              <ion-note slot="helper" *ngIf="!corte">Ingresa el dinero disponible en caja</ion-note>
+              <ion-note slot="error" *ngIf="form.get('monto_inicio')?.invalid && form.get('monto_inicio')?.touched">
+                El monto inicial es requerido y debe ser mayor a 0
+              </ion-note>
+            </ion-item>
+          </div>
+
+          <div *ngIf="corte" class="amount-display start-amount">
+            <span class="currency-symbol">$</span>
+            <span class="amount-value">{{ form.get('monto_inicio')?.value | number:'1.2-2' }}</span>
+            <span class="currency-label">MXN</span>
+          </div>
+        </div>
+
+        <!-- Monto Final Section (solo cuando hay corte) -->
+        <div *ngIf="corte" class="amount-section">
+          <div class="section-header">
+            <div class="section-icon end-icon">
+              <ion-icon name="arrow-down-circle-outline"></ion-icon>
+            </div>
+            <div class="section-info">
+              <h3>Monto Final</h3>
+              <p>Dinero total en caja al finalizar el día</p>
+            </div>
+          </div>
+          
+          <div class="input-container">
+            <ion-item class="custom-item">
+              <ion-label position="stacked">Cantidad en pesos mexicanos</ion-label>
+              <ion-input 
+                type="number" 
+                placeholder="0.00"
+                formControlName="monto_final"
+                class="amount-input">
+              </ion-input>
+              <ion-note slot="helper">Cuenta todo el dinero en caja</ion-note>
+              <ion-note slot="error" *ngIf="form.get('monto_final')?.invalid && form.get('monto_final')?.touched">
+                El monto final es requerido y debe ser mayor a 0
+              </ion-note>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- Calculation Card (solo cuando hay corte y monto final) -->
+        <div *ngIf="corte && form.get('monto_final')?.value > 0" class="calculation-card">
+          <div class="calc-header">
+            <ion-icon name="calculator-outline"></ion-icon>
+            <span>Resumen del Día</span>
+          </div>
+          
+          <div class="calc-body">
+            <div class="calc-item">
+              <span class="calc-label">Monto Final</span>
+              <span class="calc-value positive">{{ form.get('monto_final')?.value | currency:'MXN':'symbol':'1.2-2' }}</span>
+            </div>
+            
+            <div class="calc-item">
+              <span class="calc-label">Monto Inicial</span>
+              <span class="calc-value">{{ form.get('monto_inicio')?.value | currency:'MXN':'symbol':'1.2-2' }}</span>
+            </div>
+            
+            <div class="calc-divider"></div>
+            
+            <div class="calc-item total">
+              <span class="calc-label">Ganancias del Día</span>
+              <span class="calc-value" [class.negative]="getCalculatedGanancias() < 0">
+                {{ getCalculatedGanancias() | currency:'MXN':'symbol':'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-container">
+          <ion-button 
+            *ngIf="!corte"
+            type="submit"
+            expand="block"
+            class="primary-action"
+            [disabled]="!isFormValid()">
+            <ion-icon name="unlock-outline" slot="start"></ion-icon>
+            Aperturar Caja
+          </ion-button>
+
+          <ion-button 
+            *ngIf="corte"
+            type="submit"
+            expand="block"
+            class="danger-action"
+            [disabled]="!isFormValid()">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            Cerrar Caja
+          </ion-button>
+
+          <ion-button 
+            expand="block"
+            fill="clear"
+            class="cancel-action"
+            (click)="cancelOperation()">
+            <ion-icon name="close-outline" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ion-content>

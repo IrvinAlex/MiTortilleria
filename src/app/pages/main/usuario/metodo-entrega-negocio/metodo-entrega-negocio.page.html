@@ -1,0 +1,173 @@
+<app-header [showMenu]="true" title="Método de entrega"></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <ion-icon name="fast-food-outline" class="hero-icon"></ion-icon>
+      <h1 class="hero-title">¿Cómo quieres recibir tu pedido?</h1>
+      <p class="hero-subtitle">Elige la opción que mejor se adapte a ti</p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Delivery Options -->
+      <div class="delivery-section">
+        <div class="delivery-options">
+          <!-- Store Pickup Option -->
+          <div class="delivery-option" [class.selected]="selectedMethod === 'negocio'" (click)="onMethodChange('negocio')">
+            <div class="option-header">
+              <div class="option-icon-wrapper">
+                <ion-icon name="storefront" class="option-main-icon"></ion-icon>
+              </div>
+              <div class="option-badge" *ngIf="selectedMethod === 'negocio'">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+            </div>
+            <div class="option-content">
+              <h3>Recoger en tienda</h3>
+              <p>Retira tu pedido directamente en nuestro local</p>
+              <div class="option-features">
+                <div class="feature">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span>15-20 min</span>
+                </div>
+                <div class="feature">
+                  <ion-icon name="cash-outline"></ion-icon>
+                  <span>Sin costo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Home Delivery Option -->
+          <div class="delivery-option" [class.selected]="selectedMethod === 'domicilio'" (click)="onMethodChange('domicilio')">
+            <div class="option-header">
+              <div class="option-icon-wrapper">
+                <ion-icon name="bicycle" class="option-main-icon"></ion-icon>
+              </div>
+              <div class="option-badge" *ngIf="selectedMethod === 'domicilio'">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+            </div>
+            <div class="option-content">
+              <h3>Entrega a domicilio</h3>
+              <p>Recibe tu pedido en la comodidad de tu hogar</p>
+              <div class="option-features">
+                <div class="feature">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span>30-45 min</span>
+                </div>
+                <div class="feature">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span>A tu puerta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date Selection -->
+        <div class="date-section">
+          <div class="date-card">
+            <div class="date-header">
+              <ion-icon name="calendar-outline" class="date-icon"></ion-icon>
+              <h3>Fecha de entrega</h3>
+            </div>
+            <ion-datetime 
+              presentation="date"
+              [(ngModel)]="selectedDate"
+              class="custom-datetime"
+              [min]="minDate"
+              locale="es-ES">
+            </ion-datetime>
+          </div>
+        </div>
+
+        <!-- Time Selection -->
+        <div class="time-section">
+          <div class="time-card">
+            <div class="time-header">
+              <ion-icon name="time-outline" class="time-icon"></ion-icon>
+              <h3>Hora de entrega</h3>
+            </div>
+            <ion-datetime 
+              presentation="time"
+              [(ngModel)]="selectedTime"
+              class="custom-datetime"
+              locale="es-ES">
+            </ion-datetime>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="summary-section">
+        <div class="summary-card">
+          <div class="summary-header">
+            <ion-icon name="receipt-outline" class="summary-icon"></ion-icon>
+            <h3>Resumen del pedido</h3>
+          </div>
+          
+          <div class="summary-content">
+            <div class="order-details">
+              <div class="detail-row">
+                <span class="detail-label">
+                  <ion-icon name="bag-outline"></ion-icon>
+                  Productos
+                </span>
+                <span class="detail-value">{{ cart?.detalle_carrito?.length || 0 }} items</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="detail-label">Subtotal</span>
+                <span class="detail-value">{{ cart?.total | currency }}</span>
+              </div>
+
+              <div class="detail-row" *ngIf="discountAmount > 0">
+                <span class="detail-label discount-label">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                  Descuento ({{porcentaje}}%)
+                </span>
+                <span class="detail-value discount-value">-{{ discountAmount | currency }}</span>
+              </div>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="total-section">
+              <div class="total-row">
+                <span class="total-label">Total a pagar</span>
+                <span class="total-amount">{{ getTotalAmount() | currency }}</span>
+              </div>
+              <div class="savings" *ngIf="discountAmount > 0">
+                <ion-icon name="happy-outline"></ion-icon>
+                <span>¡Ahorras {{ discountAmount | currency }}!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <div class="footer-content">
+      <div class="selected-method" *ngIf="selectedMethod">
+        <ion-icon [name]="selectedMethod === 'negocio' ? 'storefront-outline' : 'bicycle-outline'"></ion-icon>
+        <span>{{ selectedMethod === 'negocio' ? 'Recoger en tienda' : 'Entrega a domicilio' }}</span>
+      </div>
+      <ion-button 
+        expand="block" 
+        size="large"
+        [disabled]="!selectedMethod || !selectedDate || !selectedTime" 
+        (click)="continue()"
+        class="continue-button">
+        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        Continuar con el pedido
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

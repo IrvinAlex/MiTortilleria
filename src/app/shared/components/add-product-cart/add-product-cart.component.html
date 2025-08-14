@@ -1,0 +1,159 @@
+<app-header [isModal]="true" [showNombre]="false" [title]=" 'Producto: '+producto.nombre " [cartCount]="getCartCount()"></app-header>
+
+<ion-content>
+  <ion-card-content class="text">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      
+      <!-----MOSTRAR AGREGAR PRODUCTO PARA PRODUCTO QUE SE PIDA CON GRANEL-->
+      <div *ngIf="producto.granel">
+        <ion-item>
+          <ion-select label="Tipo de unidad" label-placement="floating" formControlName="tipoCambio" (ionChange)="onSelectChange($event)" fill="solid">
+            <ion-select-option *ngIf="!isTostadaOrTotopo()" value="kg">Kilogramo</ion-select-option>
+            <ion-select-option *ngIf="isTostadaOrTotopo()" value="bolsa">Bolsa</ion-select-option>
+            <ion-select-option value="$">Granel</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-text color="danger" *ngIf="form.get('tipoCambio')?.invalid && form.get('tipoCambio')?.touched">
+          Selecciona un tipo de unidad.
+        </ion-text>
+  
+        <ion-label *ngIf="form.value.tipoCambio" style="margin-left: 2rem;">Cantidad</ion-label>
+        <ion-item *ngIf="form.value.tipoCambio">
+          <ion-button 
+            fill="solid" 
+            color="primary" 
+            slot="start" 
+            *ngIf="form.value.tipoCambio=='kg' || form.value.tipoCambio=='bolsa'"
+            (click)="decrement()" 
+            class="animated-button">-</ion-button>
+        
+          <ion-input 
+            type="number" 
+            formControlName="cantidad" 
+            *ngIf="form.value.tipoCambio=='kg' || form.value.tipoCambio=='bolsa'"
+            [value]="quantity" 
+            placeholder="Cantidad"
+            (ionChange)="onInputChange($event)"
+            (keypress)="onKeyPress($event)">
+            <ion-label slot="start">{{ prefix }}</ion-label>
+          </ion-input>
+  
+          <ion-input 
+            type="number" 
+            formControlName="cantidad" 
+            *ngIf="form.value.tipoCambio=='$'"
+            [value]="dinero" 
+            placeholder="Cantidad"
+            (keypress)="onKeyPress($event)">
+            <ion-label slot="start">{{ prefix }}</ion-label>
+          </ion-input>
+        
+          <ion-button 
+            fill="solid" 
+            color="primary" 
+            slot="end" 
+            (click)="increment()" 
+            *ngIf="form.value.tipoCambio=='kg' || form.value.tipoCambio=='bolsa'"
+            class="animated-button">+</ion-button>
+        </ion-item>
+        
+        <ion-text color="danger" *ngIf="form.get('cantidad')?.invalid && form.get('cantidad')?.touched">
+          <ng-container *ngIf="form.get('cantidad')?.errors?.['required']">La cantidad es requerida.</ng-container>
+          <ng-container *ngIf="form.get('cantidad')?.errors?.['min']">Debe ser mayor a 0.</ng-container>
+        </ion-text>
+  
+        <ion-item>
+          <ion-select label="Opciones" label-placement="floating" formControlName="opcion" fill="solid">
+            <ion-select-option *ngFor="let opcion of producto.opciones" [value]="opcion.id">
+              {{ opcion.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-text color="danger" *ngIf="form.get('opcion')?.invalid && form.get('opcion')?.touched">
+          Selecciona un tipo de opción.
+        </ion-text>
+        <h1 style="font-weight: bolder;">Total</h1>
+        <div *ngIf="form.value.opcion">
+          <h2 class="buttotal" *ngIf="form.value.tipoCambio=='kg' || form.value.tipoCambio=='bolsa'">${{ (form.value.cantidad * buscarPrecioPorId(form.value.opcion)) | number:'1.2-2' }}</h2>
+          <h2 class="buttotal" *ngIf="form.value.tipoCambio == '$'">{{ actualizarTotal() | number:'1.2-2' }} {{ isTostadaOrTotopo() ? 'bolsa(s)' : 'kg' }}</h2>
+  
+        </div>
+        
+        <h2 class="buttotal" *ngIf="!form.value.opcion">$0.00</h2>
+  
+        <div style="display: flex; justify-content: flex-end;">
+          <ion-button type="submit" class="btntarget" [disabled]="form.invalid">
+            {{ isProductInCart(producto.id) ? 'Actualizar' : 'Agregar' }} <ion-icon class="iconmodal" name="checkmark-circle-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <!-----MOSTRAR AGREGAR PRODUCTO PARA PRODUCTO QUE SE PIDA CON GRANEL-->
+      <div *ngIf="!producto.granel">
+        
+        <ion-label style="margin-left: 2rem;">Cantidad</ion-label>
+        <ion-item >
+          <ion-button 
+            fill="solid" 
+            color="primary" 
+            slot="start" 
+            (click)="decrement()" 
+            class="animated-button">-</ion-button>
+        
+          <ion-input 
+            type="number" 
+            formControlName="cantidad" 
+            [value]="quantity" 
+            placeholder="Cantidad"
+            (ionChange)="onInputChange($event)"
+            (keypress)="onKeyPress($event)">
+            <ion-label slot="start">{{ prefix }}</ion-label>
+          </ion-input>
+        
+          <ion-button 
+            fill="solid" 
+            color="primary" 
+            slot="end" 
+            (click)="increment()" 
+            class="animated-button">+</ion-button>
+        </ion-item>
+        
+        <ion-text color="danger" *ngIf="form.get('cantidad')?.invalid && form.get('cantidad')?.touched">
+          <ng-container *ngIf="form.get('cantidad')?.errors?.['required']">La cantidad es requerida.</ng-container>
+          <ng-container *ngIf="form.get('cantidad')?.errors?.['min']">Debe ser mayor a 0.</ng-container>
+        </ion-text>
+  
+        <ion-item>
+          <ion-select label="Opciones" label-placement="floating" formControlName="opcion" fill="solid">
+            <ion-select-option *ngFor="let opcion of producto.opciones" [value]="opcion.id">
+              {{ opcion.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-text color="danger" *ngIf="form.get('opcion')?.invalid && form.get('opcion')?.touched">
+          Selecciona un tipo de opción.
+        </ion-text>
+        <h1 style="font-weight: bolder;">Total</h1>
+        <div *ngIf="form.value.opcion">
+          <h2 class="buttotal" >${{ (form.value.cantidad * buscarPrecioPorId(form.value.opcion)) | number:'1.2-2' }}</h2>
+  
+        </div>
+        
+        <h2 class="buttotal" *ngIf="!form.value.opcion">$0.00</h2>
+  
+        <div style="display: flex; justify-content: flex-end;">
+          <ion-button type="submit" class="btntarget" [disabled]="form.invalid">
+            {{ isProductInCart(producto.id) ? 'Actualizar' : 'Agregar' }} <ion-icon class="iconmodal" name="checkmark-circle-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+
+
+
+
+    </form>
+  </ion-card-content>
+</ion-content>

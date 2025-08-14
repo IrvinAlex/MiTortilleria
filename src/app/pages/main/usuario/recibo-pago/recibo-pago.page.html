@@ -1,0 +1,44 @@
+<ion-content [fullscreen]="true">
+  <div class="receipt-wrapper">
+    <!-- Logo y encabezado -->
+    <div class="header">
+      <img src="../../../../../assets/img/Logo.png" alt="Logo" class="logo">
+      <h1>Tortillería Plata Jaimes</h1>
+      <h2>Recibo de Pago</h2>
+    </div>
+
+    <!-- Detalles generales -->
+    <div class="receipt-section">
+      <div class="detail-item">
+        <span class="label">Fecha:</span>
+        <span class="value">{{ cart?.fecha | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Total:</span>
+        <span class="value">{{ cart?.total | currency }}</span>
+      </div>
+    </div>
+
+    <!-- Línea divisoria -->
+    <div class="divider"></div>
+
+    <!-- Detalle de productos -->
+    <div class="receipt-section">
+      <h3 class="section-title">Productos</h3>
+      <div *ngFor="let item of cart?.detalle_carrito" class="product-item">
+        <div class="product-detail">
+          <span>{{ item.producto?.nombre || '' }} x{{ item.cantidad }} {{ item.opcion?.nombre || '' }}</span>
+        </div>
+        <div class="product-price">
+          <span>{{ item.subtotal | currency }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón para pedidos -->
+    <ion-button expand="block" mode="ios" routerLink="/main/historial-pedidos" class="orders-button">
+      <ion-icon name="list-outline" slot="start"></ion-icon>
+      Ir a pedidos
+    </ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,156 @@
+<app-header [isModal]="true" [showNombre]="false" [showLogo]="false" title="Detalles del pedido"></app-header>
+
+<ion-content>
+  <div class="ticket-container">
+    <h2 class="ticket-title">Ticket de Pedido</h2>
+    <div class="ticket-section">
+      <p><ion-icon name="storefront-outline"></ion-icon> Nombre del negocio: Tortilleria Plata Jaimes</p>
+      <p><ion-icon name="person-outline"></ion-icon> Cliente: {{ pedido.nombre_cliente }}</p>
+      <p><ion-icon name="calendar-outline"></ion-icon> Fecha: {{ pedido.fecha?.toDate() | date: 'dd/MM/yyyy' }}</p>
+      <p *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
+        <ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de entrega: {{ pedido.fecha?.toDate() | date: 'dd/MM/yyyy HH:mm' }}</p>
+      
+      <!-- Delivery Type Information -->
+      <p>
+        <ion-icon [name]="getDeliveryTypeIcon()" [color]="getDeliveryTypeColor()"></ion-icon>
+        Tipo de entrega: 
+        <ion-chip [color]="getDeliveryTypeColor()" mode="ios">
+          <ion-label>{{ pedido.tipo_entrega || 'No especificado' }}</ion-label>
+        </ion-chip>
+      </p>
+    </div>
+
+    <!-- Enhanced Map Section for Home Delivery -->
+    <div class="ticket-section" *ngIf="isHomeDelivery() && pedido.geopoint_entrega">
+      <h3 class="ticket-subtitle">
+        <ion-icon name="map-outline" color="primary"></ion-icon>
+        Ubicación de Entrega
+      </h3>
+      
+      <!-- Map Controls -->
+      <div class="map-controls">
+        <ion-button 
+          fill="outline" 
+          size="small" 
+          (click)="loadMapPreview()" 
+          *ngIf="!showMapPreview"
+          class="map-preview-btn">
+          <ion-icon name="map-outline" slot="start"></ion-icon>
+          Ver mapa
+        </ion-button>
+        
+        <ion-button 
+          fill="outline" 
+          size="small" 
+          (click)="openLocationInMaps()"
+          class="external-maps-btn">
+          <ion-icon name="navigate-outline" slot="start"></ion-icon>
+          Abrir en Maps
+        </ion-button>
+      </div>
+
+      <!-- Map Container -->
+      <div class="map-container" *ngIf="showMapPreview">
+        <div #mapContainer class="map-canvas" *ngIf="!mapLoadError"></div>
+        
+        <!-- Loading State -->
+        <div class="map-loading" *ngIf="showMapPreview && !isMapReady && !mapLoadError">
+          <ion-spinner name="circles"></ion-spinner>
+          <p>Cargando mapa...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div class="map-error" *ngIf="mapLoadError">
+          <ion-icon name="warning-outline" color="warning"></ion-icon>
+          <p>No se pudo cargar el mapa</p>
+          <ion-button size="small" fill="clear" (click)="openLocationInMaps()">
+            Ver en Google Maps
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Location Details -->
+      <div class="delivery-info">
+        <p>
+          <ion-icon name="location-outline" color="primary"></ion-icon>
+          Coordenadas: {{ pedido.geopoint_entrega.latitude | number:'1.6-6' }}, {{ pedido.geopoint_entrega.longitude | number:'1.6-6' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Business Pickup Information -->
+    <div class="ticket-section" *ngIf="pedido.tipo_entrega?.toLowerCase() === 'negocio'">
+      <h3 class="ticket-subtitle">
+        <ion-icon name="storefront-outline" color="success"></ion-icon>
+        Recolección en Negocio
+      </h3>
+      <div class="pickup-info">
+        <p><ion-icon name="location-outline"></ion-icon> Dirección: Tortillería Plata Jaimes</p>
+        <p><ion-icon name="time-outline"></ion-icon> Horario de atención: 8:00 AM - 8:00 PM</p>
+        <p><ion-icon name="call-outline"></ion-icon> Teléfono: (555) 123-4567</p>
+      </div>
+    </div>
+
+    <h3 class="ticket-subtitle">Productos Comprados</h3>
+    <ion-list>
+      <ion-item *ngFor="let producto of pedido.detalle_pedido">
+        <ion-avatar slot="start" class="avatar-icon">
+          <img [src]="producto.producto.imagen" alt="{{ producto.producto.nombre }}" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ producto.producto.nombre }}</h2>
+          <p *ngIf="producto.tamano_tortilla">Tamaño de tortilla: <span class="subtotal">{{ producto.tamano_tortilla }}</span></p>
+          <p>Cantidad: {{ producto.cantidad }}</p>
+          <p>Subtotal: <span class="subtotal">{{ producto.subtotal | currency }}</span></p>
+        </ion-label>
+        <ion-badge slot="end" color="tertiary">
+          <ion-icon name="cube-outline"></ion-icon>
+          {{ producto.cantidad }}
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <div class="ticket-section">
+      <p><ion-icon name="cash-outline"></ion-icon> Total: {{ pedido.total | number: '1.2-2' }}</p>
+      <p><ion-icon name="card-outline"></ion-icon> Tipo de Pago: {{ pedido.tipo_pago }}</p>
+      <p>Estatus: {{pedido.estatus}} <ion-icon style="margin-left: 0.5rem;" slot="start" [color]="getColorIcon(pedido.estatus)" [name]="getStatusIcon(pedido.estatus)"></ion-icon></p>
+    </div>
+
+    <!-- Rating Section -->
+    <div class="rating-section">
+      <h3>Calificar Pedido</h3>
+      <ion-item>
+        <ion-label>Calificación:</ion-label>
+        <ion-range min="1" max="5" step="1" snaps="true" [(ngModel)]="rating">
+          <ion-icon slot="start" name="star-outline"></ion-icon>
+          <ion-icon slot="end" name="star"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-button expand="block" color="primary" (click)="rateService()">Guardar Calificación</ion-button>
+    </div>
+
+    <!-- Reorder Button -->
+    <ion-button expand="block" color="primary" (click)="reorderProducts()">Pedir de nuevo</ion-button>
+  </div>
+
+  <div class="segment-content">
+      <div id="qrImage">
+        <div class="d-flex-center">
+          <div class="d-flex-center qr-wrapper">
+            <!-- Genera un código QR dinámico si hay texto en `qrText` -->
+            <qr-code *ngIf="qrText" [value]="qrText" size="190" errorCorrectionLevel="M"></qr-code>
+            <!-- Imagen de marcador si no hay texto para generar el código QR -->
+            <img *ngIf="!qrText" class="qr-placeholder" src="../../../../../assets/img/qr.webp" alt="">
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón para capturar la pantalla y compartir el código QR generado -->
+      <ion-button (click)="captureScreen()" *ngIf="qrText" class="submit ion-margin-top" expand="block">
+        Compartir
+        <ion-icon slot="end" name="share-social-outline"> </ion-icon>
+      </ion-button>
+    </div>
+
+  
+</ion-content>

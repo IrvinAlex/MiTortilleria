@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MiTortilleria</string>
+    <string name="title_activity_main">MiTortilleria</string>
+    <string name="package_name">com.mi.tortilleria</string>
+    <string name="custom_url_scheme">com.mi.tortilleria</string>
+  <string name="facebook_app_id">1238659450745177</string>
+  <string name="fb_login_protocol_scheme">1238659450745177</string>
+  <string name="facebook_client_token">67575cb0d7ed64ed7ee07f1233e56b21</string>
+  <string name="google_maps_key">AIzaSyCoYrPCfn0BhrCLHGryTOg5J4uSonRPJvw</string>
+</resources>

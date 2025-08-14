@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Mi Tortillería</title>
+
+  <base href="/" />
+
+  <meta name="color-scheme" content="light dark" />
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <link rel="icon" type="image/png" href="assets/icon/favicon.jpg" />
+
+  <!-- add to homescreen for ios -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+  <meta name="google-signin-client_id" content="711214583642-pvfsv0ivkr087tapi0jiol3r173tpv17.apps.googleusercontent.com" />
+  <meta name="google-signin-scope" content="profile email" />
+  <!--- MAPS --->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5Zq3Y9PdVBkxPkG2FMF69Ti4zA0ZKjEE"></script>
+  <!--- PAYPAL --->
+  <script src="https://www.paypal.com/sdk/js?client-id=Ac0Podm3HIJGA0A1bdWT1w_ExNQkTVLgaSrbOCa5kcX6TOSER-YAsMmYpqUkEp--YCEucmjlFAMrsCIM&currency=MXN"></script>
+
+
+</head>
+
+<body>
+  <app-root></app-root>
+</body>
+
+<script>
+  window.fbAsyncInit = function () {
+    FB.init({
+      appId: '1238659450745177',
+      cookie: true,
+      xfbml: true,
+      version: 'v5.0'
+    });
+  };
+  (function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {
+      return;
+    }
+    js = d.createElement(s);
+    js.id = id;
+    js.src = 'https://connect.facebook.net/en_US/sdk.js';
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+</script>
+</html>

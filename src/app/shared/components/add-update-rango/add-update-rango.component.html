@@ -1,0 +1,56 @@
+<app-header [isModal]="true" [title]=" rango ? 'Actualizar rango': 'Agregar rango' "></app-header>
+
+<ion-content>
+  <form [formGroup]="form" class="ion-padding ion-text-center" (ngSubmit)="submit()" (keypress.enter)="submit()">
+
+    <!-- Input: Nombre -->
+    <app-custom-input autocomplete="producto" [control]="form.controls.producto" type="text" label="Producto"></app-custom-input>
+    <div class="validators" *ngIf="form.controls.producto.errors && form.controls.producto.touched">
+      <div *ngIf="form.controls.producto.errors?.['required']">Este campo es requerido</div>
+      <div *ngIf="form.controls.producto.errors?.['minlength']">El nombre debe tener al menos 4 caracteres</div>
+    </div>
+
+    <!-- Input: Apellido paterno -->
+    <app-custom-input autocomplete="tipo" [control]="form.controls.tipo" type="text" label="Tipo de cliente o actividad"></app-custom-input>
+    <div class="validators" *ngIf="form.controls.tipo.errors && form.controls.tipo.touched">
+      <div *ngIf="form.controls.tipo.errors?.['required']">Este campo es requerido</div>
+    </div>
+
+    <!-- Input: Apellido materno -->
+    <app-custom-input autocomplete="min_producto"
+                   [control]="form.controls.min_producto"
+                   type="number"
+                   label="Minimo de compra (Kg)"
+                   min="0"
+                   step="0.01"
+                   inputmode="decimal"
+                   pattern="^\d+(\.\d+)?$"></app-custom-input>
+    <div class="validators" *ngIf="form.controls.min_producto.errors && form.controls.min_producto.touched">
+      <div *ngIf="form.controls.min_producto.errors?.['required']">Este campo es requerido</div>
+      <div *ngIf="form.controls.min_producto.errors?.['min']">No se permiten números negativos</div>
+      <div *ngIf="form.controls.min_producto.errors?.['pattern']">Solo números válidos</div>
+    </div>
+
+    <!-- Input: Apellido materno -->
+    <app-custom-input autocomplete="max_producto"
+                   [control]="form.controls.max_producto"
+                   type="number"
+                   label="Maximo de compra (Kg)"
+                   min="0"
+                   step="0.01"
+                   inputmode="decimal"
+                   pattern="^\d+(\.\d+)?$"></app-custom-input>
+    <div class="validators" *ngIf="form.controls.max_producto.errors && form.controls.max_producto.touched">
+      <div *ngIf="form.controls.max_producto.errors?.['required']">Este campo es requerido</div>
+      <div *ngIf="form.controls.max_producto.errors?.['min']">No se permiten números negativos</div>
+      <div *ngIf="form.controls.max_producto.errors?.['pattern']">Solo números válidos</div>
+    </div>
+    
+
+    <!-- Botón de envío -->
+    <ion-button class="ion-margin" mode="ios" class="submit" type="submit" [disabled]="form.invalid">
+      {{ rango ? 'Actualizar rango' : 'Agregar rango' }}
+      <ion-icon slot="end" name="checkmark-circle-outline"></ion-icon>
+    </ion-button>
+  </form>
+</ion-content>

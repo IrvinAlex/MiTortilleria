@@ -1,0 +1,88 @@
+
+/* Contenedor principal */
+.form-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  height: 100%; /* Asegura que ocupa todo el modal */
+  padding: 1.5rem;
+  background-color: #f9f9f9; /* Fondo neutro */
+}
+
+/* Contenedor del formulario */
+.form-wrapper {
+  background-color: white; /* Fondo blanco para el formulario */
+  border-radius: 10px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra todos los elementos */
+}
+
+/* Estilo de los campos */
+.custom-item {
+  width: 100%;
+  margin-bottom: 1.5rem; /* Espaciado entre campos */
+}
+
+.custom-label {
+  font-size: 1.2rem; /* Texto legible */
+  color: #029032; /* Verde para las etiquetas */
+  font-weight: bold;
+  margin-bottom: 0.5rem; /* Espaciado con el input */
+}
+
+.custom-input {
+  width: 100%;
+  padding: 0.8rem; /* Espaciado interno */
+  border: 1px solid #cccccc; /* Borde gris */
+  border-radius: 8px; /* Bordes redondeados */
+  background-color: #f9f9f9; /* Fondo claro */
+  font-size: 1rem;
+  color: #333333;
+  box-sizing: border-box;
+}
+
+.custom-input:focus {
+  border: 1px solid #029032; /* Resaltado verde */
+  outline: none;
+}
+
+/* Botón */
+.custom-button {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  background-color: #029032; /* Verde */
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.custom-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-icon{
+  font-size: 100px;
+  opacity: 30%;
+}
+
+ion-avatar{
+  width: 200px;
+  height: 160px;
+  --border-radius: 15px;
+  margin: 0 auto;
+}
+
+.error-text {
+  color: red;
+  font-size: 14px;
+}

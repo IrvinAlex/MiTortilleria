@@ -1,0 +1,82 @@
+.receipt-wrapper {
+  padding: 16px;
+  font-family: 'Courier New', Courier, monospace; /* Simula la fuente típica de un ticket */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 16px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.header .logo {
+  max-width: 80px;
+  margin-bottom: 8px;
+}
+
+.header h2 {
+  font-size: 1.5em;
+  color: #333;
+  margin: 0;
+}
+
+.receipt-section {
+  margin-bottom: 16px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed #ccc;
+}
+
+.detail-item .label {
+  font-weight: bold;
+  color: #555;
+}
+
+.detail-item .value {
+  font-weight: bold;
+  color: #000;
+}
+
+.divider {
+  border-bottom: 2px solid #1ad436; /* Color distintivo de tu tortillería */
+  margin: 16px 0;
+}
+
+.section-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #1ad436;
+  margin-bottom: 8px;
+}
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed #ccc;
+}
+
+.product-detail {
+  font-size: 1em;
+  color: #333;
+}
+
+.product-price {
+  font-size: 1em;
+  font-weight: bold;
+  color: #000;
+}
+
+.orders-button {
+  margin-top: 16px;
+  background-color: #1ad436;
+  color: #fff;
+  border-radius: 20px;
+}

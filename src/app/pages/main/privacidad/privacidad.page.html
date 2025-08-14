@@ -1,0 +1,55 @@
+<app-header [showMenu]="true" title="Privacidad"></app-header>
+
+<!-- Contenido principal de la página -->
+<ion-content class="ion-padding">
+  
+  <!-- Sección de encabezado con animación -->
+  <div class="header-animation">
+    <!-- Icono visual para representar la privacidad -->
+    <ion-icon name="shield-checkmark-outline" class="icon"></ion-icon>
+    <!-- Título principal de la página -->
+    <h1 class="title">Tu privacidad es importante</h1>
+  </div>
+
+  <!-- Contenedor del contenido principal -->
+  <div class="content">
+    <!-- Texto introductorio explicando el compromiso de privacidad -->
+    <p>
+      En <strong>Tortillería Plata Jaimes</strong>, nos comprometemos a proteger tus datos. 
+      Esta política de privacidad explica cómo recopilamos, usamos y protegemos tu información.
+    </p>
+
+    <!-- Lista de secciones informativas -->
+    <ion-list>
+      <!-- Elemento de la lista: Información recopilada -->
+      <ion-item>
+        <!-- Icono descriptivo -->
+        <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+        <!-- Etiqueta con el encabezado y descripción -->
+        <ion-label>
+          <h2>Información que recopilamos</h2>
+          <p>Recopilamos datos personales como nombre, dirección y métodos de pago.</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Elemento de la lista: Protección de datos -->
+      <ion-item>
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>Protección de tus datos</h2>
+          <p>Usamos encriptación avanzada para proteger tu información.</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Elemento de la lista: Derechos del usuario -->
+      <ion-item>
+        <ion-icon name="refresh-circle-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>Derechos del usuario</h2>
+          <p>Puedes solicitar acceso, corrección o eliminación de tus datos en cualquier momento.</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+</ion-content>

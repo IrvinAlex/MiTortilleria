@@ -1,0 +1,79 @@
+/* Estilos para el contenedor del formulario */
+ion-card-content.text {
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos del texto "Total" */
+.buttotal {
+  font-size: 24px;
+  color: #4caf50; /* Color verde suave */
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #e8f5e9; /* Fondo verde claro */
+  text-align: center;
+  transition: transform 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+ion-text[color="danger"] {
+  font-size: 0.9rem;
+  color: #e74c3c;
+  margin-top: 0.25rem;
+  margin-left: 0.5rem;
+  display: block;
+}
+
+.btntarget {
+  margin-top: 15px;
+  width: 100%; 
+  }
+
+.animated-button {
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+
+.animated-button:hover {
+  background-color: #007bff;
+  transform: scale(1.1);
+}
+
+
+ion-input[placeholder="Cantidad"] {
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+
+ion-item {
+  --border-width: 0px;
+  --highlight-color-focused: #4caf50;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}

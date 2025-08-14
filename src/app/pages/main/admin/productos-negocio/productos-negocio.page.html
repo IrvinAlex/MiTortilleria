@@ -1,0 +1,66 @@
+<app-header [showMenu]="true" title="Negocio" buttonCartNegocio="true" [cartCount]="getCartCount()"></app-header>
+
+<ion-content [fullscreen]="true">
+    <!-- Barra de búsqueda -->
+    <ion-searchbar 
+    mode="ios" 
+    animated="true" 
+    placeholder="Buscar producto por nombre o descripción..." 
+    [(ngModel)]="searchTerm" 
+    (ionInput)="filterProductos()"
+    (ionClear)="filterProductos()"
+    showClearButton="focus">
+  </ion-searchbar>
+  
+  <!-- Mensaje cuando no hay resultados -->
+  <div *ngIf="productos.length === 0 && searchTerm.length > 0" class="no-results">
+    <ion-item>
+      <ion-icon name="search-outline" slot="start"></ion-icon>
+      <ion-label>
+        <h2>No se encontraron productos</h2>
+        <p>Intenta con otro término de búsqueda</p>
+      </ion-label>
+    </ion-item>
+  </div>
+  
+  <!-- Contenedor de las tarjetas -->
+  <div class="card-container">
+
+    <!-- Tarjetas generadas dinámicamente -->
+    <ion-card *ngFor="let producto of productos" class="target">
+      
+      <!-- Contenedor de la imagen del producto -->
+      <div class="contimg">
+        <img [src]="producto.imagen" [alt]="producto.nombre" />
+      </div>
+      
+      <!-- Encabezado de la tarjeta -->
+      <ion-card-header>
+        <ion-card-title>{{ producto.nombre }}</ion-card-title>
+      </ion-card-header>
+      
+      <!-- Contenido de la tarjeta -->
+      <ion-card-content class="text">
+        {{ producto.descripcion }}
+
+        <!-- Precio del producto -->
+        <div class="precio">
+          <strong>${{ producto.precio_mostrador | number:'1.2-2' }}</strong>
+        </div>
+
+        <!-- Botón dinámico: agregar al carrito o ver en carrito -->
+        <ion-button 
+          (click)="handleProductAction(producto)" 
+          class="btntarget" 
+          expand="block" 
+          [color]="isProductInCart(producto) ? 'success' : 'primary'">
+          {{ getButtonText(producto) }} 
+          <ion-icon [name]="getButtonIcon(producto)"></ion-icon>
+        </ion-button>
+      </ion-card-content>
+      
+    </ion-card>
+
+  </div>
+
+</ion-content>
