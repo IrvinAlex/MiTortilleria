@@ -1,0 +1,203 @@
+.form-tarifa {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--ion-color-light);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  padding: 16px;
+}
+
+.form-section {
+  margin-bottom: 28px;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px 0;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    font-size: 18px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+}
+
+.inputs-row {
+  display: flex;
+  gap: 12px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.input-item {
+  flex: 1;
+  --background: var(--ion-color-light);
+  --border-radius: 12px;
+  margin-bottom: 8px;
+
+  ion-label {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+  }
+
+  ion-input {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.distance-inputs {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .distance-field {
+    flex: 1;
+  }
+
+  .distance-separator {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+
+    .distance-separator {
+      justify-content: center;
+      margin-top: 0;
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.validators {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ion-color-danger);
+
+  span {
+    margin-right: 8px;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 480px) {
+  .form-section {
+    margin-bottom: 24px;
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+  }
+
+  .button-section {
+    margin-top: 30px;
+    padding-top: 15px;
+
+    .submit-btn {
+      height: 48px;
+      font-size: 15px;
+    }
+  }
+}
+
+.range-preview,
+.price-preview {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+
+  ion-chip {
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-dark);
+    font-weight: 500;
+
+    ion-label {
+      font-weight: 600;
+    }
+  }
+}
+
+.checkbox-item {
+  --background: var(--ion-color-light);
+  --border-radius: 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+
+  ion-label {
+    margin-left: 12px;
+
+    h3 {
+      margin: 0 0 4px 0;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+.button-section {
+  margin-top: 24px;
+
+  .submit-btn {
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+    font-size: 16px;
+
+    &:disabled {
+      --opacity: 0.5;
+    }
+  }
+}
+
+// Animation for form validation
+.validators {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Focus styles for better accessibility
+app-custom-input {
+  margin-bottom: 8px;
+}
+
+ion-chip {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}

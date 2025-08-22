@@ -1,3 +1,14 @@
 h1{
     color: #fff;
 }
+.password-strength-indicator {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+.password-strength-indicator .weak { color: #e74c3c; }
+.password-strength-indicator .medium { color: #f39c12; }
+.password-strength-indicator .acceptable { color: #3498db; }
+.password-strength-indicator .strong { color: #27ae60; }
+.terms-checkboxes ion-label a {
+  cursor: pointer;
+}

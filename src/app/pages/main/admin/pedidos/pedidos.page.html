@@ -9,61 +9,83 @@
   <ion-searchbar mode="ios" animated="true" placeholder="Cliente, productos, precio o código" [(ngModel)]="searchTerm" (ionInput)="filterPedidos()"></ion-searchbar>
 
   <!-- Botón para abrir el modal de filtros -->
-  <ion-button expand="block" color="primary" (click)="openFilterModal()">Filtros <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon></ion-button>
+  <ion-button expand="block" color="primary" (click)="openFilterModal()">
+    <span>Filtros</span>
+    <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon>
+  </ion-button>
 
   <!-- Botón para quitar los filtros aplicados -->
   <ion-button expand="block" color="light" *ngIf="filtersApplied" (click)="clearFilters()">
-    Quitar Filtros <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon>
+    <span>Quitar Filtros</span>
+    <ion-icon style="margin-left: 0.5rem;" name="filter-outline"></ion-icon>
   </ion-button>
 
   <!-- Muestra los pedidos filtrados si existen -->
   <ng-container *ngIf="pedidosFiltrados.length > 0">
     <ion-list *ngFor="let pedido of pedidosFiltrados">
       <ion-item-sliding class="product-item">
-        <ion-item>
-          <ion-label>
-            <!-- Muestra el total del pedido con formato de dos decimales -->
-            <div class="name">
-              <h2>
-                <ion-icon slot="start" style="margin-right: 2rem;" color="danger" name="cash-outline"></ion-icon>
-                ${{ pedido.total | number:'1.2-2' }}
+        <ion-item class="pedido-item">
+          <ion-label class="pedido-label">
+            <!-- Total del pedido -->
+            <div class="pedido-total">
+              <ion-icon name="cash-outline" color="danger"></ion-icon>
+              <h2 class="total-amount">
+                {{ pedido.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN
               </h2>
             </div>
-            <!-- Información del cliente y estado del pedido -->
-            <div class="data">
-              <strong><ion-icon slot="start" name="person-outline"></ion-icon> Cliente: {{pedido.nombre_cliente}}</strong>
-              <strong style="margin-left: 3rem;">
-                <ion-icon slot="start" [color]="getColorIcon(pedido.estatus)" [name]="getStatusIcon(pedido.estatus)"></ion-icon> {{getDisplayStatus(pedido)}}
-              </strong>
+            
+            <!-- Contenedor principal para información -->
+            <div class="pedido-main-info">
+              <!-- Información del cliente y estado -->
+              <div class="pedido-info">
+                <div class="info-row">
+                  <ion-icon name="person-outline"></ion-icon>
+                  <span class="info-text">{{ pedido.nombre_cliente }}</span>
+                </div>
+                <div class="info-row">
+                  <ion-icon [color]="getColorIcon(pedido.estatus)" [name]="getStatusIcon(pedido.estatus)"></ion-icon>
+                  <span class="info-text">{{ getDisplayStatus(pedido) }}</span>
+                </div>
+              </div>
+              
+              <!-- Tipo de entrega y horario -->
+              <div class="pedido-delivery-schedule">
+                <div class="info-row">
+                  <ion-icon
+                    [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))"
+                    [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))">
+                  </ion-icon>
+                  <span class="info-text">
+                    {{ getEffectiveDeliveryType(pedido) === 'domicilio' ? 'Entrega a domicilio' : 'Recolección en negocio' }}
+                  </span>
+                </div>
+                
+                <!-- Horario programado -->
+                <div class="info-row" *ngIf="getScheduledDate(pedido)">
+                  <ion-icon 
+                    [name]="getEffectiveDeliveryType(pedido) === 'negocio' ? 'time-outline' : 'truck-outline'" 
+                    [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))">
+                  </ion-icon>
+                  <span class="info-text schedule-text">
+                    <strong>{{ getScheduledLabel(pedido) }}:</strong>
+                    <br>
+                    {{ getScheduledDate(pedido) | date: 'dd/MM/yyyy HH:mm' }}
+                  </span>
+                </div>
+              </div>
             </div>
             
-            <!-- Muestra el tipo de entrega del pedido (domicilio solo si hay ubicación) -->
-            <div class="data">
-              <strong>
-                <ion-icon
-                  slot="start"
-                  [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))"
-                  [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))">
-                </ion-icon>
-                {{ getEffectiveDeliveryType(pedido) }}
-              </strong>
+            <!-- Chips de información -->
+            <div class="pedido-chips">
+              <ion-chip color="primary" mode="ios" outline="true">
+                <ion-label>{{ pedido.tipo_pago }}</ion-label>
+              </ion-chip>
+              
+              <ion-chip [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))" mode="ios" outline="true">
+                <ion-icon [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))"></ion-icon>
+                <ion-label>{{ getEffectiveDeliveryType(pedido) === 'domicilio' ? 'Domicilio' : 'Negocio' }}</ion-label>
+              </ion-chip>
             </div>
-            
-            <!-- Fecha de entrega solo se muestra si el estado es 'En espera de recolección' -->
-            <div class="data" *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
-              <strong><ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de entrega: {{ pedido.fecha_entrega?.toDate() | date: 'dd/MM/yyyy HH:mm' }}</strong>
-            </div>
-            
-            <!-- Chip con el tipo de pago -->
-            <ion-chip color="primary" mode="ios" outline="true">
-              <ion-label>{{pedido.tipo_pago}}</ion-label>
-            </ion-chip>
-            
-            <!-- Chip con el tipo de entrega (domicilio solo si hay ubicación) -->
-            <ion-chip [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))" mode="ios" outline="true">
-              <ion-icon [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))"></ion-icon>
-              <ion-label>{{ getEffectiveDeliveryType(pedido) }}</ion-label>
-            </ion-chip>
           </ion-label>
         </ion-item>
       
@@ -71,11 +93,13 @@
         <ion-item-options>
           <!-- Opción para ver los detalles del pedido -->
           <ion-item-option color="secondary" (click)="openPedidoDetalle(pedido)">
-            <ion-icon class="option-btn" style="margin-right: 0.5rem;" name="eye-outline"></ion-icon> Ver Detalle
+            <ion-icon name="eye-outline"></ion-icon>
+            <div class="option-text">Ver Detalle</div>
           </ion-item-option>
-          <!-- Opción para cancelar el pedido, solo si el estado no es 'Cancelado' ni 'Entregado' -->
+          <!-- Opción para cancelar el pedido -->
           <ion-item-option color="danger" (click)="cancelarPedido(pedido)" *ngIf="pedido.estatus.toLowerCase() !== 'cancelado' && pedido.estatus.toLowerCase() !== 'entregado'">
-            <ion-icon class="option-btn" style="margin-right: 0.5rem;" name="close-circle-outline"></ion-icon> Cancelar
+            <ion-icon name="close-circle-outline"></ion-icon>
+            <div class="option-text">Cancelar</div>
           </ion-item-option>
         </ion-item-options>
       </ion-item-sliding>

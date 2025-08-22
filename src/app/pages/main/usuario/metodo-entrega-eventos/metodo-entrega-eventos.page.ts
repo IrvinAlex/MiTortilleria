@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UtilsService } from 'src/app/services/utils.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 import { EntregaDomicilioEventosComponent } from 'src/app/shared/components/entrega-domicilio-eventos/entrega-domicilio-eventos.component';
 import { EntregaDomicilioComponent } from 'src/app/shared/components/entrega-domicilio/entrega-domicilio.component';
 import { EntregaNegocioEventosComponent } from 'src/app/shared/components/entrega-negocio-eventos/entrega-negocio-eventos.component';
@@ -30,7 +31,11 @@ export class MetodoEntregaEventosPage implements OnInit {
   deliveryFee: number = 0;
   showMinimumOrderMessage: boolean = false;
 
-  constructor(private router: Router, private utilsSvc: UtilsService) { }
+  constructor(
+    private router: Router, 
+    private utilsSvc: UtilsService,
+    private firebaseSvc: FirebaseService
+  ) { }
 
   ngOnInit() {
     this.setDateLimits();
@@ -42,13 +47,14 @@ export class MetodoEntregaEventosPage implements OnInit {
 
   setDateLimits() {
     const today = new Date();
-    
-    // Minimum date is today
+    // Establecer minDate a las 00:00:00 del día actual
+    today.setHours(0, 0, 0, 0);
     this.minDate = today.toISOString();
-    
+
     // Maximum date is 1 month from today (not 6 months)
     const maxDate = new Date();
     maxDate.setMonth(today.getMonth() + 1);
+    maxDate.setHours(23, 59, 59, 999); // Fin del día
     this.maxDate = maxDate.toISOString();
   }
 
@@ -191,16 +197,18 @@ export class MetodoEntregaEventosPage implements OnInit {
       this.utilsSvc.saveInLocalStorage('selectedMethod', this.selectedMethod);
       this.cart.fecha_entrega = combinedDateTime;
       this.utilsSvc.saveInLocalStorage('carrito_eventos', [this.cart]);
-      // Navigate to the appropriate page based on the selected method
+      
+      // Save pickup information to Firebase if method is 'negocio'
       if (this.selectedMethod === 'negocio') {
+        await this.savePickupInfoToFirebase(combinedDateTime);
+        
         const success = await this.utilsSvc.presentModal({
           component: EntregaNegocioEventosComponent,
           componentProps: {},
         });
         if (success) {
-          this.utilsSvc.dismissModal(true); // Dismiss the method selection modal
+          this.utilsSvc.dismissModal(true);
         }
-        
       }
       else if(this.selectedMethod === 'domicilio') {
         // Para entrega a domicilio, primero confirmar la dirección
@@ -220,6 +228,27 @@ export class MetodoEntregaEventosPage implements OnInit {
           }
         }
       }
+    }
+  }
+
+  // Add method to save pickup information to Firebase
+  async savePickupInfoToFirebase(pickupDateTime: string) {
+    try {
+      const userId = this.utilsSvc.getFromLocalStorage('user').uid;
+      const carritoId = this.cart.id;
+      
+      // Update cart in Firebase with pickup information
+      await this.firebaseSvc.updateDocumet(`users/${userId}/carrito_eventos/${carritoId}`, {
+        metodo_entrega: 'negocio',
+        fecha_entrega: pickupDateTime,
+        hora_recoleccion: pickupDateTime,
+        es_recoleccion_negocio: true,
+        updated_at: new Date()
+      });
+
+      console.log('Información de recolección guardada en Firebase');
+    } catch (error) {
+      console.error('Error al guardar información de recolección:', error);
     }
   }
 
@@ -283,7 +312,7 @@ export class MetodoEntregaEventosPage implements OnInit {
     
     // Business hours: 9:00 AM to 8:00 PM (9:00 - 20:00)
     const startHour = 9;  // 9 AM
-    const endHour = 20;   // 8 PM
+    const endHour = 22;   // 8 PM
     
     // Convert time to minutes for easier comparison
     const selectedTimeInMinutes = hours * 60 + minutes;

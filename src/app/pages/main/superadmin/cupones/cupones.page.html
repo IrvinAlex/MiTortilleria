@@ -1,4 +1,4 @@
-<app-header [showMenu]="true" title="Administración de cupones"></app-header>
+<app-header [showMenu]="true" title="Cupones"></app-header>
 
 <ion-content class="ion-padding-top ion-text-center">
 
@@ -19,7 +19,7 @@
       </ion-col>
       <ion-col size="4" class="ion-text-right">
         <!-- Botón para abrir el modal de agregar un usuario -->
-        <ion-button (click)="openAddCuponModal()" color="success">
+        <ion-button (click)="openAddCuponModal()">
           <ion-icon name="add-circle-outline"></ion-icon>
           Agregar cupón
         </ion-button>
@@ -59,7 +59,7 @@
         </ion-col>
       </ng-container>
       
-      <!-- Acciones: Editar y eliminar -->
+      <!-- Acciones: Editar, eliminar y notificar -->
       <ion-col>
         <ion-button (click)="editItem(item)" color="warning">
           <ion-icon name="create"></ion-icon>
@@ -67,9 +67,47 @@
         <ion-button (click)="deleteItem(item)" color="danger">
           <ion-icon name="trash"></ion-icon>
         </ion-button>
+        <ion-button 
+          color="primary"
+          (click)="openNotificationModalForCupon(item)"
+          style="margin-left: 0.5rem;"
+        >
+          <ion-icon name="send" slot="start"></ion-icon>
+          Notificar
+        </ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <!-- NUEVO: Modal para enviar notificación push -->
+  <ion-modal *ngIf="isNotificationModalOpen">
+    <ion-header>
+      <ion-toolbar >
+        <ion-title>Enviar notificación push</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeNotificationModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <form [formGroup]="notificationForm" (ngSubmit)="sendNotification()">
+        <ion-item>
+          <ion-label position="floating">Título</ion-label>
+          <ion-input formControlName="title"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Mensaje</ion-label>
+          <ion-textarea formControlName="message"></ion-textarea>
+        </ion-item>
+        <ion-button expand="block" color="success" type="submit" [disabled]="!notificationForm.valid" class="modern-send-btn">
+          <ion-icon name="send"></ion-icon>
+          Enviar
+        </ion-button>
+      </form>
+    </ion-content>
+  </ion-modal>
 
   <!-- Paginación de la tabla -->
   <div class="pagination">
@@ -99,3 +137,4 @@
     </ion-button>
   </div>
 </ion-content>
+

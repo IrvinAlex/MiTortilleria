@@ -10,6 +10,8 @@ import { Direccion } from 'src/app/models/direccion.model';
 import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { getAuth} from 'firebase/auth'
+
 
 
 @Component({
@@ -149,9 +151,9 @@ export class AuthPage implements OnInit {
         return;
       }
 
-      // Hay una sesión activa en otro dispositivo - NO PERMITIR ACCESO
+      // Hay una sesión activa en otro dispositivo - MOSTRAR ALERTA PERO NO REDIRIGIR
       await this.showDeviceSessionBlockedAlert(user.device_session);
-      resolve(false); // Siempre negar el acceso
+      resolve(false); // Negar el acceso pero mantener en la página de auth
     });
   }
 
@@ -496,15 +498,23 @@ export class AuthPage implements OnInit {
       
       if (!canLogin) {
         loading.dismiss();
+        // NO CERRAR SESIÓN AUTOMÁTICAMENTE - solo denegar acceso
+        // this.firebaseSvc.signOutAutomatic(); // REMOVIDO
+        
+        // Mostrar toast informativo pero mantenerse en la página
         this.utilsSvc.presentToast({
-          message: '❌ Acceso denegado: Dispositivo ya conectado',
-          duration: 3000,
+          message: '❌ Acceso denegado: Sesión activa en otro dispositivo',
+          duration: 4000,
           color: 'danger',
           position: 'top',
           icon: 'shield-outline'
         });
-        this.firebaseSvc.signOutAutomatic();
-        return;
+        
+        // Cerrar sesión de Firebase Auth pero sin limpiar localStorage completamente
+        const auth = getAuth();
+        await auth.signOut();
+        
+        return; // Permanecer en la página de auth
       }
 
       // Actualizar sesión de dispositivo
@@ -877,15 +887,27 @@ export class AuthPage implements OnInit {
         }
       })
 
-      //OBTENER LA DIRECCION DEL USUARIO
-      let path2 = `users/${user.uid}/Address`;
-      let sub = this.firebaseSvc.getCollectionData(path2, []).subscribe({
-        next: (res: any) => {
-          this.direccion = res;
-          this.utilsSvc.setElementInLocalstorage("direccion", this.direccion);
-          sub.unsubscribe();
-        }
-      })
+      if (user.type_profile == 1) {
+        let path2 = `direccionNegocio`;  // Ruta para la dirección a obtener
+        //OBTENER LA DIRECCION DEL USUARIO
+        let sub = this.firebaseSvc.getCollectionData(path2, []).subscribe({
+          next: (res: any) => {
+            this.direccion = res;
+            this.utilsSvc.setElementInLocalstorage("direccion", this.direccion);
+            sub.unsubscribe();
+          }
+        });
+      } else {
+        let path2 = `users/${user.uid}/Address`;  // Ruta para obtener la colección de direcciones
+        //OBTENER LA DIRECCION DEL USUARIO
+        let sub = this.firebaseSvc.getCollectionData(path2, []).subscribe({
+          next: (res: any) => {
+            this.direccion = res;
+            this.utilsSvc.setElementInLocalstorage("direccion", this.direccion);
+            sub.unsubscribe();
+          }
+        });
+      }
 
       let path3 = `users/${uid}/carrito`;
       let sub3 = this.firebaseSvc.getCollectionData(path3, []).subscribe({
@@ -904,6 +926,52 @@ export class AuthPage implements OnInit {
           sub3.unsubscribe();
         }
       })
+
+      let path4 = `users/${uid}/carrito_eventos`;
+      let sub4 = this.firebaseSvc.getCollectionData(path4, []).subscribe({
+        next: (res: any) => {
+          this.carrito_eventos = res;
+          //OBTENER LOS DETALLES DEL CARRITO
+          let path4 = `users/${user.uid}/carrito_eventos/${this.carrito_eventos[0].id}/detalle_carrito`;
+          let sub4 = this.firebaseSvc.obtenerColeccion(path4).subscribe({
+            next: (detalle: any) => {
+              this.carrito_eventos[0].detalle_carrito = detalle;
+              this.utilsSvc.setElementInLocalstorage("carrito_eventos", this.carrito_eventos);
+              sub4.unsubscribe();
+            }
+          })
+
+          sub4.unsubscribe();
+        }
+      });
+      
+      this.form_carrito_eventos.reset();
+
+        if (user.isBusiness) {
+          let path5 = `users/${uid}/carrito_negocio`;
+          let sub5 = this.firebaseSvc.getCollectionData(path5, []).subscribe({
+            next: (res: any) => {
+              this.carrito_negocio = res;
+              if (this.carrito_negocio) {
+                //OBTENER LOS DETALLES DEL CARRITO
+                let path6 = `users/${uid}/carrito_negocio/${this.carrito_negocio[0].id}/detalle_carrito`;
+                
+                let sub6 = this.firebaseSvc.obtenerColeccion(path6).subscribe({
+                  next: (detalle: any) => {
+                    this.carrito_negocio[0].detalle_carrito = detalle;
+                    this.utilsSvc.setElementInLocalstorage("carrito_negocio", this.carrito_negocio);
+                    sub6.unsubscribe();
+                  }
+                });
+
+                sub5.unsubscribe();
+              }
+            }
+          });
+          
+          this.form_carrito_negocio.reset();
+      }
+      
       if (user.type_profile == 1) {
         this.utilsSvc.routerLink('main/informe-superadmin');
       } else if (user.type_profile == 2) {

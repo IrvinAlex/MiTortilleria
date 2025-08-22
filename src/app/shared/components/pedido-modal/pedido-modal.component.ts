@@ -222,26 +222,128 @@ export class PedidoModalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // Enhanced method to determine effective delivery type
+  getEffectiveDeliveryType(): string {
+    // Check explicit pickup flags first
+    if (this.pedido?.es_recoleccion_negocio === true) return 'negocio';
+    if (this.pedido?.metodo_entrega === 'negocio') return 'negocio';
+    if (this.pedido?.tipo_entrega === 'negocio') return 'negocio';
+    
+    // Check for pickup time field
+    if (this.pedido?.hora_recoleccion) return 'negocio';
+    
+    // Check if has delivery location
+    if (this.hasDeliveryLocation()) {
+      return this.pedido?.tipo_entrega?.toLowerCase() === 'domicilio' ? 'domicilio' : 'negocio';
+    }
+    
+    // Default to pickup if no clear delivery location
+    return 'negocio';
+  }
+
+  // Check if order has delivery location information
+  hasDeliveryLocation(): boolean {
+    const gp = this.pedido?.geopoint_entrega;
+    const hasGeoPoint = gp && 
+      typeof gp.latitude === 'number' && 
+      typeof gp.longitude === 'number' &&
+      !isNaN(gp.latitude) && 
+      !isNaN(gp.longitude);
+
+    const hasCoords = (typeof this.pedido?.lat === 'number' && typeof this.pedido?.lng === 'number') ||
+      (typeof this.pedido?.coordenadas?.lat === 'number' && typeof this.pedido?.coordenadas?.lng === 'number');
+
+    return !!(hasGeoPoint || hasCoords);
+  }
+
   getDeliveryTypeIcon(): string {
-    switch (this.pedido.tipo_entrega?.toLowerCase()) {
+    const effectiveType = this.getEffectiveDeliveryType();
+    switch (effectiveType) {
       case 'domicilio':
         return 'home-outline';
-      default:
+      case 'negocio':
         return 'storefront-outline';
+      default:
+        return 'location-outline';
     }
   }
 
   getDeliveryTypeColor(): string {
-    switch (this.pedido.tipo_entrega?.toLowerCase()) {
+    const effectiveType = this.getEffectiveDeliveryType();
+    switch (effectiveType) {
       case 'domicilio':
         return 'primary';
-      default:
+      case 'negocio':
         return 'success';
+      default:
+        return 'medium';
     }
   }
 
   isHomeDelivery(): boolean {
-    return this.pedido.tipo_entrega?.toLowerCase() === 'domicilio';
+    return this.getEffectiveDeliveryType() === 'domicilio';
+  }
+
+  isBusinessPickup(): boolean {
+    return this.getEffectiveDeliveryType() === 'negocio';
+  }
+
+  // Get the appropriate scheduling date for the order
+  getScheduledDate(): Date | null {
+    // Priority: pickup time > delivery time > order date
+    if (this.pedido?.hora_recoleccion) {
+      return this.toDateTime(this.pedido.hora_recoleccion);
+    }
+    if (this.pedido?.fecha_entrega) {
+      return this.toDateTime(this.pedido.fecha_entrega);
+    }
+    if (this.pedido?.fecha) {
+      return this.toDateTime(this.pedido.fecha);
+    }
+    return null;
+  }
+
+  // Get the appropriate label for the scheduling
+  getScheduledLabel(): string {
+    if (this.isBusinessPickup()) {
+      if (this.pedido?.hora_recoleccion) return 'Horario de recolección';
+      if (this.pedido?.fecha_entrega) return 'Horario programado';
+      return 'Fecha del pedido';
+    } else {
+      return 'Horario de entrega';
+    }
+  }
+
+  // Convert various date formats to Date object
+  private toDateTime(value: any): Date | null {
+    if (!value) return null;
+    if (value?.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value?.seconds) return new Date(value.seconds * 1000);
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Get delivery type display name
+  getDeliveryTypeDisplayName(): string {
+    const effectiveType = this.getEffectiveDeliveryType();
+    switch (effectiveType) {
+      case 'domicilio':
+        return 'Entrega a domicilio';
+      case 'negocio':
+        return 'Recolección en negocio';
+      default:
+        return 'Tipo no especificado';
+    }
+  }
+
+  // Get business information for pickup orders
+  getBusinessInfo() {
+    return {
+      name: 'Tortillería Plata Jaimes',
+      address: 'Calle Principal #123, Centro, Ciudad',
+      phone: '+52 722 366 4325',
+      hours: 'Lunes a Domingo de 9:00 AM a 8:00 PM'
+    };
   }
 
   private async sendStatusUpdateEmail(pedidoId: string) {

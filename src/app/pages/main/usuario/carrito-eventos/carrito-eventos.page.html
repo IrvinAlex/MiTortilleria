@@ -40,7 +40,7 @@
                 <ion-icon name="cube-outline"></ion-icon>
                 Cantidad: {{ item.cantidad }}
               </div>
-              <div class="item-price">{{ item.subtotal | currency }}</div>
+              <div class="item-price">{{ item.subtotal | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</div>
             </div>
             
             <div class="item-actions">
@@ -94,7 +94,7 @@
     <div class="total-section">
       <div class="total-simple">
         <span class="total-label">Total:</span>
-        <span class="total-value">{{ cart.total | currency }}</span>
+        <span class="total-value">{{ cart.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
     </div>
     

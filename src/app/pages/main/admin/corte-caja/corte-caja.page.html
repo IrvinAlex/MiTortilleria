@@ -20,7 +20,7 @@
     <div class="stat-card success-card">
       <ion-icon name="trending-up-outline"></ion-icon>
       <div class="stat-info">
-        <h3>{{ getTotalGanancias() | currency:'MXN':'symbol':'1.2-2' }}</h3>
+        <h3>{{ getTotalGanancias() | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</h3>
         <p>Ganancias Totales</p>
       </div>
     </div>
@@ -121,9 +121,9 @@
           <tbody>
             <tr *ngFor="let item of paginatedData" class="table-row">
               <td>{{ item.fecha }}</td>
-              <td>{{ item.monto_inicio | currency:'MXN':'symbol':'1.2-2' }}</td>
-              <td>{{ item.monto_final | currency:'MXN':'symbol':'1.2-2' }}</td>
-              <td class="amount-cell">{{ item.ganancias | currency:'MXN':'symbol':'1.2-2' }}</td>
+              <td>{{ item.monto_inicio | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</td>
+              <td>{{ item.monto_final | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</td>
+              <td class="amount-cell">{{ item.ganancias | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</td>
               <td>
                 <ion-badge [class]="getStatusClass(item.estatus)">
                   {{ item.estatus }}
@@ -167,15 +167,15 @@
           <div class="amounts-grid">
             <div class="amount-item">
               <span class="amount-label">Inicial</span>
-              <span class="amount-value">{{ item.monto_inicio | currency:'MXN':'symbol':'1.2-2' }}</span>
+              <span class="amount-value">{{ item.monto_inicio | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
             </div>
             <div class="amount-item">
               <span class="amount-label">Final</span>
-              <span class="amount-value">{{ item.monto_final | currency:'MXN':'symbol':'1.2-2' }}</span>
+              <span class="amount-value">{{ item.monto_final | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
             </div>
             <div class="amount-item highlight">
               <span class="amount-label">Ganancias</span>
-              <span class="amount-value">{{ item.ganancias | currency:'MXN':'symbol':'1.2-2' }}</span>
+              <span class="amount-value">{{ item.ganancias | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
             </div>
           </div>
         </div>

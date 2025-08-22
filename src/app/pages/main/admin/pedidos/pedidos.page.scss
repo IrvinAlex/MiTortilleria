@@ -1,6 +1,4 @@
-
-
-  .fecha{
+.fecha{
     font-weight: bold;
     color: gray;
     margin-left: 1rem;
@@ -82,5 +80,319 @@
       opacity: 1;
     }
   }
+
+  // Estilos responsivos para pedidos
+.pedido-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 8px;
+  margin-bottom: 8px;
+}
+
+.pedido-label {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+}
+
+.pedido-total {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
   
+  ion-icon {
+    font-size: 1.2rem;
+    min-width: 20px;
+  }
   
+  .total-amount {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--ion-color-dark);
+    word-break: break-word;
+  }
+}
+
+.pedido-info,
+.pedido-delivery,
+.pedido-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 24px;
+  
+  ion-icon {
+    font-size: 1rem;
+    min-width: 16px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  
+  .info-text {
+    flex: 1;
+    font-weight: 500;
+    line-height: 1.3;
+    word-break: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  
+  .schedule-text {
+    font-size: 0.9rem;
+    
+    strong {
+      font-weight: 600;
+    }
+  }
+}
+
+.pedido-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  
+  ion-chip {
+    margin: 0;
+    max-width: 100%;
+    
+    ion-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+    
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+// Estilos para opciones de acción
+ion-item-options {
+  ion-item-option {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 80px;
+    
+    .option-text {
+      font-size: 0.8rem;
+      margin-top: 4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    
+    ion-icon {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+  }
+}
+
+// Estilos para pantallas grandes (Desktop/Tablet landscape)
+@media (min-width: 768px) {
+  .pedido-item {
+    --padding-start: 20px;
+    --padding-end: 20px;
+    margin-bottom: 12px;
+  }
+  
+  .pedido-label {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+  }
+  
+  .pedido-total {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+    min-width: 180px;
+    
+    .total-amount {
+      font-size: 1.3rem;
+    }
+  }
+  
+  .pedido-main-info {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  
+  .pedido-info {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .pedido-delivery-schedule {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .pedido-chips {
+    flex: 0 0 auto;
+    margin-top: 0;
+    align-items: flex-start;
+    min-width: 200px;
+  }
+  
+  .info-row {
+    min-height: 22px;
+    
+    .info-text {
+      font-size: 0.95rem;
+    }
+    
+    .schedule-text {
+      font-size: 0.9rem;
+      
+      br {
+        display: none;
+      }
+      
+      strong::after {
+        content: " ";
+      }
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .pedido-item {
+    --padding-start: 24px;
+    --padding-end: 24px;
+  }
+  
+  .pedido-label {
+    gap: 24px;
+    padding: 16px 0;
+  }
+  
+  .pedido-total {
+    min-width: 200px;
+    
+    .total-amount {
+      font-size: 1.4rem;
+    }
+  }
+  
+  .pedido-main-info {
+    gap: 30px;
+  }
+  
+  .pedido-info {
+    min-width: 220px;
+  }
+  
+  .pedido-delivery-schedule {
+    min-width: 280px;
+  }
+  
+  .pedido-chips {
+    min-width: 220px;
+    
+    ion-chip {
+      ion-label {
+        max-width: 140px;
+      }
+    }
+  }
+}
+
+// Responsive breakpoints
+@media (max-width: 480px) {
+  .pedido-item {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+  
+  .pedido-total {
+    .total-amount {
+      font-size: 1.1rem;
+    }
+  }
+  
+  .info-row {
+    .info-text {
+      font-size: 0.9rem;
+    }
+  }
+  
+  .pedido-chips {
+    ion-chip {
+      ion-label {
+        font-size: 0.8rem;
+        max-width: 100px;
+      }
+    }
+  }
+  
+  ion-item-options {
+    ion-item-option {
+      min-width: 70px;
+      
+      .option-text {
+        font-size: 0.7rem;
+      }
+      
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .pedido-label {
+    gap: 8px;
+  }
+  
+  .pedido-total {
+    .total-amount {
+      font-size: 1rem;
+    }
+  }
+  
+  .info-row {
+    gap: 6px;
+    
+    ion-icon {
+      font-size: 0.9rem;
+      min-width: 14px;
+    }
+    
+    .info-text {
+      font-size: 0.85rem;
+    }
+  }
+  
+  .pedido-chips {
+    gap: 6px;
+    
+    ion-chip {
+      ion-label {
+        font-size: 0.75rem;
+        max-width: 80px;
+      }
+    }
+  }
+}
+

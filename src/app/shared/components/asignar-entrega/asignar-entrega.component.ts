@@ -341,10 +341,6 @@ export class AsignarEntregaComponent implements OnInit, AfterViewInit {
     }
   }
 
-  isHomeDelivery(): boolean {
-    return this.pedido.tipo_entrega?.toLowerCase() === 'domicilio';
-  }
-
   getPaymentMethodIcon(): string {
     const metodo = this.pedido?.tipo_pago?.toLowerCase() || '';
     return metodo === 'efectivo' ? 'cash-outline' : 'card-outline';
@@ -376,5 +372,103 @@ export class AsignarEntregaComponent implements OnInit, AfterViewInit {
     const metodo = this.pedido?.tipo_pago?.toLowerCase() || '';
     const confirmed = !!this.pedido?.pago_confirmado;
     return metodo === 'tarjeta' || confirmed ? 'checkmark-circle-outline' : 'time-outline';
+  }
+
+  // Devuelve la fecha programada del pedido (hora_recoleccion > fecha_entrega > fecha)
+  getScheduledDate(): Date | null {
+    if (this.pedido?.hora_recoleccion) {
+      return this.toDateTime(this.pedido.hora_recoleccion);
+    }
+    if (this.pedido?.fecha_entrega) {
+      return this.toDateTime(this.pedido.fecha_entrega);
+    }
+    if (this.pedido?.fecha) {
+      return this.toDateTime(this.pedido.fecha);
+    }
+    return null;
+  }
+
+  getBusinessInfo() {
+    return {
+      name: 'Tortillería Plata Jaimes',
+      address: 'Calle Principal #123, Centro, Ciudad',
+      phone: '+52 722 366 4325',
+      hours: 'Lunes a Domingo de 9:00 AM a 8:00 PM'
+    };
+  }
+
+  getScheduledLabel(): string {
+    if (this.isBusinessPickup()) {
+      if (this.pedido?.hora_recoleccion) return 'Horario de recolección';
+      if (this.pedido?.fecha_entrega) return 'Horario programado';
+      return 'Fecha del pedido';
+    } else {
+      return 'Horario de entrega';
+    }
+  }
+
+  getEffectiveDeliveryType(): string {
+    // Si tiene geopoint_entrega válido, es domicilio
+    const gp = this.pedido?.geopoint_entrega;
+    if (
+      gp &&
+      typeof gp.latitude === 'number' &&
+      typeof gp.longitude === 'number' &&
+      !isNaN(gp.latitude) &&
+      !isNaN(gp.longitude)
+    ) {
+      return 'domicilio';
+    }
+
+    // Prioridad: explícito negocio
+    if (this.pedido?.es_recoleccion_negocio === true) return 'negocio';
+    if ((this.pedido?.metodo_entrega || '').toLowerCase() === 'negocio') return 'negocio';
+    if ((this.pedido?.tipo_entrega || '').toLowerCase() === 'negocio') return 'negocio';
+
+    // Si tiene hora_recoleccion o fecha_recoger, es negocio
+    if (this.pedido?.hora_recoleccion || this.pedido?.fecha_recoger) return 'negocio';
+
+    // Si tiene ubicación alternativa, también domicilio
+    if (
+      (typeof this.pedido?.lat === 'number' && typeof this.pedido?.lng === 'number') ||
+      (typeof this.pedido?.coordenadas?.lat === 'number' && typeof this.pedido?.coordenadas?.lng === 'number')
+    ) {
+      return 'domicilio';
+    }
+
+    // Si tipo_entrega explícito domicilio
+    if ((this.pedido?.tipo_entrega || '').toLowerCase() === 'domicilio') return 'domicilio';
+
+    // Fallback: si no hay ubicación, negocio
+    return 'negocio';
+  }
+
+  isHomeDelivery(): boolean {
+    return this.getEffectiveDeliveryType() === 'domicilio';
+  }
+
+  isBusinessPickup(): boolean {
+    return this.getEffectiveDeliveryType() === 'negocio';
+  }
+
+  getDeliveryTypeDisplayName(): string {
+    const effectiveType = this.getEffectiveDeliveryType();
+    switch (effectiveType) {
+      case 'domicilio':
+        return 'Entrega a domicilio';
+      case 'negocio':
+        return 'Recolección en negocio';
+      default:
+        return 'Tipo no especificado';
+    }
+  }
+
+  // Helper para convertir a Date
+  private toDateTime(value: any): Date | null {
+    if (!value) return null;
+    if (value?.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value?.seconds) return new Date(value.seconds * 1000);
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
   }
 }

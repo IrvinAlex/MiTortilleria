@@ -1,4 +1,4 @@
-<app-header [isModal]="true" [showNombre]="false" [showLogo]="false" title="Detalles del pedido"></app-header>
+<app-header [isModal]="true" [showNombre]="false" [showLogo]="false" title="Asignar Horario"></app-header>
 
 <ion-content>
   <!-- Status Bar con información de demanda -->
@@ -57,17 +57,43 @@
     </ion-card-header>
     
     <ion-card-content>
-      <!-- Fecha y Hora -->
+      <!-- Fecha y Hora SIN RESTRICCIONES PARA HOY -->
       <ion-item>
         <ion-label>Fecha y Hora de Recolección</ion-label>
         <ion-datetime
-          display-format="YYYY-MM-DD HH:mm"
-          picker-format="YYYY-MM-DD HH:mm"
           [(ngModel)]="fechaHoraRecoleccion"
           [min]="fechaMinima"
+          [max]="fechaMaxima"
           placeholder="Selecciona fecha y hora"
-          (ionChange)="onDateTimeChange()">
+          locale="es-MX"
+          (ionChange)="onDateTimeChange()"
+          [showDefaultButtons]="true"
+          [showClearButton]="false"
+          presentation="date-time"
+          preferWheel="false">
         </ion-datetime>
+      </ion-item>
+
+
+      <!-- Display current selected date -->
+      <ion-item *ngIf="fechaHoraRecoleccion">
+        <ion-label class="selected-date-display">
+          <h3>Horario seleccionado:</h3>
+          <p>{{ fechaHoraRecoleccion | date:'EEEE, dd \'de\' MMMM \'de\' yyyy \'a las\' HH:mm':'es-ES' }}</p>
+          <p style="font-size: 0.9rem; color: var(--ion-color-medium);">
+            Hora actual: {{ currentTime | date:'HH:mm':'es-ES' }}
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Information about flexible hours -->
+      <ion-item>
+        <ion-icon name="information-circle-outline" slot="start" color="success"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <h3>Horarios Disponibles</h3>
+          <p>✅ Puedes elegir desde HOY cualquier hora que necesites</p>
+          <p>💡 Horario sugerido: 9:00 AM - 8:00 PM</p>
+        </ion-label>
       </ion-item>
 
       <!-- Card para mostrar tiempo estimado y hora asignada -->
@@ -160,40 +186,13 @@
         </ion-card-content>
       </ion-card>
 
-      <!-- Estado del Sistema -->
-      <ion-card class="status-info-card">
-        <ion-card-header>
-          <ion-card-subtitle>Estado Actual del Sistema</ion-card-subtitle>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-item lines="none">
-            <ion-label>Hora actual:</ion-label>
-            <ion-note slot="end">{{ formatCurrentTime() }}</ion-note>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-label>Nivel de demanda:</ion-label>
-            <ion-note slot="end" [color]="currentDemandLevel?.color">
-              {{ currentDemandLevel?.level?.toUpperCase() || 'CALCULANDO' }}
-            </ion-note>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-label>Tiempo estimado actual:</ion-label>
-            <ion-note slot="end" [color]="currentDemandLevel?.color">
-              {{ estimatedTime }}
-            </ion-note>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-label>Hora asignada:</ion-label>
-            <ion-note slot="end" color="primary">
-              {{ formatAssignedTime() }}
-            </ion-note>
-          </ion-item>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Slider original (como alternativa) -->
+      <!-- Enhanced slider section -->
       <div *ngIf="pedido.estatus.toLowerCase() === 'en preparación' && !isCountdownActive" class="assign-slider-container">
         <ion-label>Desliza para asignar manualmente</ion-label>
+        <p *ngIf="!fechaHoraRecoleccion" class="warning-text">
+          <ion-icon name="warning" color="warning"></ion-icon>
+          Selecciona una fecha y hora antes de asignar
+        </p>
         <ion-range
           min="0"
           max="100"

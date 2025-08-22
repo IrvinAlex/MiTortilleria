@@ -32,32 +32,110 @@
     <ion-list *ngFor="let pedido of pedidosFiltrados">
       <!-- Ítem deslizable para cada pedido -->
       <ion-item-sliding *ngIf="pedido.estatus.toLowerCase()==='en preparación'" class="product-item">
-        <ion-item>
-          <ion-label>
+        <ion-item class="card horario-item">
+          <ion-label class="horario-label">
             <!-- Total del pedido -->
             <div class="name">
               <h2>
                 <ion-icon slot="start" style="margin-right: 2rem;" color="danger" name="cash-outline"></ion-icon>
-                ${{ pedido.total | number:'1.2-2' }} <!-- Muestra el total con dos decimales -->
+                {{ pedido.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN
               </h2>
             </div>
-            <!-- Información del cliente y estatus -->
-            <div class="data">
-              <strong>
-                <ion-icon slot="start" name="person-outline"></ion-icon> 
-                Cliente: {{pedido.nombre_cliente}}
-              </strong>
-              <strong style="margin-left: 3rem;">
-                <ion-icon slot="start" name="refresh-circle-outline"></ion-icon> 
-                {{pedido.estatus}}
-              </strong>
+
+            <!-- Contenedor principal para información -->
+            <div class="horario-main-info">
+              <!-- Información del cliente y estatus -->
+              <div class="data">
+                <strong>
+                  <ion-icon slot="start" name="person-outline"></ion-icon> 
+                  Cliente: {{pedido.nombre_cliente}}
+                </strong>
+                <strong style="margin-left: 3rem;">
+                  <ion-icon slot="start" name="refresh-circle-outline"></ion-icon> 
+                  {{pedido.estatus}}
+                </strong>
+              </div>
+
+              <!-- Tipo de entrega con información específica -->
+              <div class="data">
+                <strong>
+                  <ion-icon 
+                    slot="start" 
+                    [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))"
+                    [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))">
+                  </ion-icon>
+                  {{ getDeliveryTypeDisplayName(getEffectiveDeliveryType(pedido)) }}
+                </strong>
+              </div>
+
+              <!-- Horario programado unificado -->
+              <div class="data" *ngIf="getScheduledDate(pedido)">
+                <strong>
+                  <ion-icon 
+                    slot="start" 
+                    [name]="getEffectiveDeliveryType(pedido) === 'negocio' ? 'time-outline' : 'truck-outline'"
+                    [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))">
+                  </ion-icon>
+                  {{ getScheduledLabel(pedido) }}: {{ getScheduledDate(pedido) | date: 'dd/MM/yyyy HH:mm' }}
+                </strong>
+              </div>
             </div>
-            <!-- Etiqueta para el tipo de pago -->
-            <ion-chip color="primary" mode="ios" outline="true">
-              <ion-label>{{pedido.tipo_pago}}</ion-label>
-            </ion-chip>
+
+            <!-- Información específica para recolección en negocio -->
+            <div class="pickup-info" *ngIf="getEffectiveDeliveryType(pedido) === 'negocio'">
+              <div class="pickup-details">
+                <ion-icon name="storefront-outline" color="success"></ion-icon>
+                <span class="pickup-text">Recolección en Tortillería Plata Jaimes</span>
+              </div>
+              <div class="pickup-schedule" *ngIf="getScheduledDate(pedido)">
+                <ion-icon name="alarm-outline" color="success"></ion-icon>
+                <span class="schedule-text">
+                  Horario programado: {{ getScheduledDate(pedido) | date: 'EEEE, dd \'de\' MMMM \'a las\' HH:mm':'es-ES' }}
+                </span>
+              </div>
+              <div class="pickup-instructions">
+                <ion-icon name="information-circle-outline" color="medium"></ion-icon>
+                <span class="instructions-text">Cliente debe presentar ID o número de pedido</span>
+              </div>
+            </div>
+
+            <!-- Información específica para entrega a domicilio -->
+            <div class="delivery-info" *ngIf="getEffectiveDeliveryType(pedido) === 'domicilio'">
+              <div class="delivery-details">
+                <ion-icon name="home-outline" color="primary"></ion-icon>
+                <span class="delivery-text">Entrega en domicilio programada</span>
+              </div>
+              <div class="delivery-schedule" *ngIf="getScheduledDate(pedido)">
+                <ion-icon name="truck-outline" color="primary"></ion-icon>
+                <span class="schedule-text">
+                  Horario de entrega: {{ getScheduledDate(pedido) | date: 'EEEE, dd \'de\' MMMM \'a las\' HH:mm':'es-ES' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Chips informativos -->
+            <div class="chips-container">
+              <!-- Etiqueta para el tipo de pago -->
+              <ion-chip color="primary" mode="ios" outline="true">
+                <ion-icon name="card-outline"></ion-icon>
+                <ion-label>{{pedido.tipo_pago}}</ion-label>
+              </ion-chip>
+
+              <!-- Chip para tipo de entrega -->
+              <ion-chip [color]="getDeliveryTypeColor(getEffectiveDeliveryType(pedido))" mode="ios" outline="true">
+                <ion-icon [name]="getDeliveryTypeIcon(getEffectiveDeliveryType(pedido))"></ion-icon>
+                <ion-label>{{ getEffectiveDeliveryType(pedido) === 'negocio' ? 'Recolección' : 'Domicilio' }}</ion-label>
+              </ion-chip>
+
+              <!-- Chip de estado temporal -->
+              <ion-chip color="warning" mode="ios" *ngIf="isScheduledSoon(pedido)">
+                <ion-icon name="warning-outline"></ion-icon>
+                <ion-label>Próximo</ion-label>
+              </ion-chip>
+            </div>
           </ion-label>
         </ion-item>
+
         <!-- Opciones deslizable del pedido -->
         <ion-item-options>
           <!-- Opción: Asignar horario -->

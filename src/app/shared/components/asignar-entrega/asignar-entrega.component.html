@@ -6,63 +6,89 @@
     <div class="ticket-section">
       <p><ion-icon name="storefront-outline"></ion-icon> Nombre del negocio: Tortilleria Plata Jaimes</p>
       <p><ion-icon name="person-outline"></ion-icon> Cliente: {{ pedido.nombre_cliente }}</p>
-      <p *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
-        <ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de pedido: {{ pedido.fecha_entrega?.toDate() | date: 'dd/MM/yyyy HH:mm' }}</p>
-
-      <p *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
-        <ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de entrega: {{ pedido.fecha_recoger?.toDate() | date: 'dd/MM/yyyy HH:mm' }}
-      </p>
-
-      <!-- Delivery Type Information -->
+      <p><ion-icon name="calendar-outline"></ion-icon> Fecha: {{ pedido.fecha?.toDate() | date: 'dd/MM/yyyy' }}</p>
+      <div class="scheduling-info" *ngIf="getScheduledDate()">
+        <p>
+          <ion-icon [name]="isBusinessPickup() ? 'time-outline' : 'truck-outline'" [color]="getDeliveryTypeColor()"></ion-icon>
+          {{ getScheduledLabel() }}: {{ getScheduledDate() | date: 'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
       <p>
         <ion-icon [name]="getDeliveryTypeIcon()" [color]="getDeliveryTypeColor()"></ion-icon>
-        Tipo de entrega:
+        Tipo de entrega: 
         <ion-chip [color]="getDeliveryTypeColor()" mode="ios">
-          <ion-label>{{ pedido.tipo_entrega || 'No especificado' }}</ion-label>
+          <ion-icon [name]="getDeliveryTypeIcon()" slot="start"></ion-icon>
+          <ion-label>{{ getDeliveryTypeDisplayName() }}</ion-label>
         </ion-chip>
       </p>
     </div>
 
-    <!-- Enhanced Map Section for Home Delivery -->
+    <!-- SOLO negocio -->
+    <div class="ticket-section" *ngIf="isBusinessPickup()">
+      <h3 class="ticket-subtitle">
+        <ion-icon name="storefront-outline" color="success"></ion-icon>
+        Información de Recolección en Negocio
+      </h3>
+      <div class="pickup-info">
+        <p><ion-icon name="time-outline"></ion-icon> Horario de atención: {{ getBusinessInfo().hours }}</p>
+        <p><ion-icon name="call-outline"></ion-icon> Teléfono: {{ getBusinessInfo().phone }}</p>
+        <p>
+          <ion-icon name="alarm-outline"></ion-icon>
+          <strong>Horario de recolección:</strong>
+          <span *ngIf="getScheduledDate()">{{ getScheduledDate() | date: 'EEEE, dd \'de\' MMMM \'a las\' HH:mm':'es-ES' }}</span>
+          <span *ngIf="!getScheduledDate()">Por definir</span>
+        </p>
+        <p *ngIf="pedido.tipo_pago === 'Efectivo'"><ion-icon name="cash-outline" color="warning"></ion-icon> Pago en efectivo al recoger.</p>
+      </div>
+    </div>
+
+    <!-- SOLO domicilio -->
+    <div class="ticket-section" *ngIf="isHomeDelivery()">
+      <h3 class="ticket-subtitle">
+        <ion-icon name="home-outline" color="primary"></ion-icon>
+        Entrega a Domicilio
+      </h3>
+      <div class="delivery-info">
+        <p><ion-icon name="location-outline"></ion-icon> Dirección de entrega: 
+          <span *ngIf="pedido._direccion_texto">{{ pedido._direccion_texto }}</span>
+          <span *ngIf="!pedido._direccion_texto">Ubicación proporcionada por el cliente</span>
+        </p>
+        <p>
+          <ion-icon name="truck-outline"></ion-icon>
+          <strong>Horario de entrega:</strong>
+          <span *ngIf="getScheduledDate()">{{ getScheduledDate() | date: 'EEEE, dd \'de\' MMMM \'a las\' HH:mm':'es-ES' }}</span>
+          <span *ngIf="!getScheduledDate()">Por definir</span>
+        </p>
+        <p><ion-icon name="information-circle-outline"></ion-icon> Indicaciones: 
+          <span *ngIf="pedido.indicaciones">{{ pedido.indicaciones }}</span>
+          <span *ngIf="!pedido.indicaciones">No especificadas</span>
+        </p>
+        <p *ngIf="pedido.tipo_pago === 'Efectivo'"><ion-icon name="cash-outline" color="warning"></ion-icon> Pago en efectivo al recibir.</p>
+      </div>
+    </div>
+
+    <!-- Mapa solo si es domicilio y hay ubicación -->
     <div class="ticket-section" *ngIf="isHomeDelivery() && pedido.geopoint_entrega">
       <h3 class="ticket-subtitle">
         <ion-icon name="map-outline" color="primary"></ion-icon>
         Ubicación de Entrega
       </h3>
-
-      <!-- Map Controls -->
       <div class="map-controls">
-        <ion-button
-          fill="outline"
-          size="small"
-          (click)="loadMapPreview()"
-          *ngIf="!showMapPreview"
-          class="map-preview-btn">
+        <ion-button fill="outline" size="small" (click)="loadMapPreview()" *ngIf="!showMapPreview" class="map-preview-btn">
           <ion-icon name="map-outline" slot="start"></ion-icon>
           Ver mapa
         </ion-button>
-
-        <ion-button
-          fill="outline"
-          size="small"
-          (click)="openLocationInMaps()"
-          class="external-maps-btn">
+        <ion-button fill="outline" size="small" (click)="openLocationInMaps()" class="external-maps-btn">
           <ion-icon name="navigate-outline" slot="start"></ion-icon>
           Abrir en Maps
         </ion-button>
       </div>
-
-      <!-- Map Container -->
       <div class="map-container" *ngIf="showMapPreview">
         <div #mapContainer class="map-canvas" *ngIf="!mapLoadError"></div>
-
-        <!-- Loading State -->
         <div class="map-loading" *ngIf="showMapPreview && !isMapReady && !mapLoadError">
           <ion-spinner name="circles"></ion-spinner>
           <p>Cargando mapa...</p>
         </div>
-
-        <!-- Error State -->
         <div class="map-error" *ngIf="mapLoadError">
           <ion-icon name="warning-outline" color="warning"></ion-icon>
           <p>No se pudo cargar el mapa</p>
@@ -71,8 +97,6 @@
           </ion-button>
         </div>
       </div>
-
-      <!-- Location Details -->
       <div class="delivery-info">
         <p>
           <ion-icon name="location-outline" color="primary"></ion-icon>
@@ -81,31 +105,18 @@
       </div>
     </div>
 
-    <!-- Business Pickup Information -->
-    <div class="ticket-section" *ngIf="pedido.tipo_entrega?.toLowerCase() === 'negocio'">
-      <h3 class="ticket-subtitle">
-        <ion-icon name="storefront-outline" color="success"></ion-icon>
-        Recolección en Negocio
-      </h3>
-      <div class="pickup-info">
-        <p><ion-icon name="location-outline"></ion-icon> Dirección: Tortillería Plata Jaimes</p>
-        <p><ion-icon name="time-outline"></ion-icon> Horario de atención: 8:00 AM - 8:00 PM</p>
-        <p><ion-icon name="call-outline"></ion-icon> Teléfono: (555) 123-4567</p>
-      </div>
-    </div>
-
-    <!-- Products Section -->
+    <!-- Productos Section -->
     <h3 class="ticket-subtitle">Productos Comprados</h3>
     <ion-list>
       <ion-item *ngFor="let producto of pedido.detalle_pedido">
         <ion-avatar slot="start" class="avatar-icon">
-          <ion-icon name="pricetag-outline" color="success"></ion-icon>
+          <img [src]="producto.producto.imagen" alt="{{ producto.producto.nombre }}" />
         </ion-avatar>
         <ion-label>
           <h2>{{ producto.nombre }}</h2>
           <p *ngIf="producto.tamano_tortilla">Tamaño de tortilla: <span class="subtotal">{{ producto.tamano_tortilla }}</span></p>
           <p>Cantidad: {{ producto.cantidad }}</p>
-          <p>Subtotal: <span class="subtotal">{{ producto.subtotal | currency }}</span></p>
+          <p>Subtotal: <span class="subtotal">{{ producto.subtotal | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span></p>
         </ion-label>
         <ion-badge slot="end" color="tertiary">
           <ion-icon name="cube-outline"></ion-icon>
@@ -130,7 +141,8 @@
     </div>
 
     <div class="ticket-section">
-      <h2><ion-icon name="cash-outline"></ion-icon> Total: {{ pedido.total | number: '1.2-2' }}</h2>
+      <h2><ion-icon name="cash-outline"></ion-icon> Total: {{ pedido.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN
+</h2>
     </div>
 
     <!-- Replace slider with action button -->
@@ -139,7 +151,6 @@
         <ion-icon name="checkmark-outline"></ion-icon>
         <span>Marcar como Entregado</span>
       </button>
-
       <div *ngIf="showAnimation" class="success-animation">
         <ion-icon name="checkmark-circle" color="primary"></ion-icon>
         <p>Pedido entregado</p>

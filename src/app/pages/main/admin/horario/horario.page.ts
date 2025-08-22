@@ -69,25 +69,43 @@ export class HorarioPage implements OnInit {
     let query = [
       where("estatus", "==", "En preparación")
     ];    
-      
   
-    // Obtener la fecha de hoy
     let fechaHoy = new Date();
-    fechaHoy.setHours(0, 0, 0, 0); // Aseguramos que la hora sea medianoche
+    fechaHoy.setHours(0, 0, 0, 0);
+    
+    let fechaManana = new Date(fechaHoy);
+    fechaManana.setDate(fechaHoy.getDate() + 1);
   
-    // Obtener todos los pedidos
     let sub = this.firebaseSvc.getCollectionData(path,query).subscribe({
       next: (res: any) => {
         if (Array.isArray(res)) {
-          this.loading = true; // Iniciar el estado de carga
+          this.loading = true;
   
-          // Guardamos todos los pedidos (sin filtrar)
           this.pedidos = res;
   
-          // Filtrar solo los pedidos de hoy
+          // Filter only today's orders and check delivery type
           const pedidosHoy = this.pedidos.filter((pedido: any) => {
-            const fechaEntrega = pedido.fecha_entrega.toDate ? pedido.fecha_entrega.toDate() : pedido.fecha_entrega; // Asegurarse de que la fecha sea un objeto Date
-            return fechaEntrega >= fechaHoy && fechaEntrega < new Date(fechaHoy.getTime() + 86400000); // Filtra los pedidos de hoy
+            let fechaEntrega;
+            
+            // Handle pickup orders - check hora_recoleccion first
+            if (pedido.hora_recoleccion && pedido.hora_recoleccion.toDate) {
+              fechaEntrega = pedido.hora_recoleccion.toDate();
+            } else if (pedido.fecha_entrega && pedido.fecha_entrega.toDate) {
+              fechaEntrega = pedido.fecha_entrega.toDate();
+            } else if (pedido.fecha_entrega) {
+              fechaEntrega = new Date(pedido.fecha_entrega);
+            } else {
+              return false;
+            }
+            
+            const isToday = fechaEntrega >= fechaHoy && fechaEntrega < fechaManana;
+            
+            // Check if it's a pickup order or delivery order
+            const isPickupOrder = pedido?.es_recoleccion_negocio === true || 
+                                 pedido?.metodo_entrega === 'negocio' ||
+                                 pedido?.tipo_entrega === 'negocio';
+            
+            return isToday;
           });
   
           // Procesar los datos de cada pedido
@@ -124,8 +142,8 @@ export class HorarioPage implements OnInit {
           // Esperar a que todas las promesas se resuelvan
           Promise.all(promises)
             .then((pedidosActualizados) => {
-              // Asignar pedidos con datos completos (solo los de hoy, por ahora)
-              this.pedidosFiltrados = pedidosHoy; // Filtrados de hoy
+              // Asignar pedidos con datos completos (solo los de hoy)
+              this.pedidosFiltrados = pedidosHoy;
               this.loading = false;
             })
             .catch((error) => {
@@ -202,10 +220,24 @@ export class HorarioPage implements OnInit {
   // Limpia los filtros y restaura la lista completa de pedidos
   clearFilters() {
     // Al limpiar los filtros, mostramos solo los pedidos de hoy
+    let fechaHoy = new Date();
+    fechaHoy.setHours(0, 0, 0, 0);
+    let fechaManana = new Date(fechaHoy);
+    fechaManana.setDate(fechaHoy.getDate() + 1);
+
     this.pedidosFiltrados = this.pedidos.filter(pedido => {
-      const fechaEntrega = new Date(pedido.fecha_entrega);
-      const fechaHoy = new Date();
-      return fechaEntrega.toDateString() === fechaHoy.toDateString();
+      let fechaEntrega;
+      
+      // Manejar diferentes tipos de fecha (Firestore timestamp o Date)
+      if (pedido.fecha_entrega && pedido.fecha_entrega.toDate) {
+        fechaEntrega = pedido.fecha_entrega.toDate();
+      } else if (pedido.fecha_entrega) {
+        fechaEntrega = new Date(pedido.fecha_entrega);
+      } else {
+        return false;
+      }
+      
+      return fechaEntrega >= fechaHoy && fechaEntrega < fechaManana;
     });
     this.filtersApplied = false;
   }
@@ -215,10 +247,10 @@ export class HorarioPage implements OnInit {
     const term = this.searchTerm.toLowerCase();
 
     this.pedidosFiltrados = this.pedidos.filter(pedido =>
-      pedido.nombre_cliente.toLowerCase().includes(term) || // Agregado para incluir al cliente
-      pedido.total.toFixed(2).includes(term) || // Asegurarse de que el total tenga siempre dos decimales
-      pedido.id.toLowerCase().includes(term) ||
-      pedido.estatus.toLowerCase().includes(term)
+      pedido.nombre_cliente.toLowerCase().includes(term) // Agregado para incluir al cliente
+      || pedido.total.toFixed(2).includes(term) // Asegurarse de que el total tenga siempre dos decimales
+      || pedido.id.toLowerCase().includes(term)
+      || pedido.estatus.toLowerCase().includes(term)
 
     );
   }
@@ -321,5 +353,116 @@ export class HorarioPage implements OnInit {
     this.getPedidos();
   }
 
+  // Enhanced delivery type detection for pickup orders
+  getEffectiveDeliveryType(pedido: any): string {
+    // First check explicit flags for pickup
+    if (pedido?.es_recoleccion_negocio === true) return 'negocio';
+    if (pedido?.metodo_entrega === 'negocio') return 'negocio';
+    if (pedido?.tipo_entrega === 'negocio') return 'negocio';
+    
+    // Check for pickup time field
+    if (pedido?.hora_recoleccion) return 'negocio';
+    
+    // Fallback to location-based detection
+    const t = (pedido?.tipo_entrega || '').toLowerCase();
+    if (!t) return this.hasUbicacion(pedido) ? 'domicilio' : 'negocio';
+    if (t === 'domicilio') return this.hasUbicacion(pedido) ? 'domicilio' : 'negocio';
+    return 'negocio';
+  }
+
+  private hasUbicacion(pedido: any): boolean {
+    if (!pedido) return false;
+    const gp = pedido?.geopoint_entrega;
+    const hasGeoPoint = gp && 
+      typeof gp.latitude === 'number' && 
+      typeof gp.longitude === 'number' &&
+      !isNaN(gp.latitude) && 
+      !isNaN(gp.longitude);
+
+    const hasCoords = (typeof pedido?.lat === 'number' && typeof pedido?.lng === 'number') ||
+      (typeof pedido?.coordenadas?.lat === 'number' && typeof pedido?.coordenadas?.lng === 'number');
+
+    return !!(hasGeoPoint || hasCoords);
+  }
+
+  getDeliveryTypeIcon(tipoEntrega: string): string {
+    switch (tipoEntrega?.toLowerCase()) {
+      case 'domicilio':
+        return 'home-outline';
+      case 'negocio':
+        return 'storefront-outline';
+      default:
+        return 'location-outline';
+    }
+  }
+
+  getDeliveryTypeColor(tipoEntrega: string): string {
+    switch (tipoEntrega?.toLowerCase()) {
+      case 'domicilio':
+        return 'primary';
+      case 'negocio':
+        return 'success';
+      default:
+        return 'medium';
+    }
+  }
+
+  getDeliveryTypeDisplayName(tipoEntrega: string): string {
+    switch (tipoEntrega?.toLowerCase()) {
+      case 'domicilio':
+        return 'Entrega a domicilio';
+      case 'negocio':
+        return 'Recolección en negocio';
+      default:
+        return 'Tipo no especificado';
+    }
+  }
+
+  // Get the appropriate scheduling date for the order
+  getScheduledDate(pedido: any): Date | null {
+    // Priority: pickup time > delivery time > order date
+    if (pedido?.hora_recoleccion) {
+      return this.toDateTime(pedido.hora_recoleccion);
+    }
+    if (pedido?.fecha_entrega) {
+      return this.toDateTime(pedido.fecha_entrega);
+    }
+    if (pedido?.fecha) {
+      return this.toDateTime(pedido.fecha);
+    }
+    return null;
+  }
+
+  // Get the appropriate label for the scheduling
+  getScheduledLabel(pedido: any): string {
+    const effectiveType = this.getEffectiveDeliveryType(pedido);
+    if (effectiveType === 'negocio') {
+      if (pedido?.hora_recoleccion) return 'Horario de recolección';
+      if (pedido?.fecha_entrega) return 'Horario programado';
+      return 'Fecha del pedido';
+    } else {
+      return 'Horario de entrega';
+    }
+  }
+
+  // Convert various date formats to Date object
+  private toDateTime(value: any): Date | null {
+    if (!value) return null;
+    if (value?.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value?.seconds) return new Date(value.seconds * 1000);
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Check if order is scheduled soon (within next 2 hours)
+  isScheduledSoon(pedido: any): boolean {
+    const scheduledDate = this.getScheduledDate(pedido);
+    if (!scheduledDate) return false;
+    
+    const now = new Date();
+    const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+    
+    return scheduledDate <= twoHoursFromNow && scheduledDate > now;
+  }
 
 }

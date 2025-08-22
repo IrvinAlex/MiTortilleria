@@ -7,6 +7,8 @@ import { AddUpdateProductComponent } from 'src/app/shared/components/add-update-
 import { AddUpdateCuponComponent } from 'src/app/shared/components/add-update-cupon/add-update-cupon.component';
 import { Cupon } from 'src/app/models/cupon.model';
 import { AlertController } from '@ionic/angular';
+import { ModalController as IonicModalController } from '@ionic/angular';
+import { NotificationModalComponent } from 'src/app/shared/components/notification-modal/notification-modal.component';
 
 @Component({
   selector: 'app-cupones',
@@ -39,12 +41,18 @@ export class CuponesPage implements OnInit {
 
   firebaseSvc = inject(FirebaseService);
 
+  // NUEVO: Modal y formulario para notificación push
+  isNotificationModalOpen = false;
+  notificationForm: FormGroup;
+  selectedCupon: any = null; // Cupón seleccionado para notificación
+
   constructor(
     private modalCtrl: ModalController,
     private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef,
     private firebaseService: FirebaseService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private ionicModalCtrl: IonicModalController // NUEVO
   ) {
     this.setPage(1); // Inicializa en la página 1
     this.cuponForm = this.formBuilder.group({
@@ -53,6 +61,10 @@ export class CuponesPage implements OnInit {
       numero_compras: [''],
       porcentaje: [''],
       codigo: ['']
+    });
+    this.notificationForm = this.formBuilder.group({
+      title: ['', Validators.required],
+      message: ['', Validators.required]
     });
   }
 
@@ -125,7 +137,7 @@ export class CuponesPage implements OnInit {
               message: 'Eliminación cancelada.',
               duration: 1500,
               color: 'warning',
-              position: 'middle',
+              position: 'bottom',
               icon: 'alert-circle-outline',
             });
           }
@@ -163,7 +175,7 @@ export class CuponesPage implements OnInit {
             message: 'Cupón eliminado exitosamente.',
             duration: 1500,
             color: 'success',
-            position: 'middle',
+            position: 'bottom',
             icon: 'checkmark-circle-outline',
           });
           console.log("Documento eliminado de Firestore");
@@ -173,7 +185,7 @@ export class CuponesPage implements OnInit {
             message: 'Error al eliminar el cupón.',
             duration: 2500,
             color: 'danger',
-            position: 'middle',
+            position: 'bottom',
             icon: 'alert-circle-outline',
           });
           console.error("Error al eliminar el documento: ", error);
@@ -183,7 +195,7 @@ export class CuponesPage implements OnInit {
         message: 'Cupón no encontrado en la lista.',
         duration: 2500,
         color: 'danger',
-        position: 'middle',
+        position: 'bottom',
         icon: 'alert-circle-outline',
       });
     }
@@ -232,32 +244,100 @@ export class CuponesPage implements OnInit {
     return await modal.present();
   }
 
-  // Cerrar el modal
-  closeModal() {
-    this.modalCtrl.dismiss();
+  // NUEVO: Abrir modal de notificación
+  async openNotificationModal() {
+    this.isNotificationModalOpen = true;
+    const modal = await this.ionicModalCtrl.create({
+      component: NotificationModalComponent,
+      componentProps: {
+        notificationForm: this.notificationForm
+      }
+    });
+
+    modal.onDidDismiss().then((result) => {
+      this.isNotificationModalOpen = false;
+      if (result.data && result.data.length > 0) {
+        // Opcional: mostrar toast de éxito
+        this.utilsSvc.presentToast({
+          message: 'Notificación enviada.',
+          duration: 1500,
+          color: 'primary',
+          position: 'bottom',
+          icon: 'send-outline',
+        }); 
+      }
+    });
+
+    return await modal.present();
   }
 
-  // Agregar producto y cerrar modal
-  submitProduct() {
-    if (this.cuponForm.valid) {
-      this.paginatedData = [...this.data]; // Actualizamos la lista filtrada
-      this.cuponForm.reset(); // Resetear el formulario
-      this.closeModal(); // Cerrar modal
-      this.cdr.detectChanges(); // Aseguramos que los cambios se detecten
+  // NUEVO: Método para enviar la notificación push
+  sendNotification() {
+    if (this.notificationForm.valid) {
+      const { title, message } = this.notificationForm.value;
+      // Suponiendo que existe un método en FirebaseService para enviar push
+      this.firebaseService.sendPushNotification({ title, message })
+        .then(() => {
+          this.utilsSvc.presentToast({
+            message: 'Notificación enviada exitosamente.',
+            duration: 1500,
+            color: 'success',
+            position: 'bottom',
+            icon: 'send-outline',
+          });
+          this.notificationForm.reset();
+          this.closeNotificationModal();
+        })
+        .catch(error => {
+          this.utilsSvc.presentToast({
+            message: 'Error al enviar la notificación.',
+            duration: 2500,
+            color: 'danger',
+            position: 'bottom',
+            icon: 'alert-circle-outline',
+          });
+          console.error("Error al enviar la notificación: ", error);
+        });
     }
   }
 
-  // Agrega un nuevo producto y cierra el modal
-  addProduct() {
-    if (this.cuponForm.valid) {
-      this.paginatedData = [...this.data]; // Actualizamos la lista filtrada
-      this.cuponForm.reset();
-      this.closeModal();
-      this.cdr.detectChanges(); // Aseguramos que los cambios se detecten
-    }
+  // NUEVO: Cerrar modal de notificación
+  closeNotificationModal() {
+    this.ionicModalCtrl.dismiss();
+    this.isNotificationModalOpen = false;
   }
 
-  
+  // Abrir modal de notificación para un cupón específico
+  async openNotificationModalForCupon(cupon: any) {
+    this.selectedCupon = cupon;
+    this.notificationForm.patchValue({
+      title: `¡Oferta especial! ${cupon.descripcion}`,
+      message: `Cupón: ${cupon.codigo} - ${cupon.porcentaje}% de descuento en compras mínimas de ${cupon.numero_compras}.`
+    });
+    this.isNotificationModalOpen = true;
+    const modal = await this.ionicModalCtrl.create({
+      component: NotificationModalComponent,
+      componentProps: {
+        notificationForm: this.notificationForm
+      }
+    });
+
+    modal.onDidDismiss().then((result) => {
+      this.isNotificationModalOpen = false;
+      this.selectedCupon = null;
+      if (result.data && result.data.length > 0) {
+        this.utilsSvc.presentToast({
+          message: 'Notificación enviada.',
+          duration: 1500,
+          color: 'primary',
+          position: 'bottom',
+          icon: 'send-outline',
+        });
+      }
+    });
+
+    return await modal.present();
+  }
 
   // Método para cambiar de página
   setPage(page: number) {

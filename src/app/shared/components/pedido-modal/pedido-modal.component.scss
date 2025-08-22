@@ -267,25 +267,80 @@ ion-badge {
 }
 
 .pickup-info {
-  background-color: #f0f8f0;
-  padding: 1rem;
+  background: var(--ion-color-light);
   border-radius: 8px;
-  border-left: 4px solid var(--ion-color-success);
+  padding: 16px;
+  margin: 16px 0;
+  
+  h4 {
+    margin: 0 0 12px 0;
+    color: var(--ion-color-success);
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--ion-color-success);
+    padding-bottom: 8px;
+  }
+  
+  p {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    ion-icon {
+      color: var(--ion-color-success);
+      min-width: 20px;
+    }
+  }
 }
 
-.pickup-info p {
-  margin: 0.5rem 0;
-  display: flex;
-  align-items: center;
-  font-size: 0.95rem;
+.scheduling-info {
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  border-left: 4px solid var(--ion-color-primary);
+  
+  p {
+    margin: 0;
+    font-weight: 500;
+    color: var(--ion-color-primary);
+  }
 }
 
-.pickup-info ion-icon {
-  margin-right: 0.75rem;
-  color: var(--ion-color-success);
+.pickup-schedule {
+  margin-bottom: 20px;
+  
+  .schedule-highlight {
+    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid var(--ion-color-success);
+    
+    ion-icon {
+      font-size: 24px;
+    }
+    
+    h4 {
+      margin: 0 0 4px 0;
+      color: var(--ion-color-success);
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .schedule-time {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ion-color-success-shade);
+    }
+  }
 }
 
-// Custom icon styles for Leaflet markers
+/* Custom icon styles for Leaflet markers
 :global(.custom-div-icon) {
   background: white;
   border: 2px solid #ddd;
@@ -294,7 +349,7 @@ ion-badge {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
+}*/
 
 // Mobile optimizations
 @media (max-width: 768px) {

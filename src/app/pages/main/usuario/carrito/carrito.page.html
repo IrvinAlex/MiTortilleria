@@ -69,7 +69,7 @@
                 <ion-icon name="cube-outline"></ion-icon>
                 Cantidad: {{ item.cantidad }}
               </div>
-              <div class="item-price">{{ item.subtotal | currency }}</div>
+              <div class="item-price">{{ item.subtotal | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</div>
             </div>
             
             <div class="item-actions">
@@ -123,21 +123,21 @@
     <div class="total-section">
       <div *ngIf="discountAmount <= 0" class="total-simple">
         <span class="total-label">Total:</span>
-        <span class="total-value">{{ cart.total | currency }}</span>
+        <span class="total-value">{{ cart.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       
       <div *ngIf="discountAmount > 0" class="total-with-discount">
         <div class="subtotal-line">
           <span>Subtotal:</span>
-          <span class="original-amount">{{ cart.total | currency }}</span>
+          <span class="original-amount">{{ cart.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
         </div>
         <div class="discount-line">
           <span>Descuento ({{ porcentaje }}%):</span>
-          <span class="discount-amount">-{{ discountAmount | currency }}</span>
+          <span class="discount-amount">-{{ discountAmount | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
         </div>
         <div class="total-line">
           <span>Total:</span>
-          <span class="final-amount">{{ (cart.total - discountAmount) | currency }}</span>
+          <span class="final-amount">{{ (cart.total - discountAmount) | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
         </div>
       </div>
     </div>

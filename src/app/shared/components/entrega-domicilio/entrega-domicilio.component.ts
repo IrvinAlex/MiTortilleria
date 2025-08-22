@@ -22,6 +22,10 @@ export class EntregaDomicilioComponent  implements OnInit {
   porcentaje: number = 0;
   distanciaKm: number = 0;
   transportFee: number = 0;
+  serviceFee: number = 5; // Cargo por servicio
+  useDistancePricing: boolean = true;
+  fixedFare: number = 50;
+  pricingTiers: any[] = [];
 
   constructor() {}
 
@@ -36,20 +40,53 @@ export class EntregaDomicilioComponent  implements OnInit {
               const businessLocation = businessLocations[0];
               console.log(`Business Location: ${JSON.stringify(businessLocation)}`);
                 const distancia = this.calcularDistancia(
-                    parseFloat(userLocation.geopoint._lat),
-                    parseFloat(userLocation.geopoint._long),
-                    parseFloat(businessLocation['geopoint'].latitude),
-                    parseFloat(businessLocation['geopoint'].longitude)
+                    parseFloat(userLocation.geopoint._lat || userLocation.geopoint.latitude),
+                    parseFloat(userLocation.geopoint._long || userLocation.geopoint.longitude),
+                    parseFloat(businessLocation['geopoint'].latitude) || parseFloat(businessLocation['geopoint']._lat),
+                    parseFloat(businessLocation['geopoint'].longitude) || parseFloat(businessLocation['geopoint']._long)
                 );
               console.log(`Distancia: ${distancia} km`);
               this.distanciaKm = parseFloat(distancia.toFixed(2));
-              this.transportFee = this.calculateTransportFee(this.distanciaKm);
+              this.loadTransportFeeFromFirebase(this.distanciaKm);
             }
         });
     }
   }
 
+  private async loadTransportFeeFromFirebase(distance: number) {
+    try {
+      // First try to get distance-based tariffs
+      this.firebaseSvc.getCollectionData('tarifas_transporte').subscribe(tariffs => {
+        if (tariffs && tariffs.length > 0) {
+          const applicableTariff = tariffs.find(t => 
+            distance >= t['distancia_min'] && distance <= t['distancia_max'] && t['activo']
+          );
+          
+          if (applicableTariff) {
+            this.transportFee = applicableTariff['tarifa'];
+            return;
+          }
+        }
+        
+        // Fallback to fixed tariff
+        this.firebaseSvc.getCollectionData('tarifa_fija').subscribe(fixedTariffs => {
+          if (fixedTariffs && fixedTariffs.length > 0 && fixedTariffs[0]['activo']) {
+            this.transportFee = fixedTariffs[0]['precio'];
+          } else {
+            // Ultimate fallback to hardcoded calculation
+            this.transportFee = this.calculateTransportFee(distance);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error loading transport fee from Firebase:', error);
+      // Fallback to hardcoded calculation
+      this.transportFee = this.calculateTransportFee(distance);
+    }
+  }
+
   private calculateTransportFee(distanceKm: number): number {
+    // Keep as fallback
     if (distanceKm <= 0.5) return 30;
     if (distanceKm <= 1.0) return 35;
     if (distanceKm <= 1.5) return 50;
@@ -60,7 +97,7 @@ export class EntregaDomicilioComponent  implements OnInit {
     if (distanceKm <= 4.0) return 115;
     if (distanceKm <= 4.5) return 125;
     if (distanceKm <= 5.0) return 145;
-    return 145; // Para distancias mayores a 5km
+    return 145;
   }
 
   private async sendOrderConfirmationEmail(pedidoId: string, orderType: string) {
@@ -78,7 +115,8 @@ export class EntregaDomicilioComponent  implements OnInit {
         discountAmount: this.cart.total * (this.porcentaje / 100),
         discountPercent: this.porcentaje,
         transportFee: this.transportFee,
-        total: this.cart.total - (this.cart.total * (this.porcentaje / 100)) + this.transportFee
+        serviceFee: this.serviceFee, // Agregar cargo por servicio
+        total: this.cart.total - (this.cart.total * (this.porcentaje / 100)) + this.transportFee + this.serviceFee
       };
 
       await this.emailSvc.sendOrderConfirmationEmail(orderData);
@@ -99,10 +137,15 @@ export class EntregaDomicilioComponent  implements OnInit {
             purchase_units: [
               {
                 amount: {
-                  value: this.cart.total-(this.cart.total*(this.porcentaje/100)), // Precio total del pago
+                  value: (this.cart.total-(this.cart.total*(this.porcentaje/100)) + this.transportFee + this.serviceFee).toFixed(2),
                 },
+                shipping_address: {
+                  country_code: 'MX'
+                  // address_line_1: 'México', // Opcional
+                }
               },
             ],
+            shipping_preference: 'SET_PROVIDED_ADDRESS'
           });
         },
         onApprove: async (data, actions) => {
@@ -158,7 +201,8 @@ export class EntregaDomicilioComponent  implements OnInit {
                 pago_confirmado: true,
                 tipo_pago: 'Tarjeta',
                 tipo_entrega: 'Domicilio',
-                total: this.cart.total,
+                total: this.cart.total-(this.cart.total*(this.porcentaje/100)) + this.transportFee + this.serviceFee, // Sumar cargo por servicio
+                serviceFee: this.serviceFee, // Guardar cargo por servicio en el pedido
                 uid_cliente: userId,
                 geopoint_entrega: {
                   latitude: parseFloat(direccionEntrega.geopoint._lat),
@@ -300,7 +344,8 @@ export class EntregaDomicilioComponent  implements OnInit {
         pago_confirmado: false,
         tipo_pago: 'Efectivo',
         tipo_entrega: 'Domicilio',
-        total: this.cart.total-(this.cart.total*(this.porcentaje/100)) + this.transportFee,
+        total: this.cart.total-(this.cart.total*(this.porcentaje/100)) + this.transportFee + this.serviceFee, // Sumar cargo por servicio
+        serviceFee: this.serviceFee, // Guardar cargo por servicio en el pedido
         uid_cliente: userId,
         geopoint_entrega: {
           latitude: parseFloat(direccionEntrega.geopoint._lat),
@@ -415,3 +460,4 @@ export class EntregaDomicilioComponent  implements OnInit {
     return this.utilsSvc.getFromLocalStorage("direccion") || {};  // Devuelve un objeto vacío si no existe
   }
 }
+

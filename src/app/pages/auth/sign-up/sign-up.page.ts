@@ -11,6 +11,7 @@ import { User } from 'src/app/models/user.model';
 import { Direccion } from 'src/app/models/direccion.model';
 import { set } from 'date-fns';
 import { NavController } from '@ionic/angular';
+import { Terms2Component } from 'src/app/shared/components/terms/terms2.component';
 
 @Component({
   selector: 'app-sign-up',
@@ -18,7 +19,6 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./sign-up.page.scss'],
 })
 export class SignUpPage implements OnInit {
-
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
   emailSvc = inject(EmailService);
@@ -30,6 +30,8 @@ export class SignUpPage implements OnInit {
   carrito_negocio: any;
   isTaqueriaChecked: boolean = false;
   nameLabel = 'Nombre';
+
+  passwordStrength: string = '';
 
   form = new FormGroup({
     uid: new FormControl(''),
@@ -44,6 +46,9 @@ export class SignUpPage implements OnInit {
     type_profile: new FormControl(),
     active_user: new FormControl('1'),
     isBusiness: new FormControl(false),
+    acceptedTerms: new FormControl(false, Validators.requiredTrue),
+    acceptedPrivacy: new FormControl(false, Validators.requiredTrue),
+    acceptedAll: new FormControl(false, Validators.requiredTrue),
   });
 
   form_carrito = new FormGroup({
@@ -186,7 +191,84 @@ export class SignUpPage implements OnInit {
     }
   }
 
-  // Método para validar contraseña
+  // Validación avanzada de contraseña
+  validatePassword(password: string): string {
+    if (!password) return 'Débil';
+
+    const minLength = 12;
+    const strongLength = 14;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSymbol = /[!@#$%^&*\-_\+=\?]/.test(password);
+
+    // Palabras y patrones prohibidos
+    const forbiddenPatterns = [
+      /miempresa/i, /tortilleria/i, /platajaimes/i, /password/i, /contraseña/i,
+      /123456/, /qwerty/, /asdf/, /letras/, /numeros/, /admin/i,
+      /\d{8,}/, // números largos
+      /(.)\1{3,}/, // repetidos
+      /[A-Za-z]+202[0-9]/, // nombre + año
+      /[A-Za-z]+123/, // nombre + 123
+      /firulais/i, /maria/i, /omar/i, /leo/i, /futbol/i,
+      /test|fake|dummy|example/i,
+      /16081995/, /ABC1234/, /Futbol#1/,
+      // Secuencias de teclado
+      /qwertyui/, /asdf1234/, /asdf/, /qwerty/,
+      // Matrícula, PIN, teléfono
+      /\d{7,}/, /[A-Z]{3,}\d{3,}/,
+      // Secuencias simples
+      /1234/, /2345/, /3456/, /4567/, /5678/, /6789/, /7890/,
+      /abcd/, /bcde/, /cdef/, /defg/, /efgh/, /fghi/, /ghij/,
+      // Datos personales obvios
+      /Google202\d/, /Omar\d{4}/, /Maria\d{4}/, /Leo202\d/, /Futbol#1/,
+    ];
+
+    for (const pattern of forbiddenPatterns) {
+      if (pattern.test(password)) return 'Fácil';
+    }
+
+    // Detectar secuencias numéricas y alfabéticas de 4 o más caracteres
+    const isSequential = (str: string) => {
+      // numérico ascendente
+      for (let i = 0; i < str.length - 3; i++) {
+        const sub = str.substring(i, i + 4);
+        if (/^\d+$/.test(sub)) {
+          const nums = sub.split('').map(Number);
+          if (nums[1] === nums[0] + 1 && nums[2] === nums[1] + 1 && nums[3] === nums[2] + 1) return true;
+        }
+      }
+      // alfabético ascendente
+      for (let i = 0; i < str.length - 3; i++) {
+        const sub = str.substring(i, i + 4);
+        if (/^[a-zA-Z]+$/.test(sub)) {
+          const codes = sub.split('').map(c => c.charCodeAt(0));
+          if (codes[1] === codes[0] + 1 && codes[2] === codes[1] + 1 && codes[3] === codes[2] + 1) return true;
+        }
+      }
+      return false;
+    };
+    if (isSequential(password)) return 'Fácil';
+
+    if (password.length < minLength || /^[a-zA-Z]+$/.test(password) || /^\d+$/.test(password)) {
+      return 'Débil';
+    }
+    if (password.length === minLength && hasUpper && hasLower && hasNumber) {
+      return 'Media';
+    }
+    if (password.length > minLength && hasUpper && hasLower && hasNumber && !hasSymbol) {
+      return 'Aceptable';
+    }
+    if (
+      password.length >= strongLength &&
+      hasUpper && hasLower && hasNumber && hasSymbol
+    ) {
+      return 'Fuerte';
+    }
+    return 'Media';
+  }
+
+  // Actualiza el indicador de seguridad y valida requisitos mínimos
   onPasswordInput(event: any) {
     if (!event || !event.target) return;
     
@@ -210,6 +292,8 @@ export class SignUpPage implements OnInit {
       this.form.controls.password.setValue(value);
     }
     event.target.value = value; // Sincronizar el input visual
+
+    this.passwordStrength = this.validatePassword(value);
   }
 
   // Verificar si el email existe usando API externa
@@ -346,6 +430,19 @@ export class SignUpPage implements OnInit {
 
  async submit() {
     if (this.form.valid) {
+      // Validar contraseña fácil antes de continuar
+      const password = this.form.value.password;
+      const passwordStrength = this.validatePassword(password);
+      if (passwordStrength === 'Fácil') {
+        this.utilsSvc.presentToast({
+          message: '⚠️ Advertencia: La contraseña es fácil de adivinar. Evita datos obvios, secuencias o palabras comunes.',
+          duration: 4000,
+          color: 'danger',
+          icon: 'alert-circle-outline',
+        });
+        return; // No permite el registro
+      }
+
       const loading = await this.utilsSvc.loading();
       await loading.present();
       
@@ -597,5 +694,33 @@ export class SignUpPage implements OnInit {
         console.error('Error setting user info:', error);
       }
     }
+  }
+
+  // Checkbox: sincronización de aceptación
+  onTermsChange() {
+    const acceptedAll = this.form.controls.acceptedAll.value;
+    if (acceptedAll) {
+      this.form.controls.acceptedTerms.setValue(true);
+      this.form.controls.acceptedPrivacy.setValue(true);
+    } else {
+      if (!this.form.controls.acceptedTerms.value || !this.form.controls.acceptedPrivacy.value) {
+        this.form.controls.acceptedAll.setValue(false);
+      }
+    }
+  }
+
+  // Abrir términos y privacidad (navegación)
+  async openTerms() {
+    let success = await this.utilsSvc.presentModal({
+          component: Terms2Component,
+          cssClass: 'app-terms',
+          componentProps: {  },
+        })
+        if (success) {
+          
+        }
+  }
+  openPrivacy() {
+    this.navCtrl.navigateForward('/privacidad');
   }
 }

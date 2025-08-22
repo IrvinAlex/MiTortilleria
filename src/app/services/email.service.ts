@@ -281,8 +281,8 @@ export class EmailService {
                           <p style="margin: 5px 0; color: #666; font-size: 14px;">Tradición y Sabor Auténtico desde 1995</p>
                       </div>
                       <div style="color: #888; font-size: 14px; line-height: 1.5;">
-                          <p style="margin: 4px 0;">📧 Email: info@mitortilleria.com</p>
-                          <p style="margin: 4px 0;">📱 WhatsApp: +52 123 456 7890</p>
+                          <p style="margin: 4px 0;">📧 Email: mitortilleriaservice@gmail.com</p>
+                          <p style="margin: 4px 0;">📱 WhatsApp: +52 722 366 4325</p>
                           <p style="margin: 4px 0;">🌐 Síguenos en redes sociales: @MiTortilleria</p>
                       </div>
                       <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
@@ -439,8 +439,8 @@ export class EmailService {
                           <p style="margin: 5px 0; color: #666; font-size: 14px;">Tradición y Sabor Auténtico desde 1995</p>
                       </div>
                       <div style="color: #888; font-size: 14px; line-height: 1.5;">
-                          <p style="margin: 4px 0;">📧 Email: info@mitortilleria.com</p>
-                          <p style="margin: 4px 0;">📱 WhatsApp: +52 123 456 7890</p>
+                          <p style="margin: 4px 0;">📧 Email: mitortilleriaservice@gmail.com</p>
+                          <p style="margin: 4px 0;">📱 WhatsApp: +52 722 366 4325</p>
                           <p style="margin: 4px 0;">🌐 Síguenos en redes sociales: @MiTortilleria</p>
                       </div>
                       <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
@@ -481,14 +481,14 @@ export class EmailService {
       minute: '2-digit'
     });
 
-    const fechaRecoleccion = orderData.fechaRecoleccion.toLocaleDateString('es-MX', {
+    const fechaRecoleccion = orderData.fechaRecoleccion ? new Date(orderData.fechaRecoleccion).toLocaleDateString('es-MX', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
-    });
+    }) : 'Por definir';
 
     return `
       <!DOCTYPE html>
@@ -496,7 +496,7 @@ export class EmailService {
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Horario de Recolección - Tortillería Plata Jaimes</title>
+          <title>Confirmación de Pedido para Recolección - Tortillería Plata Jaimes</title>
       </head>
       <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
           <div style="max-width: 600px; margin: 0 auto; background-color: white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -504,21 +504,21 @@ export class EmailService {
               <!-- Header -->
               <div style="background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%); padding: 30px 20px; text-align: center; color: white;">
                   <div style="display: inline-block; background-color: rgba(255,255,255,0.2); padding: 15px; border-radius: 50%; margin-bottom: 15px;">
-                      <div style="font-size: 40px;">⏰</div>
+                      <div style="font-size: 40px;">🏪</div>
                   </div>
                   <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">Tortillería Plata Jaimes</h1>
                   <p style="margin: 8px 0 0 0; font-size: 16px; opacity: 0.9;">Tradición y Sabor Auténtico</p>
               </div>
 
-              <!-- Pickup Schedule Message -->
+              <!-- Pickup Confirmation Message -->
               <div style="background-color: #e8f5e8; border-left: 4px solid #2e7d32; padding: 20px; margin: 0;">
                   <div style="display: flex; align-items: center;">
                       <div style="background-color: #2e7d32; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 20px;">
-                          📅
+                          ✓
                       </div>
                       <div>
-                          <h2 style="margin: 0; color: #2e7d32; font-size: 24px;">¡Horario de Recolección Asignado!</h2>
-                          <p style="margin: 5px 0 0 0; color: #388e3c; font-size: 16px;">Hola ${orderData.customerName}, tu pedido estará listo para recoger.</p>
+                          <h2 style="margin: 0; color: #2e7d32; font-size: 24px;">¡Pedido Confirmado para Recolección!</h2>
+                          <p style="margin: 5px 0 0 0; color: #388e3c; font-size: 16px;">Hola ${orderData.customerName}, tu pedido estará listo para recoger en nuestro negocio.</p>
                       </div>
                   </div>
               </div>
@@ -534,7 +534,7 @@ export class EmailService {
                                   <div style="color: #333; font-size: 18px; font-weight: 600; margin-top: 2px;">#${orderData.orderId}</div>
                               </div>
                               <div style="margin-bottom: 15px;">
-                                  <strong style="color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Fecha de Actualización</strong>
+                                  <strong style="color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Fecha de Confirmación</strong>
                                   <div style="color: #333; font-size: 16px; margin-top: 2px;">${currentDate}</div>
                               </div>
                           </div>
@@ -544,14 +544,13 @@ export class EmailService {
                                   <div style="color: #333; font-size: 16px; margin-top: 2px;">
                                       <span style="background-color: ${orderData.tipo_pago === 'Efectivo' ? '#ff9800' : '#2e7d32'}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px;">
                                           ${orderData.tipo_pago === 'Efectivo' ? '💵 ' + orderData.tipo_pago : '💳 ' + orderData.tipo_pago}
-                                      </span>
-                                  </div>
+                                      </div>
                               </div>
                               <div style="margin-bottom: 15px;">
-                                  <strong style="color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Estado Actual</strong>
+                                  <strong style="color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Modalidad de Entrega</strong>
                                   <div style="color: #333; font-size: 16px; margin-top: 2px;">
                                       <span style="background-color: #2e7d32; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px;">
-                                          ⏰ ${orderData.estatus}
+                                          🏪 Recolección en Negocio
                                       </span>
                                   </div>
                               </div>
@@ -559,17 +558,19 @@ export class EmailService {
                       </div>
                   </div>
 
-                  <!-- Pickup Info -->
+                  <!-- Pickup Information -->
                   <div style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%); border-left: 4px solid #2e7d32; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
                       <h4 style="margin: 0 0 15px 0; color: #1b5e20; font-size: 18px; display: flex; align-items: center;">
-                          <span style="margin-right: 8px;">📅</span> Información de Recolección
+                          <span style="margin-right: 8px;">🏪</span> Información de Recolección
                       </h4>
                       <div style="color: #2e7d32; line-height: 1.6;">
-                          <p style="margin: 8px 0; font-size: 18px; font-weight: 600;"><strong>🕐 Fecha y hora de recolección:</strong></p>
+                          <p style="margin: 8px 0; font-size: 18px; font-weight: 600;"><strong>🕐 Horario programado para recolección:</strong></p>
                           <p style="margin: 8px 0; font-size: 20px; font-weight: 700; color: #1b5e20; background-color: rgba(46, 125, 50, 0.1); padding: 10px; border-radius: 8px; text-align: center;">${fechaRecoleccion}</p>
-                          <p style="margin: 8px 0;"><strong>📍 Dirección:</strong> Tortillería Plata Jaimes - Calle Principal #123</p>
-                          <p style="margin: 8px 0;"><strong>📞 Contacto:</strong> +52 123 456 7890</p>
-                          <p style="margin: 8px 0;"><strong>⚠️ Importante:</strong> Por favor llega puntual a la hora asignada</p>
+                          <p style="margin: 8px 0;"><strong>📍 Dirección del Negocio:</strong> Calle Principal #123, Centro, Ciudad</p>
+                          <p style="margin: 8px 0;"><strong>🕒 Horarios de Atención:</strong> Lunes a Domingo de 9:00 AM a 8:00 PM</p>
+                          <p style="margin: 8px 0;"><strong>📞 Teléfono:</strong> +52 722 366 4325</p>
+                          <p style="margin: 8px 0; color: #1b5e20; font-weight: 600;"><strong>⚠️ Importante:</strong> Por favor llega puntual a la hora programada</p>
+                          ${orderData.tipo_pago === 'Efectivo' ? '<p style="margin: 8px 0; font-weight: 600; color: #1b5e20;"><strong>💰 Recordatorio:</strong> Pago en efectivo al recoger el pedido</p>' : '<p style="margin: 8px 0; color: #2e7d32;"><strong>✅ Pago procesado:</strong> Tu pago ha sido confirmado exitosamente</p>'}
                       </div>
                   </div>
 
@@ -592,11 +593,41 @@ export class EmailService {
                       </div>
                   </div>
 
-                  <!-- Total Summary -->
+                  <!-- Pricing Summary -->
                   <div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
-                      <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; background-color: #e8f5e8; margin: 0 -15px; padding-left: 15px; padding-right: 15px; border-radius: 8px;">
-                          <span style="color: #2e7d32; font-size: 20px; font-weight: 600;">Total del Pedido = </span>
-                          <span style="color: #2e7d32; font-size: 24px; font-weight: 700;">${orderData.total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</span>
+                      <h3 style="margin: 0 0 20px 0; color: #333; font-size: 20px;">Resumen de Precios</h3>
+                      <div style="space-y: 12px;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                              <span style="color: #666; font-size: 16px;">Subtotal (${orderData.items.length} productos) = </span>
+                              <span style="color: #333; font-size: 16px; font-weight: 500;">${orderData.subtotal.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</span>
+                          </div>
+                          ${orderData.discountAmount > 0 ? `
+                          <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                              <span style="color: #666; font-size: 16px;">Descuento (${orderData.discountPercent}%) = </span>
+                              <span style="color: #d32f2f; font-size: 16px; font-weight: 500;">-${orderData.discountAmount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</span>
+                          </div>` : ''}
+                          <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                              <span style="color: #666; font-size: 16px;">Tarifa de transporte = </span>
+                              <span style="color: #333; font-size: 16px; font-weight: 500;">🆓 GRATIS (Recolección en negocio)</span>
+                          </div>
+                          <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; background-color: #e8f5e8; margin: 15px -15px -15px -15px; padding-left: 15px; padding-right: 15px; border-radius: 8px;">
+                              <span style="color: #2e7d32; font-size: 20px; font-weight: 600;">Total a Pagar = </span>
+                              <span style="color: #2e7d32; font-size: 24px; font-weight: 700;">${orderData.total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</span>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Instructions -->
+                  <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left: 4px solid #ff9800; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+                      <h4 style="margin: 0 0 15px 0; color: #e65100; font-size: 18px; display: flex; align-items: center;">
+                          <span style="margin-right: 8px;">📋</span> Instrucciones para la Recolección
+                      </h4>
+                      <div style="color: #ef6c00; line-height: 1.6;">
+                          <p style="margin: 8px 0;"><strong>1. 📱 Confirmación:</strong> Presenta este correo o menciona tu número de pedido</p>
+                          <p style="margin: 8px 0;"><strong>2. ⏰ Puntualidad:</strong> Llega en el horario programado para evitar demoras</p>
+                          <p style="margin: 8px 0;"><strong>3. 🆔 Identificación:</strong> Trae tu identificación o comprobante de pago</p>
+                          <p style="margin: 8px 0;"><strong>4. 📞 Dudas:</strong> Llámanos si tienes alguna pregunta</p>
+                          <p style="margin: 8px 0;"><strong>5. ✅ Verificación:</strong> Revisa tu pedido antes de retirarte</p>
                       </div>
                   </div>
 
@@ -607,8 +638,8 @@ export class EmailService {
                           <p style="margin: 5px 0; color: #666; font-size: 14px;">Tradición y Sabor Auténtico desde 1995</p>
                       </div>
                       <div style="color: #888; font-size: 14px; line-height: 1.5;">
-                          <p style="margin: 4px 0;">📧 Email: info@mitortilleria.com</p>
-                          <p style="margin: 4px 0;">📱 WhatsApp: +52 123 456 7890</p>
+                          <p style="margin: 4px 0;">📧 Email: mitortilleriaservice@gmail.com</p>
+                          <p style="margin: 4px 0;">📱 WhatsApp: +52 722 366 4325</p>
                           <p style="margin: 4px 0;">🌐 Síguenos en redes sociales: @MiTortilleria</p>
                       </div>
                       <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
@@ -777,8 +808,8 @@ export class EmailService {
                           <p style="margin: 5px 0; color: #666; font-size: 14px;">Tradición y Sabor Auténtico desde 1995</p>
                       </div>
                       <div style="color: #888; font-size: 14px; line-height: 1.5;">
-                          <p style="margin: 4px 0;">📧 Email: info@mitortilleria.com</p>
-                          <p style="margin: 4px 0;">📱 WhatsApp: +52 123 456 7890</p>
+                          <p style="margin: 4px 0;">📧 Email: mitortilleriaservice@gmail.com</p>
+                          <p style="margin: 4px 0;">📱 WhatsApp: +52 722 366 4325</p>
                           <p style="margin: 4px 0;">🌐 Síguenos en redes sociales: @MiTortilleria</p>
                       </div>
                       <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
@@ -899,9 +930,9 @@ export class EmailService {
                   <div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
                       <h4 style="margin: 0 0 20px 0; color: #333; font-size: 22px;">¿Necesitas ayuda?</h4>
                       <div style="color: #666; line-height: 1.6; font-size: 16px;">
-                          <p style="margin: 10px 0;"><strong>📞 Teléfono:</strong> +52 123 456 7890</p>
-                          <p style="margin: 10px 0;"><strong>📧 Email:</strong> info@mitortilleria.com</p>
-                          <p style="margin: 10px 0;"><strong>💬 WhatsApp:</strong> +52 123 456 7890</p>
+                          <p style="margin: 10px 0;"><strong>📞 Teléfono:</strong> +52 722 366 4325</p>
+                          <p style="margin: 10px 0;"><strong>📧 Email:</strong> mitortilleriaservice@gmail.com</p>
+                          <p style="margin: 10px 0;"><strong>💬 WhatsApp:</strong> +52 722 366 4325</p>
                           <p style="margin: 10px 0;"><strong>🌐 Redes Sociales:</strong> @MiTortilleria</p>
                           <p style="margin: 10px 0;"><strong>⏰ Horarios:</strong> Lunes a Domingo, 7:00 AM - 9:00 PM</p>
                       </div>
@@ -913,7 +944,7 @@ export class EmailService {
                           <h4 style="margin: 0; color: #2e7d32; font-size: 24px;">Tortillería Plata Jaimes</h4>
                           <p style="margin: 8px 0; color: #666; font-size: 16px;">Tradición y Sabor Auténtico desde 1995</p>
                           <p style="margin: 8px 0; color: #888; font-size: 14px;">Más de 25 años llevando el mejor sabor a tu mesa</p>
-                      </div>
+                      </div
                       
                       <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
                           <p style="margin: 0; color: #999; font-size: 14px;">

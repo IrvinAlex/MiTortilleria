@@ -4,6 +4,8 @@ ion-grid {
     margin-top: 20px;
     padding-left: 3rem;
     padding-right: 3rem;
+    box-shadow: 0 4px 24px rgba(26, 212, 54, 0.08); /* Sombra moderna */
+    background: #fff;
   }
   
   .header-row {
@@ -14,12 +16,18 @@ ion-grid {
     border-top-left-radius: 15px; /* Redondea las esquinas superiores */
     border-top-right-radius: 15px;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(26, 212, 54, 0.12);
+    letter-spacing: 1px;
   }
   
   .data-row {
     background-color: #f9f9f9;
     border-bottom: 1px solid #1ad436;
     text-align: center;
+    transition: background 0.2s;
+    &:hover {
+      background-color: #e6ffe6;
+    }
   }
   
   .data-row:last-child {
@@ -33,16 +41,61 @@ ion-grid {
   
   ion-button {
     margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(26, 212, 54, 0.10);
+    font-weight: 600;
+    transition: background 0.2s, box-shadow 0.2s;
   }
   
-  ion-searchbar {
-    margin-top: 10px;
+  ion-button[color="primary"], .modern-notification-btn {
+    background: linear-gradient(90deg, #1ad436 0%, #0fae2c 100%);
+    color: #fff;
+    border: none;
   }
   
-  .cololetra {
-    background-color: #d4fcd8; /* Un verde clarito */
-    border-radius: 5px;        /* Bordes redondeados opcionales */
+  ion-button[color="success"], .modern-send-btn {
+    background: linear-gradient(90deg, #1ad436 0%, #0fae2c 100%);
+    color: #fff;
+    border: none;
+  }
+  
+  ion-modal {
+    --background: #fff;
+    --border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(26, 212, 54, 0.18);
+    padding: 1.5rem;
+  }
+  
+  ion-toolbar[color="primary"] {
+    background: linear-gradient(90deg, #1ad436 0%, #0fae2c 100%);
+    color: #fff;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+  }
+  
+  ion-item {
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 4px rgba(26, 212, 54, 0.08);
+  }
+  
+  ion-input, ion-textarea {
+    background: #f4fff4;
+    border-radius: 6px;
     padding: 8px;
+    font-size: 16px;
+  }
+  
+  .modern-notification-btn {
+    margin-bottom: 1rem;
+    font-size: 16px;
+    box-shadow: 0 2px 8px rgba(26, 212, 54, 0.12);
+  }
+  
+  .modern-send-btn {
+    margin-top: 1rem;
+    font-size: 16px;
+    box-shadow: 0 2px 8px rgba(26, 212, 54, 0.12);
   }
   
   .pagination {
@@ -52,6 +105,9 @@ ion-grid {
     margin-top: 20px;
     margin-bottom: 3rem;
     flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    background: #f4fff4;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(26, 212, 54, 0.08);
   }
   
   .pagination-button {
@@ -60,12 +116,21 @@ ion-grid {
     max-width: 150px; /* Limitar el ancho máximo de los botones */
   }
   
+  .pagination-info {
+    font-weight: 600;
+    color: #1ad436;
+    margin: 0 10px;
+    font-size: 16px;
+  }
+  
   .table-header {
     display: flex;
     justify-content: space-between; /* Espacio entre el título y el botón */
     align-items: center;
     margin-bottom: 10px; /* Espacio entre el encabezado y la tabla */
     margin-right: 4rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
   }
   
   .toggle-columns-button {
@@ -75,6 +140,34 @@ ion-grid {
   
   .toggle-columns-button ion-icon {
     font-size: 18px; /* Tamaño del ícono */
+  }
+  
+  .fancy-notification-btn {
+    background: linear-gradient(90deg, #1ad436 0%, #0fae2c 100%);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    box-shadow: 0 4px 16px rgba(26, 212, 54, 0.18);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .fancy-notification-btn:hover,
+  .fancy-notification-btn:focus {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 24px rgba(26, 212, 54, 0.28);
+    background: linear-gradient(90deg, #0fae2c 0%, #1ad436 100%);
+  }
+  
+  .fancy-btn-text {
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+    font-weight: 600;
   }
   
   
@@ -106,6 +199,10 @@ ion-grid {
     .pagination {
       flex-direction: column;
     }
+  
+    .modern-notification-btn, .modern-send-btn {
+      font-size: 14px;
+    }
   }
   
   @media (max-width: 480px) {
@@ -122,5 +219,9 @@ ion-grid {
       width: 100%;
       margin-top: 5px;
     }
-  }
   
+    .modern-notification-btn, .modern-send-btn {
+      font-size: 12px;
+      padding: 6px;
+    }
+  }

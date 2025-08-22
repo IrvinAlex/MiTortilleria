@@ -137,15 +137,50 @@
       (keydown)="preventExtraInput($event, 30)"
       ></app-custom-input>
 
+      <!-- Indicador de seguridad de la contraseña -->
+      <div class="password-strength-indicator" *ngIf="form.controls.password.value">
+        <span [ngClass]="{
+          'weak': passwordStrength === 'Débil',
+          'medium': passwordStrength === 'Media',
+          'acceptable': passwordStrength === 'Aceptable',
+          'strong': passwordStrength === 'Fuerte'
+        }">
+          Seguridad: {{ passwordStrength }}
+        </span>
+      </div>
+
       <div class="validators" *ngIf="form.controls.password.errors && form.controls.password.touched">
         <div *ngIf="form.controls.password.errors?.['required']">La contraseña es requerida</div>
         <div *ngIf="form.controls.password.errors?.['minLength']">La contraseña debe tener por lo menos 6 caracteres</div>
         <div *ngIf="form.controls.password.errors?.['maxlength']">La contraseña no puede exceder 30 caracteres</div>
       </div>
 
-      
+      <!-- Checkboxes de términos y privacidad -->
+      <div class="terms-checkboxes" style="margin-top: 20px;">
+        <ion-item lines="none">
+          <ion-checkbox slot="start" formControlName="acceptedTerms" (ionChange)="onTermsChange()"></ion-checkbox>
+          <ion-label>
+            He leído y acepto los 
+            <a style="color: #3880ff; text-decoration: underline;" (click)="openTerms()">Términos y condiciones</a>
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-checkbox slot="start" formControlName="acceptedPrivacy" (ionChange)="onTermsChange()"></ion-checkbox>
+          <ion-label>
+            He leído y acepto la 
+            <a style="color: #3880ff; text-decoration: underline;" (click)="openPrivacy()">Política de privacidad</a>
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-checkbox slot="start" formControlName="acceptedAll" (ionChange)="onTermsChange()"></ion-checkbox>
+          <ion-label>
+            He leído y acepto todo lo anterior
+          </ion-label>
+        </ion-item>
+      </div>
 
-      <ion-button expand="block" mode="ios" class="submit" type="submit" [disabled]="form.invalid">
+      <ion-button expand="block" mode="ios" class="submit" type="submit" 
+        [disabled]="form.invalid">
         Registrar
         <ion-icon slot="end" name="person-add-outline"></ion-icon>
       </ion-button>

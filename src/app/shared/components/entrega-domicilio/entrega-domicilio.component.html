@@ -34,18 +34,18 @@
     <ion-card-content>
       <div class="summary-item">
         <span>Productos ({{ cart?.detalle_carrito?.length || 0 }})</span>
-        <span>{{ cart?.total | currency }}</span>
+        <span>{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div *ngFor="let item of cart?.detalle_carrito" class="summary-item">
         <span>{{ item.producto?.nombre || '' }} x{{ item.cantidad }}</span>
-        <span>{{ item.subtotal | currency }}</span>
+        <span>{{ item.subtotal | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div class="divider"></div>
       
       <!-- Subtotal with discount if applicable -->
       <div class="summary-item" *ngIf="discountAmount > 0">
         <span class="original-price">Subtotal: </span>
-        <span class="original-price">{{ cart?.total | currency }}</span>
+        <span class="original-price">{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div class="summary-item" *ngIf="discountAmount > 0">
         <span class="descuento">Descuento: </span>
@@ -53,11 +53,11 @@
       </div>
       <div class="summary-item" *ngIf="discountAmount > 0">
         <span class="discounted-price">Subtotal con descuento:</span>
-        <span class="discounted-price">{{ cart?.total- (cart?.total*(porcentaje/100)) | currency }}</span>
+        <span class="discounted-price">{{ cart?.total- (cart?.total*(porcentaje/100)) | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div class="summary-item" *ngIf="discountAmount === 0">
         <span>Subtotal:</span>
-        <span>{{ cart?.total | currency }}</span>
+        <span>{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
 
       <!-- Free shipping message -->
@@ -69,20 +69,20 @@
       <!-- Transport fee -->
       <div class="summary-item">
         <span>Tarifa de transporte ({{ distanciaKm }} km):</span>
-        <span *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) >= 140">{{ 0 | currency }}</span>
-        <span *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) < 140">{{ transportFee | currency }}</span>
+        <span *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) >= 140">{{ 0 | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
+        <span *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) < 140">{{ transportFee | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
 
       <!-- Service charge -->
       <div class="summary-item" *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) < 140">
         <span>Cargo de servicio:</span>
-        <span>{{ 5 | currency }}</span>
+        <span>{{ 5 | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
 
       <!-- Motivational message for orders under $140 -->
       <div *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) < 140" class="motivational-message">
         <ion-icon name="information-circle-outline" color="primary"></ion-icon>
-        <span class="info-text">Agrega {{ 140 - (cart?.total - (cart?.total * (porcentaje / 100))) | currency }} más para envío gratis</span>
+        <span class="info-text">Agrega {{ 140 - (cart?.total - (cart?.total * (porcentaje / 100))) | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN más para envío gratis</span>
       </div>
 
       <div class="divider"></div>
@@ -91,10 +91,10 @@
       <div class="summary-item total-item">
         <span><strong>Total a pagar:</strong></span>
         <span *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) >= 140">
-          <strong>{{ cart?.total - (cart?.total * (porcentaje / 100)) | currency }}</strong>
+          <strong>{{ cart?.total - (cart?.total * (porcentaje / 100)) | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</strong>
         </span>
         <span *ngIf="(cart?.total - (cart?.total * (porcentaje / 100))) < 140">
-          <strong>{{ cart?.total - (cart?.total * (porcentaje / 100)) + transportFee + 5 | currency }}</strong>
+          <strong>{{ cart?.total - (cart?.total * (porcentaje / 100)) + transportFee + 5 | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</strong>
         </span>
       </div>
     </ion-card-content>

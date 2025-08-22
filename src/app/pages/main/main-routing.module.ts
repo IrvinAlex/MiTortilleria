@@ -148,9 +148,15 @@ const routes: Routes = [
         path: 'metodo-entrega-negocio',
         loadChildren: () => import('./usuario/metodo-entrega-negocio/metodo-entrega-negocio.module').then( m => m.MetodoEntregaNegocioPageModule)
       },
+      {
+        path: 'precio-viaje',
+        loadChildren: () => import('./admin/precio-viaje/precio-viaje.module').then( m => m.PrecioViajePageModule)
+      },
     
     ]
   },
+  
+
 ];
 
 @NgModule({

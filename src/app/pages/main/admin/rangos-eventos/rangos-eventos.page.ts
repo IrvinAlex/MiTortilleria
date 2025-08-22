@@ -107,6 +107,10 @@ export class RangosEventosPage implements OnInit {
 
   // Método para finalizar la edición
   finishEditing() {
+    if (this.editingField && this.editingFieldKey) {
+      // Add any validation or save logic here if needed
+      // For example: this.saveChanges(this.editingField);
+    }
     this.editingField = null;
     this.editingFieldKey = null;
   }
@@ -323,5 +327,24 @@ export class RangosEventosPage implements OnInit {
     });
   }
   
+  // Add pagination helper methods
+  getStartItem(): number {
+    if (!this.paginatedData || this.paginatedData.length === 0) {
+      return 0;
+    }
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  getEndItem(): number {
+    if (!this.paginatedData || this.paginatedData.length === 0) {
+      return 0;
+    }
+    const totalFiltered = this.filteredData ? this.filteredData.length : 0;
+    return Math.min(this.currentPage * this.itemsPerPage, totalFiltered);
+  }
+
+  getTotalItems(): number {
+    return this.filteredData ? this.filteredData.length : 0;
+  }
 
 }

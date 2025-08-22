@@ -1,0 +1,213 @@
+<app-header [showMenu]="true" title="Tarifas de Transporte"></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <!-- Calculator Section -->
+    <ion-card class="calculator-card">
+      <ion-card-header>
+        <div class="calculator-header">
+          <div class="header-icon-wrapper">
+            <ion-icon name="calculator-outline" style="color:white"></ion-icon>
+          </div>
+          <div class="header-content">
+            <h2>Calculadora de Tarifa</h2>
+            <p>Calcula el costo según la distancia</p>
+          </div>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="calculator-content">
+          <div class="distance-input-wrapper">
+            <ion-item class="distance-item" lines="none">
+              <ion-icon name="location-outline" slot="start" class="input-icon"></ion-icon>
+              <ion-label position="stacked">Distancia del viaje</ion-label>
+              <ion-input 
+                type="number" 
+                [(ngModel)]="calculatorDistance" 
+                (ionInput)="calculateFare()"
+                placeholder="0.5"
+                class="distance-input">
+              </ion-input>
+              <ion-note slot="end">km</ion-note>
+            </ion-item>
+          </div>
+          <div class="fare-result">
+            <div class="result-content">
+              <span class="fare-label">Tarifa calculada</span>
+              <div class="fare-amount-wrapper">
+                <span class="fare-amount">{{ calculatedFare | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }}</span>
+                <span class="currency">MXN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tariff Type Toggle -->
+    <ion-card class="tariff-type-card">
+      <ion-card-header>
+        <h3>Tipo de Tarificación</h3>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-segment [(ngModel)]="tariffType" (ionChange)="onTariffTypeChange()" class="custom-segment">
+          <ion-segment-button value="fixed" class="segment-button">
+            <div class="segment-content">
+              <ion-icon name="cash-outline"></ion-icon>
+              <ion-label>Tarifa Fija</ion-label>
+            </div>
+          </ion-segment-button>
+          <ion-segment-button value="distance" class="segment-button">
+            <div class="segment-content">
+              <ion-icon name="map-outline"></ion-icon>
+              <ion-label>Por Distancia</ion-label>
+            </div>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Fixed Tariff Section -->
+    <ion-card *ngIf="tariffType === 'fixed'" class="fixed-tariff-card">
+      <ion-card-header>
+        <div class="section-header">
+          <div class="header-icon-wrapper primary">
+            <ion-icon name="cash-outline" style="color:white"></ion-icon>
+          </div>
+          <div class="header-content">
+            <h3>Tarifa Fija</h3>
+            <p>Precio único para todos los viajes</p>
+          </div>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="fixed-tariff-content">
+          <div class="price-input-wrapper">
+            <ion-item class="price-item" lines="none">
+              <ion-icon name="pricetag-outline" slot="start" class="input-icon"></ion-icon>
+              <ion-label position="stacked">Precio por viaje</ion-label>
+              <ion-input 
+                type="number" 
+                [(ngModel)]="fixedTariff.precio" 
+                placeholder="50.00"
+                class="price-input">
+              </ion-input>
+              <ion-note slot="end">MXN</ion-note>
+            </ion-item>
+          </div>
+          
+          <div class="tariff-preview" *ngIf="fixedTariff.precio && fixedTariff.precio > 0">
+            <div class="preview-card">
+              <ion-icon name="checkmark-circle" color="light"></ion-icon>
+              <span style="color:white">Tarifa: {{ fixedTariff.precio | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
+            </div>
+          </div>
+
+          <ion-button 
+            expand="block" 
+            size="large"
+            (click)="saveFixedTariff()" 
+            [disabled]="!fixedTariff.precio || fixedTariff.precio <= 0"
+            class="save-button">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            {{ fixedTariff.id ? 'Actualizar Tarifa' : 'Guardar Tarifa' }}
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Distance-based Tariffs -->
+    <div *ngIf="tariffType === 'distance'" class="distance-section">
+      <div class="add-range-section">
+        <ion-button expand="block" size="large" fill="outline" (click)="openAddRangeModal()" class="add-range-btn">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Agregar Nuevo Rango
+        </ion-button>
+      </div>
+      <ion-card class="tariffs-card">
+        <ion-card-header>
+          <div class="section-header">
+            <div class="header-icon-wrapper secondary">
+              <ion-icon name="map-outline" color="light"></ion-icon>
+            </div>
+            <div class="header-content">
+              <h3>Tarifas por Distancia</h3>
+              <p>{{ distanceTariffs.length }} rango{{ distanceTariffs.length !== 1 ? 's' : '' }} configurado{{ distanceTariffs.length !== 1 ? 's' : '' }}</p>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf="distanceTariffs.length > 0; else noTariffs">
+            <div class="tariff-cards">
+              <ion-row>
+                <ion-col size="12" size-md="6" size-lg="4" *ngFor="let tariff of distanceTariffs">
+                  <ion-card class="tariff-card improved-card" [class.active]="isRangeActive(tariff)">
+                    <ion-card-header>
+                      <div class="tariff-header-row">
+                        <ion-icon name="location-outline" class="range-icon"></ion-icon>
+                        <div class="tariff-title">
+                          <span class="range-text">{{ tariff.rango_distancia }}</span>
+                          <ion-badge color="primary" class="tariff-badge">
+                            {{ tariff.tarifa | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }}
+                          </ion-badge>
+                        </div>
+                      </div>
+                    </ion-card-header>
+                    <ion-card-content>
+                      <div class="tariff-details-row">
+                        <div class="detail-block">
+                          <ion-label color="medium">Desde</ion-label>
+                          <div class="detail-value">{{ tariff.distancia_min }} km</div>
+                        </div>
+                        <div class="detail-block">
+                          <ion-label color="medium">Hasta</ion-label>
+                          <div class="detail-value">{{ tariff.distancia_max }} km</div>
+                        </div>
+                        <div class="detail-block">
+                          <ion-label color="medium">Estado</ion-label>
+                          <ion-chip [color]="tariff.activo ? 'success' : 'medium'" class="status-chip">
+                            <ion-icon [name]="tariff.activo ? 'checkmark-circle' : 'pause-circle'" slot="start"></ion-icon>
+                            <ion-label>{{ tariff.activo ? 'Activo' : 'Inactivo' }}</ion-label>
+                          </ion-chip>
+                        </div>
+                      </div>
+                      <div class="tariff-actions-row">
+                        <ion-button fill="clear" color="primary" (click)="editTariff(tariff)" class="action-button">
+                          <ion-icon name="create-outline" slot="start"></ion-icon>
+                          Editar
+                        </ion-button>
+                        <ion-button fill="clear" color="danger" (click)="deleteTariff(tariff)" class="action-button">
+                          <ion-icon name="trash-outline" slot="start"></ion-icon>
+                          Eliminar
+                        </ion-button>
+                      </div>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </div>
+          </div>
+          <ng-template #noTariffs>
+            <div class="no-tariffs">
+              <div class="empty-state">
+                <ion-icon name="map-outline" class="empty-icon"></ion-icon>
+                <h4>No hay tarifas configuradas</h4>
+                <p>Agrega tu primera tarifa por distancia para comenzar</p>
+                <ion-button fill="solid" (click)="openAddRangeModal()" class="empty-action-button">
+                  <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+                  Agregar Primera Tarifa
+                </ion-button>
+              </div>
+            </div>
+          </ng-template>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando tarifas...</p>
+  </div>
+</ion-content>

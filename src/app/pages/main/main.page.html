@@ -31,3 +31,78 @@
 </ion-menu>
 
 <ion-router-outlet id="menu-content" main></ion-router-outlet>
+
+<!-- Tarjeta flotante de sesión por inactividad -->
+<div class="floating-card-overlay" *ngIf="showInactivityWarning" (click)="dismissInactivityWarning()">
+  <div class="floating-card inactivity-warning-card" (click)="$event.stopPropagation()">
+    <!-- Header de la tarjeta -->
+    <div class="card-header">
+      <div class="warning-icon">⚠️</div>
+      <h2>¡Sesión por vencer!</h2>
+      <p>Inactividad detectada</p>
+      <ion-button 
+        fill="clear" 
+        class="close-btn" 
+        (click)="dismissInactivityWarning()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="card-content">
+      <div class="warning-section">
+        <h3>⏰ Tiempo de sesión agotándose</h3>
+        <p>Tu sesión se cerrará automáticamente por inactividad</p>
+      </div>
+
+      <!-- Información del tiempo restante -->
+      <div class="time-info" *ngIf="inactivityWarningData">
+        <div class="time-card">
+          <div class="time-header">
+            <span class="time-remaining">
+              ⏱️ Tiempo restante: {{inactivityWarningData.timeRemaining}}
+            </span>
+            <span class="urgent-badge">URGENTE</span>
+          </div>
+          <div class="device-details">
+            <p><strong>Dispositivo:</strong> {{inactivityWarningData.deviceInfo}}</p>
+            <p><strong>Tipo de usuario:</strong> {{inactivityWarningData.userType}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Razón de seguridad -->
+      <div class="security-warning">
+        <p><strong>🔒 Por tu seguridad:</strong> La sesión se cierra automáticamente para proteger tus datos si alguien más toma tu dispositivo.</p>
+      </div>
+
+      <!-- Instrucciones -->
+      <div class="instructions">
+        <p class="instructions-title"><strong>¿Qué quieres hacer?</strong></p>
+        <div class="instructions-list">
+          <p>• <strong>Continuar:</strong> Mantienes tu sesión activa</p>
+          <p>• <strong>Cerrar sesión:</strong> Cierras tu sesión inmediatamente</p>
+          <p>• <strong>Sin acción:</strong> Se cerrará automáticamente</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="card-actions">
+      <ion-button 
+        fill="outline" 
+        color="danger" 
+        (click)="logoutFromInactivity()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar sesión
+      </ion-button>
+      <ion-button 
+        fill="solid" 
+        color="success" 
+        (click)="continueSession()">
+        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+        Continuar
+      </ion-button>
+    </div>
+  </div>
+</div>

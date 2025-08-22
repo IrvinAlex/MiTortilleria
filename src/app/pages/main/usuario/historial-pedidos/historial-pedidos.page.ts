@@ -55,6 +55,8 @@ export class HistorialPedidosPage implements OnInit {
     }, 1000);
   }
 
+  
+
 
   //========== Obtener Pedidos y Detalles de Pedido con Productos ===========
   getPedidos() {
@@ -62,54 +64,65 @@ export class HistorialPedidosPage implements OnInit {
     this.loading = true;
     let fechaHoy = new Date();
     fechaHoy.setHours(0, 0, 0, 0);
-  
+
     let sub = this.firebaseSvc.getCollectionData(path, []).subscribe({
-      next: (res: any) => {
+      next: async (res: any) => {
         if (Array.isArray(res)) {
           this.pedidos = res;
-  
-          const promises = this.pedidos.map((pedido: any) => {
+
+          // Espera a que todos los detalles y usuarios estén listos
+          const pedidosActualizados = await Promise.all(this.pedidos.map(async (pedido: any) => {
             let path2 = `users/${pedido.uid_cliente}`;
-            return this.firebaseSvc.getDocument(path2).then((user: User) => {
-              pedido.nombre_cliente = user.name + " " + user.mother_Last_Name + " " + user.father_Last_Name;
-              const path3 = `pedidos/${pedido.id}/detalle_pedido`;
-  
+            
+            pedido.nombre_cliente = this.user().name + " " + this.user().mother_Last_Name + " " + this.user().father_Last_Name;
+            const path3 = `pedidos/${pedido.id}/detalle_pedido`;
+
+            // Espera a que los detalles estén listos
+            await new Promise<void>((resolve) => {
               this.firebaseSvc.getCollectionData(path3, []).subscribe({
-                next: (data) => {
+                next: async (data) => {
                   pedido.detalle_pedido = data;
-                  pedido.detalle_pedido.forEach(async (detalle: any) => {
+                  await Promise.all(pedido.detalle_pedido.map(async (detalle: any) => {
                     const detallePath = `productos/${detalle.uid_producto}`;
                     try {
                       let producto = await this.firebaseSvc.getDocument(detallePath);
                       detalle.producto = producto;
-                      detalle.producto.imagen = producto['imagen']; // Add image to the product details
-                    } catch (err) {
-                    }
-                  });
+                      detalle.producto.imagen = producto['imagen'];
+                    } catch (err) {}
+                  }));
+                  resolve();
                 },
-                error: (err) => console.error('Error al obtener datos:', err),
+                error: (err) => {
+                  console.error('Error al obtener datos:', err);
+                  resolve();
+                },
               });
-  
-              return pedido;
             });
+
+            return pedido;
+          }));
+
+          // Filtrar pedidos de hoy y del usuario actual
+          const pedidosHoy = pedidosActualizados.filter((pedido: any) => {
+            if (pedido.uid_cliente !== this.user().uid) return false;
+            if (!pedido.fecha_entrega) return false;
+            const fechaEntrega = pedido.fecha_entrega.toDate ? pedido.fecha_entrega.toDate() : new Date(pedido.fecha_entrega);
+            fechaEntrega.setHours(0, 0, 0, 0);
+            return fechaEntrega.getTime() === fechaHoy.getTime();
           });
-  
-          Promise.all(promises)
-            .then((pedidosActualizados) => {
-              const pedidosHoy = pedidosActualizados.filter((pedido: any) => {
-                return (
-                  pedido.uid_cliente === this.user().uid // Verifica que el UID del cliente coincida
-                );
-              });
-              this.pedidosFiltrados = pedidosHoy.sort((a, b) => b.fecha_entrega.toDate() - a.fecha_entrega.toDate());
-              this.loading = false;
-            })
-            .catch((error) => {
-              this.loading = false;
-            });
+
+          // Ordenar por fecha_entrega (convertir a Date si es necesario)
+          this.pedidosFiltrados = pedidosHoy.sort((a, b) => {
+            const fechaA = a.fecha_entrega?.toDate ? a.fecha_entrega.toDate() : new Date(a.fecha_entrega);
+            const fechaB = b.fecha_entrega?.toDate ? b.fecha_entrega.toDate() : new Date(b.fecha_entrega);
+            return fechaB.getTime() - fechaA.getTime();
+          });
+
+          this.loading = false;
         } else {
           this.pedidos = [];
           this.pedidosFiltrados = [];
+          this.loading = false;
         }
         sub.unsubscribe();
       },
@@ -190,20 +203,24 @@ export class HistorialPedidosPage implements OnInit {
 
 
   clearFilters() {
-    // Al limpiar los filtros, mostramos todos los pedidos y aseguramos que se obtengan los nombres de los clientes
     const fechaHoy = new Date();
-    fechaHoy.setHours(0, 0, 0, 0); // Aseguramos que la hora sea medianoche
+    fechaHoy.setHours(0, 0, 0, 0);
     // Filtrar solo los pedidos de hoy y con el uid correcto
     const pedidosHoy = this.pedidos.filter((pedido: any) => {
-      return (
-        pedido.uid_cliente === this.user().uid // Verifica que el UID del cliente coincida
-      );
+      if (pedido.uid_cliente !== this.user().uid) return false;
+      if (!pedido.fecha_entrega) return false;
+      const fechaEntrega = pedido.fecha_entrega.toDate ? pedido.fecha_entrega.toDate() : new Date(pedido.fecha_entrega);
+      fechaEntrega.setHours(0, 0, 0, 0);
+      return fechaEntrega.getTime() === fechaHoy.getTime();
     });
-    this.pedidosFiltrados = pedidosHoy.sort((a, b) => b.fecha_entrega.toDate() - a.fecha_entrega.toDate());
-    this.pedidosFiltrados = pedidosHoy;
+    // Ordenar por fecha_entrega (convertir a Date si es necesario)
+    this.pedidosFiltrados = pedidosHoy.sort((a, b) => {
+      const fechaA = a.fecha_entrega?.toDate ? a.fecha_entrega.toDate() : new Date(a.fecha_entrega);
+      const fechaB = b.fecha_entrega?.toDate ? b.fecha_entrega.toDate() : new Date(b.fecha_entrega);
+      return fechaB.getTime() - fechaA.getTime();
+    });
 
     const promises = this.pedidosFiltrados.map((pedido: any) => {
-      // Obtener nombre del cliente
       let path2 = `users/${pedido.uid_cliente}`;
       return this.firebaseSvc.getDocument(path2).then((user: User) => {
         pedido.nombre_cliente = user.name + " " + user.mother_Last_Name + " " + user.father_Last_Name;
@@ -211,7 +228,6 @@ export class HistorialPedidosPage implements OnInit {
       });
     });
 
-    // Esperar a que todas las promesas se resuelvan
     Promise.all(promises)
       .then((pedidosActualizados) => {
         this.pedidosFiltrados = pedidosActualizados;

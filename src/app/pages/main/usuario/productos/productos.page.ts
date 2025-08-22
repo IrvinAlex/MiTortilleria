@@ -129,8 +129,7 @@ export class ProductosPage implements OnInit {
           position: 'bottom',
           icon: 'checkmark-circle-outline'
         });
-        
-        // Mostrar botón para ir al carrito
+        // No need to update cart count here, as it's reactive
         setTimeout(() => {
           this.showGoToCartOption();
         }, 500);

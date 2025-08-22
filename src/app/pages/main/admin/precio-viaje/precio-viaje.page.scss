@@ -1,0 +1,615 @@
+.container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    padding: 8px;
+  }
+}
+
+// Calculator Card
+.calculator-card {
+  margin-bottom: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  .calculator-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .header-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--ion-color-primary-tint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      ion-icon {
+        font-size: 24px;
+        color: var(--ion-color-primary);
+      }
+    }
+    
+    .header-content {
+      flex: 1;
+      
+      h2 {
+        margin: 0 0 4px 0;
+        font-weight: 600;
+        font-size: 20px;
+      }
+      
+      p {
+        margin: 0;
+        color: var(--ion-color-medium);
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .calculator-content {
+    .distance-input-wrapper {
+      margin-bottom: 20px;
+      
+      .distance-item {
+        --background: var(--ion-color-light);
+        --border-radius: 12px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+        margin-bottom: 8px;
+        
+        .input-icon {
+          color: var(--ion-color-primary);
+          margin-right: 8px;
+        }
+        
+        .distance-input {
+          font-size: 16px;
+          font-weight: 500;
+        }
+        
+        ion-note {
+          font-weight: 600;
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+    
+    .fare-result {
+      background: linear-gradient(135deg, var(--ion-color-success-tint), var(--ion-color-success));
+      border-radius: 16px;
+      padding: 20px;
+      
+      .result-content {
+        text-align: center;
+        
+        .fare-label {
+          display: block;
+          font-weight: 500;
+          color: white;
+          margin-bottom: 8px;
+          font-size: 14px;
+          opacity: 0.9;
+        }
+        
+        .fare-amount-wrapper {
+          display: flex;
+          align-items: baseline;
+          justify-content: center;
+          gap: 4px;
+          
+          .fare-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+          }
+          
+          .currency {
+            font-size: 16px;
+            font-weight: 500;
+            color: white;
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Tariff Type Card
+.tariff-type-card {
+  margin-bottom: 20px;
+  border-radius: 16px;
+  
+  h3 {
+    margin: 0;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  .custom-segment {
+    --background: var(--ion-color-light);
+    border-radius: 12px;
+    padding: 4px;
+    
+    .segment-button {
+      --border-radius: 8px;
+      margin: 0;
+      
+      .segment-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 4px;
+        
+        ion-icon {
+          font-size: 20px;
+        }
+        
+        ion-label {
+          font-size: 12px;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// Fixed Tariff Card
+.fixed-tariff-card {
+  margin-bottom: 20px;
+  border-radius: 16px;
+  
+  .fixed-tariff-content {
+    .price-input-wrapper {
+      margin-bottom: 20px;
+      
+      .price-item {
+        --background: var(--ion-color-light);
+        --border-radius: 12px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+        
+        .input-icon {
+          color: var(--ion-color-primary);
+          margin-right: 8px;
+        }
+        
+        .price-input {
+          font-size: 18px;
+          font-weight: 600;
+        }
+        
+        ion-note {
+          font-weight: 600;
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+    
+    .tariff-preview {
+      margin-bottom: 20px;
+      
+      .preview-card {
+        background: var(--ion-color-success-tint);
+        padding: 16px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        
+        ion-icon {
+          font-size: 24px;
+        }
+        
+        span {
+          font-weight: 600;
+          color: var(--ion-color-success-shade);
+        }
+      }
+    }
+    
+    .save-button {
+      --border-radius: 12px;
+      height: 48px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Section Headers
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  .header-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &.primary {
+      background: var(--ion-color-primary-tint);
+      
+      ion-icon {
+        color: var(--ion-color-primary);
+      }
+    }
+    
+    &.secondary {
+      background: var(--ion-color-secondary-tint);
+      
+      ion-icon {
+        color: var(--ion-color-secondary);
+      }
+    }
+    
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+  
+  .header-content {
+    flex: 1;
+    
+    h3 {
+      margin: 0 0 4px 0;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    
+    p {
+      margin: 0;
+      color: var(--ion-color-medium);
+      font-size: 14px;
+    }
+  }
+}
+
+// Distance Section
+.distance-section {
+  .add-range-section {
+    margin-bottom: 20px;
+    
+    .add-range-btn {
+      --border-radius: 12px;
+      height: 48px;
+      font-weight: 600;
+      --border-width: 2px;
+      --border-style: dashed;
+    }
+  }
+}
+
+// Tariffs Card
+.tariffs-card {
+  border-radius: 16px;
+  
+  .tariff-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+    
+    .tariff-card {
+      background: var(--ion-color-light);
+      border-radius: 12px;
+      padding: 16px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      
+      &.active {
+        border-color: var(--ion-color-primary);
+        background: var(--ion-color-primary-tint);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+      }
+      
+      &.improved-card {
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-bottom: 16px;
+        background: var(--ion-color-light);
+        transition: box-shadow 0.2s;
+        border: 2px solid transparent;
+        
+        &.active {
+          border-color: var(--ion-color-primary);
+          box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb), 0.15);
+        }
+        
+        .tariff-header-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          
+          .range-icon {
+            font-size: 22px;
+            color: var(--ion-color-primary);
+            margin-right: 4px;
+          }
+          
+          .tariff-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            
+            .tariff-badge {
+              font-size: 13px;
+              font-weight: 700;
+              margin-left: 4px;
+            }
+          }
+        }
+        
+        .tariff-details-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          margin: 12px 0 8px 0;
+          
+          .detail-block {
+            flex: 1 1 80px;
+            min-width: 80px;
+            text-align: center;
+            
+            .detail-value {
+              font-weight: 600;
+              font-size: 15px;
+              margin-top: 2px;
+            }
+            
+            ion-label {
+              font-size: 13px;
+              color: var(--ion-color-medium);
+            }
+            
+            .status-chip {
+              margin-top: 2px;
+              font-size: 13px;
+            }
+          }
+        }
+        
+        .tariff-actions-row {
+          display: flex;
+          gap: 8px;
+          justify-content: center;
+          margin-top: 10px;
+          
+          .action-button {
+            --border-radius: 8px;
+            height: 36px;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 90px;
+          }
+        }
+      }
+      
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        
+        .range-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          
+          .range-icon {
+            color: var(--ion-color-primary);
+            font-size: 18px;
+          }
+          
+          .range-text {
+            font-weight: 600;
+            font-size: 16px;
+          }
+        }
+        
+        .tariff-badge {
+          font-weight: 700;
+          font-size: 14px;
+        }
+      }
+      
+      .card-content {
+        margin-bottom: 16px;
+        
+        .tariff-details {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          
+          @media (max-width: 480px) {
+            grid-template-columns: 1fr;
+            gap: 8px;
+          }
+          
+          .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            &:last-child {
+              grid-column: 1 / -1;
+              justify-content: center;
+              margin-top: 8px;
+            }
+            
+            .detail-label {
+              font-size: 14px;
+              color: var(--ion-color-medium);
+            }
+            
+            .detail-value {
+              font-weight: 600;
+              font-size: 14px;
+            }
+            
+            .status-chip {
+              margin: 0;
+              
+              ion-label {
+                font-size: 12px;
+                font-weight: 500;
+              }
+            }
+          }
+        }
+      }
+      
+      .card-actions {
+        display: flex;
+        gap: 8px;
+        
+        @media (max-width: 480px) {
+          flex-direction: column;
+        }
+        
+        .action-button {
+          flex: 1;
+          --border-radius: 8px;
+          height: 40px;
+          font-weight: 500;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  
+  .no-tariffs {
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      
+      .empty-icon {
+        font-size: 64px;
+        color: var(--ion-color-medium);
+        opacity: 0.5;
+        margin-bottom: 16px;
+      }
+      
+      h4 {
+        margin: 0 0 8px 0;
+        font-weight: 600;
+        color: var(--ion-color-dark);
+      }
+      
+      p {
+        margin: 0 0 24px 0;
+        color: var(--ion-color-medium);
+        font-size: 14px;
+      }
+      
+      .empty-action-button {
+        --border-radius: 12px;
+        height: 48px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Loading Container
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  gap: 16px;
+  
+  p {
+    margin: 0;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+// Responsive Grid for larger screens
+@media (min-width: 768px) {
+  .distance-section {
+    .tariff-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .tariff-details-row {
+    flex-direction: column;
+    gap: 8px !important;
+    
+    .detail-block {
+      min-width: unset;
+      text-align: left;
+    }
+  }
+  
+  .tariff-card.improved-card {
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .tariff-actions-row {
+    flex-direction: column;
+    gap: 6px !important;
+    
+    .action-button {
+      min-width: unset;
+      width: 100%;
+    }
+  }
+}
+
+// Animation for active tariff card
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+  }
+  50% {
+    box-shadow: 0 8px 20px rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+  }
+}
+
+.tariff-card.active {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+// Update Modal
+.add-update-modal {
+  ion-content {
+    padding: 16px !important;
+    background: var(--ion-color-light);
+  }
+  .form-section {
+    margin-bottom: 24px;
+  }
+  .button-section {
+    margin-top: 24px;
+  }
+  ion-button.submit-btn {
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+}

@@ -65,8 +65,12 @@ export class EntregaNegocioNegocioComponent  implements OnInit {
                 amount: {
                   value: this.cart.total-(this.cart.total*(this.porcentaje/100)), // Precio total del pago
                 },
+                shipping_address: {
+                  country_code: 'MX'
+                }
               },
             ],
+            shipping_preference: 'SET_PROVIDED_ADDRESS'
           });
         },
         onApprove: async (data, actions) => {
@@ -97,8 +101,13 @@ export class EntregaNegocioNegocioComponent  implements OnInit {
                 fecha_entrega: new Date(this.cart.fecha_entrega),
                 pago_confirmado: true,
                 tipo_pago: 'Tarjeta',
-                total: this.cart.total,
+                tipo_entrega: 'Negocio', // <-- Agregado para registrar el tipo de entrega
+                total: this.cart.total-(this.cart.total*(this.porcentaje/100)),
                 uid_cliente: userId
+                // Si tienes geopoint_entrega, agrégalo aquí igual que en efectivo
+                // geopoint_entrega: { ... }
+                // Si tienes serviceFee, agrégalo aquí igual que en efectivo
+                // serviceFee: this.serviceFee
               };
               
               const detalle_pedido = this.cart.detalle_carrito.map(item => ({

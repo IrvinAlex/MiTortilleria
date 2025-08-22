@@ -15,7 +15,7 @@
       </div>
       <div class="detail-item">
         <span class="label">Total:</span>
-        <span class="value">{{ cart?.total | currency }}</span>
+        <span class="value">{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
     </div>
 
@@ -30,7 +30,7 @@
           <span>{{ item.producto?.nombre || '' }} x{{ item.cantidad }} {{ item.opcion?.nombre || '' }}</span>
         </div>
         <div class="product-price">
-          <span>{{ item.subtotal | currency }}</span>
+          <span>{{ item.subtotal | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
         </div>
       </div>
     </div>

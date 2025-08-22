@@ -15,6 +15,11 @@
   --bar-background-active: var(--ion-color-primary);
   --bar-background: #ddd;
   --bar-border-radius: 50px;
+  
+  &[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 // Animación de éxito original
@@ -35,6 +40,78 @@
     font-size: 16px;
     color: var(--ion-color-primary);
     margin-top: 8px;
+  }
+}
+
+// Warning text styles
+.warning-text {
+  color: var(--ion-color-warning);
+  font-size: 0.9rem;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+// Enhanced datetime display - ALLOW ALL HOURS
+ion-datetime {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-dark);
+  border-radius: 8px;
+  padding: 8px;
+  width: 100%;
+}
+
+// Better date display
+.selected-date-display {
+  background: var(--ion-color-light-tint);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  border-left: 4px solid var(--ion-color-primary);
+  
+  h3 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    color: var(--ion-color-primary);
+  }
+  
+  p {
+    margin: 4px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    
+    &:last-child {
+      font-size: 0.9rem;
+      font-weight: normal;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+// Business hours info styling
+ion-item:has(ion-icon[name="information-circle-outline"]) {
+  --background: rgba(var(--ion-color-primary-rgb), 0.1);
+  --border-radius: 8px;
+  margin: 8px 0;
+  
+  ion-label {
+    h3 {
+      color: var(--ion-color-primary);
+      font-weight: 600;
+      margin: 0 0 4px 0;
+    }
+    
+    p {
+      color: var(--ion-color-primary-shade);
+      font-weight: 500;
+      margin: 0;
+    }
   }
 }
 
@@ -393,47 +470,6 @@
     margin: 0 0 12px 0;
     line-height: 1.4;
   }
-}
-
-.status-info-card {
-  --background: rgba(52, 144, 220, 0.05);
-  border: 1px solid rgba(52, 144, 220, 0.2);
-  margin-top: 16px;
-  
-  ion-card-subtitle {
-    color: var(--ion-color-primary);
-    font-weight: 600;
-  }
-  
-  ion-item {
-    --background: transparent;
-    --padding-start: 0;
-    --padding-end: 0;
-    font-size: 0.9rem;
-  }
-  
-  ion-label {
-    color: var(--ion-color-primary);
-  }
-}
-
-// Estilos adicionales para hora asignada
-.assigned-time-highlight {
-  font-weight: 600;
-  color: var(--ion-color-primary);
-  background: rgba(52, 144, 220, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.estimated-time-peak {
-  color: var(--ion-color-warning);
-  font-weight: 600;
-}
-
-.estimated-time-normal {
-  color: var(--ion-color-success);
-  font-weight: 600;
 }
 
 // Animaciones

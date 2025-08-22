@@ -34,16 +34,16 @@
     <ion-card-content>
       <div class="summary-item">
         <span>Productos ({{ cart?.detalle_carrito?.length || 0 }})</span>
-        <span>{{ cart?.total | currency }}</span>
+        <span>{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div *ngFor="let item of cart?.detalle_carrito" class="summary-item">
         <span>{{ item.producto?.nombre || '' }} x{{ item.cantidad }}</span>
-        <span>{{ item.subtotal | currency }}</span>
+        <span>{{ item.subtotal | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div class="divider"></div>
       <div class="summary-item" *ngIf="discountAmount > 0">
         <span class="original-price">Total: </span>
-        <span class="original-price">{{ cart?.total | currency }}</span>
+        <span class="original-price">{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div class="summary-item" *ngIf="discountAmount > 0">
         <span class="descuento">Descuento: </span>
@@ -51,11 +51,26 @@
       </div>
       <div class="summary-item" *ngIf="discountAmount > 0">
         <span class="discounted-price ">Total con descuento:</span>
-        <span class="discounted-price ">{{ cart?.total- (cart?.total*(porcentaje/100)) | currency }}</span>
+        <span class="discounted-price ">{{ cart?.total- (cart?.total*(porcentaje/100)) | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
       </div>
       <div class="summary-item" *ngIf="discountAmount === 0">
         <span>Pagas</span>
-        <span>{{ cart?.total | currency }}</span>
+        <span>{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
+      </div>
+      <!-- Peso actual y mensaje de envío -->
+      <div class="summary-item">
+        <span>Peso total:</span>
+        <span>{{ totalWeight }}kg</span>
+      </div>
+      <div *ngIf="isEligibleForFreeDelivery()" class="free-shipping-message">
+        <ion-icon name="gift-outline" color="success"></ion-icon>
+        <span class="success-text">¡Calificas para promoción de eventos!</span>
+      </div>
+      <div *ngIf="!isEligibleForFreeDelivery()" class="delivery-fee-message">
+        <ion-icon name="information-circle-outline" color="warning"></ion-icon>
+        <span class="warning-text">
+          Agrega {{ getRemainingWeightForFreeDelivery() }}kg más para promoción de eventos (mínimo {{ MINIMUM_WEIGHT_FOR_FREE_DELIVERY }}kg)
+        </span>
       </div>
     </ion-card-content>
   </ion-card>

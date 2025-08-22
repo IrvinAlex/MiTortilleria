@@ -1,0 +1,32 @@
+ion-header, ion-toolbar {
+  background: linear-gradient(90deg, #1ad436 0%, #0fae2c 100%);
+  color: #fff;
+}
+
+ion-content {
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 0 0 18px 18px;
+}
+
+ion-item {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(26, 212, 54, 0.08);
+}
+
+ion-input, ion-textarea {
+  background: #f4fff4;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.modern-send-btn {
+  margin-top: 1rem;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(26, 212, 54, 0.12);
+  background: linear-gradient(90deg, #1ad436 0%, #0fae2c 100%);
+  color: #fff;
+  border: none;
+}

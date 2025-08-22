@@ -91,15 +91,15 @@ export class AddProductCartEventsComponent  implements OnInit {
   }
 
   increment() {
-    if (this.quantity < this.producto.maximo) {
-      this.quantity=this.quantity+1;
+    if (this.quantity < this.producto.stock) {
+      this.quantity = this.quantity + 1;
       this.form.get('cantidad')?.setValue(this.quantity);
     } else {
       this.utilsSvc.presentToast({
-        message: 'Cantidad excede el máximo disponible',
+        message: 'Cantidad excede el stock disponible',
         duration: 2500,
         color: 'primary',
-        position: 'middle',
+        position: 'bottom',
         icon: 'alert-circle-outline',
       });
     }
@@ -122,23 +122,23 @@ export class AddProductCartEventsComponent  implements OnInit {
   
 
   decrement() {
-    if (this.quantity > this.producto.minimo) {
-      this.quantity=this.quantity-1;
+    if (this.quantity > 1) {
+      this.quantity = this.quantity - 1;
       this.form.get('cantidad')?.setValue(this.quantity);
     }
   }
 
   onInputChange(event: any) {
     const inputValue = event.target.value;
-    if (inputValue > this.producto.maximo) {
+    if (inputValue > this.producto.stock) {
       this.utilsSvc.presentToast({
-        message: 'Cantidad ingresada excede el máximo disponible',
+        message: 'Cantidad ingresada excede el stock disponible',
         duration: 2500,
         color: 'primary',
         position: 'middle',
         icon: 'alert-circle-outline',
       });
-      this.quantity = this.producto.maximo; // Corrige la cantidad al máximo permitido
+      this.quantity = this.producto.stock; // Corrige la cantidad al máximo permitido
       this.form.get('cantidad')?.setValue(this.quantity);
     } else if (inputValue < 0) {
       this.quantity = 0; // Evita valores negativos

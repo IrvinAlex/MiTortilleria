@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Camera } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
@@ -6,13 +6,14 @@ import { Direccion } from 'src/app/models/direccion.model';
 import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { InactivityService, InactivityWarningData } from 'src/app/services/inactivity.service';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.page.html',
   styleUrls: ['./main.page.scss'],
 })
-export class MainPage implements OnInit {
+export class MainPage implements OnInit, OnDestroy {
 
   
 
@@ -20,6 +21,12 @@ export class MainPage implements OnInit {
   currentPath: string = '';
   firebaseSvc = inject(FirebaseService);
   utilSvc = inject(UtilsService);
+  private inactivitySvc = inject(InactivityService);
+  
+  // Variables para alerta de inactividad
+  showInactivityWarning: boolean = false;
+  inactivityWarningData: InactivityWarningData | null = null;
+
   pages = [];
 
   user(): User {
@@ -39,8 +46,80 @@ export class MainPage implements OnInit {
   
     // Llama a updatePages inicialmente
     this.updatePages();
+    
+    // Iniciar monitoreo de inactividad después del login
+    this.startInactivityMonitoring();
+    
+    // Suscribirse a los cambios de la alerta de inactividad
+    this.subscribeToInactivityWarning();
   }
   
+  ngOnDestroy() {
+    // Detener monitoreo al destruir el componente
+    this.inactivitySvc.stopMonitoring();
+  }
+
+  /**
+   * Inicia el monitoreo de inactividad según el tipo de usuario
+   */
+  private startInactivityMonitoring() {
+    const user = this.utilSvc.getElementFromLocalstorage('user');
+    
+    if (user) {
+      // Solo iniciar para clientes (type_profile = 3) y negocios (type_profile = 2)
+      if (user.type_profile === 2 || user.type_profile === 3) {
+        this.inactivitySvc.startMonitoring();
+        console.log(`Monitoreo de inactividad iniciado para usuario tipo: ${user.type_profile}`);
+      } else {
+        console.log(`Usuario tipo ${user.type_profile} - Sin monitoreo de inactividad`);
+      }
+    }
+  }
+
+  /**
+   * Se suscribe a los cambios de la alerta de inactividad
+   */
+  private subscribeToInactivityWarning() {
+    // Suscribirse al estado de mostrar la alerta
+    this.inactivitySvc.getShowWarningCard().subscribe(show => {
+      this.showInactivityWarning = show;
+    });
+
+    // Suscribirse a los datos de la alerta
+    this.inactivitySvc.getWarningData().subscribe(data => {
+      this.inactivityWarningData = data;
+    });
+  }
+
+  /**
+   * Continúa la sesión cuando el usuario confirma
+   */
+  continueSession() {
+    this.inactivitySvc.continueSession();
+    
+    this.utilSvc.presentToast({
+      message: '✅ Sesión extendida exitosamente',
+      duration: 2000,
+      color: 'success',
+      position: 'top',
+      icon: 'checkmark-circle-outline'
+    });
+  }
+
+  /**
+   * Cierra la sesión desde la alerta de inactividad
+   */
+  async logoutFromInactivity() {
+    await this.inactivitySvc.logoutFromWarning();
+  }
+
+  /**
+   * Cierra la alerta de advertencia sin tomar acción
+   */
+  dismissInactivityWarning() {
+    this.inactivitySvc.dismissWarning();
+  }
+
   // Mueve la lógica de configuración de las páginas a una función
   private updatePages() {
     this.pages = []; // Reinicia las páginas para evitar duplicados
@@ -57,6 +136,7 @@ export class MainPage implements OnInit {
           { title: 'Cupones', url: '/main/cupones-superadmin', icon: 'pricetags-outline' },
           { title: 'Privacidad', url: '/main/privacidad', icon: 'shield-checkmark-outline' },
           { title: 'Rangos de productos', url: '/main/rangos-eventos', icon: 'options-outline' },
+          { title: 'Precio del viaje', url: '/main/precio-viaje', icon: 'bicycle-outline' },
           { title: 'Corte de caja', url: '/main/corte-caja-admin', icon: 'cash-outline' },
           { title: 'Perfil', url: '/main/profile', icon: 'person-outline' },
         );
@@ -69,6 +149,7 @@ export class MainPage implements OnInit {
           { title: 'Escaner QR', url: '/main/escaner-qr', icon: 'qr-code-outline' },
           { title: 'Privacidad', url: '/main/privacidad', icon: 'shield-checkmark-outline' },
           { title: 'Rangos de productos', url: '/main/rangos-eventos', icon: 'options-outline' },
+          { title: 'Precio del viaje', url: '/main/precio-viaje', icon: 'bicycle-outline' },
           { title: 'Corte de caja', url: '/main/corte-caja-admin', icon: 'cash-outline' },
           { title: 'Perfil', url: '/main/profile-admin', icon: 'person-outline' },
         );

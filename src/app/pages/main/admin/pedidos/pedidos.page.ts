@@ -120,12 +120,13 @@ export class PedidosPage implements OnInit {
 
           Promise.all(promises)
             .then(() => {
-              this.pedidosFiltrados = pedidosHoy;
+              // Ordenar pedidos por prioridad: activos -> entregados -> cancelados
+              this.pedidosFiltrados = this.sortOrdersByPriority(pedidosHoy);
               this.loading = false;
             })
             .catch((error) => {
               console.error('Error al procesar pedidos:', error);
-              this.pedidosFiltrados = pedidosHoy; // Muestra al menos los filtrados
+              this.pedidosFiltrados = this.sortOrdersByPriority(pedidosHoy);
               this.loading = false;
             });
 
@@ -142,8 +143,48 @@ export class PedidosPage implements OnInit {
       },
     });
   }
-  
-  
+
+  /**
+   * Ordena los pedidos por prioridad: activos primero, luego entregados, luego cancelados
+   */
+  private sortOrdersByPriority(pedidos: any[]): any[] {
+    return pedidos.sort((a, b) => {
+      const priorityA = this.getOrderPriority(a.estatus);
+      const priorityB = this.getOrderPriority(b.estatus);
+      
+      // Si tienen la misma prioridad, ordenar por fecha más reciente primero
+      if (priorityA === priorityB) {
+        const dateA = this.toDateTime(a?.fecha_entrega ?? a?.fecha) || new Date(0);
+        const dateB = this.toDateTime(b?.fecha_entrega ?? b?.fecha) || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      }
+      
+      return priorityA - priorityB;
+    });
+  }
+
+  /**
+   * Obtiene la prioridad numérica del estado del pedido
+   * Menor número = mayor prioridad
+   */
+  private getOrderPriority(estatus: string): number {
+    const statusLower = this.normalizeText(estatus);
+    
+    // Estados activos (prioridad más alta: 1-3)
+    if (statusLower.includes('pedido confirmado')) return 1;
+    if (statusLower.includes('en preparacion') || statusLower.includes('en preparación')) return 2;
+    if (statusLower.includes('en espera de recoleccion') || statusLower.includes('en espera de recolección') || 
+        statusLower.includes('en proceso de entrega')) return 3;
+    
+    // Estados completados (prioridad media: 4)
+    if (statusLower.includes('entregado')) return 4;
+    
+    // Estados cancelados (prioridad más baja: 5)
+    if (statusLower.includes('cancelado')) return 5;
+    
+    // Estados desconocidos (prioridad media-baja: 6)
+    return 6;
+  }
 
   closeModal() {
     this.showModal = false;
@@ -179,7 +220,7 @@ export class PedidosPage implements OnInit {
     const fechaInicio = filterParams.fechaInicio ? normalize(filterParams.fechaInicio) : null;
     const fechaFin = filterParams.fechaFin ? normalize(filterParams.fechaFin) : null;
 
-    this.pedidosFiltrados = this.pedidos.filter(pedido => {
+    const filteredPedidos = this.pedidos.filter(pedido => {
       // Filtrar por estatus
       if (filterParams.selectedStatus && filterParams.selectedStatus.length) {
         if (!filterParams.selectedStatus.includes(pedido.estatus)) {
@@ -206,13 +247,17 @@ export class PedidosPage implements OnInit {
 
       return true;
     });
+
+    // Aplicar ordenamiento por prioridad a los pedidos filtrados
+    this.pedidosFiltrados = this.sortOrdersByPriority(filteredPedidos);
   }
 
   clearFilters() {
-    // Restablece a "pedidos de hoy" usando la misma lógica robusta
-    this.pedidosFiltrados = this.pedidos.filter(pedido =>
+    // Restablece a "pedidos de hoy" usando la misma lógica robusta y ordenamiento
+    const pedidosHoy = this.pedidos.filter(pedido =>
       this.isTodayDateLike(pedido?.fecha_entrega ?? pedido?.fecha)
     );
+    this.pedidosFiltrados = this.sortOrdersByPriority(pedidosHoy);
     this.filtersApplied = false;
   }
 
@@ -224,12 +269,15 @@ export class PedidosPage implements OnInit {
       this.isTodayDateLike(p?.fecha_entrega ?? p?.fecha)
     );
 
-    this.pedidosFiltrados = baseHoy.filter(pedido =>
+    const filteredPedidos = baseHoy.filter(pedido =>
       (pedido.nombre_cliente || '').toLowerCase().includes(term) ||
       (Number.isFinite(pedido.total) ? pedido.total.toFixed(2) : '').includes(term) ||
       (pedido.id || '').toLowerCase().includes(term) ||
       (pedido.estatus || '').toLowerCase().includes(term)
     );
+
+    // Aplicar ordenamiento por prioridad a los pedidos filtrados por búsqueda
+    this.pedidosFiltrados = this.sortOrdersByPriority(filteredPedidos);
   }
 
 
@@ -331,6 +379,23 @@ export class PedidosPage implements OnInit {
     this.getPedidos();
   }
 
+  // Mostrar términos y condiciones como modal
+  async openTermsModal() {
+    const success = await this.utilsSvc.presentModal({
+      component: (await import('src/app/shared/components/terms/terms.component')).TermsComponent,
+      componentProps: {}
+    });
+    if (success) {
+      this.utilsSvc.presentToast({
+        message: `Términos aceptados`,
+        duration: 2000,
+        color: 'primary',
+        position: 'bottom',
+        icon: 'checkmark-circle-outline'
+      });
+    }
+  }
+
   getDeliveryTypeIcon(tipoEntrega: string): string {
     switch (tipoEntrega?.toLowerCase()) {
       case 'domicilio':
@@ -381,13 +446,57 @@ export class PedidosPage implements OnInit {
     return !!(hasGeoPoint || hasCoords);
   }
 
-  // Devuelve el tipo de entrega efectivo: solo 'domicilio' si hay ubicación; de lo contrario 'negocio'
+  // Enhanced delivery type detection for pickup orders
   getEffectiveDeliveryType(pedido: any): string {
+    // First check explicit flags for pickup
+    if (pedido?.es_recoleccion_negocio === true) return 'negocio';
+    if (pedido?.metodo_entrega === 'negocio') return 'negocio';
+    if (pedido?.tipo_entrega === 'negocio') return 'negocio';
+    
+    // Check for pickup time field
+    if (pedido?.hora_recoleccion) return 'negocio';
+    
+    // Fallback to location-based detection
     const t = (pedido?.tipo_entrega || '').toLowerCase();
-    if (!t) return 'negocio';
+    if (!t) return this.hasUbicacion(pedido) ? 'domicilio' : 'negocio';
     if (t === 'domicilio') return this.hasUbicacion(pedido) ? 'domicilio' : 'negocio';
-    // Sin tipo declarado: inferir por ubicación
-    return this.hasUbicacion(pedido) ? 'domicilio' : 'negocio';
+    return 'negocio';
+  }
+
+  // Get the appropriate scheduling date for the order
+  getScheduledDate(pedido: any): Date | null {
+    // Priority: pickup time > delivery time > order date
+    if (pedido?.hora_recoleccion) {
+      return this.toDateTime(pedido.hora_recoleccion);
+    }
+    if (pedido?.fecha_entrega) {
+      return this.toDateTime(pedido.fecha_entrega);
+    }
+    if (pedido?.fecha) {
+      return this.toDateTime(pedido.fecha);
+    }
+    return null;
+  }
+
+  // Get the appropriate label for the scheduling
+  getScheduledLabel(pedido: any): string {
+    const effectiveType = this.getEffectiveDeliveryType(pedido);
+    if (effectiveType === 'negocio') {
+      if (pedido?.hora_recoleccion) return 'Horario de recolección';
+      if (pedido?.fecha_entrega) return 'Horario programado';
+      return 'Fecha del pedido';
+    } else {
+      return 'Horario de entrega';
+    }
+  }
+
+  // Convert various date formats to Date object
+  private toDateTime(value: any): Date | null {
+    if (!value) return null;
+    if (value?.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value?.seconds) return new Date(value.seconds * 1000);
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
   }
 
   // Comparación sin acentos, minúsculas, colapsando espacios y trim

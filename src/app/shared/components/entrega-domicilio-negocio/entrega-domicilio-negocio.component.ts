@@ -35,19 +35,52 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
         if (businessLocations && businessLocations.length > 0) {
           const businessLocation = businessLocations[0];
           const distancia = this.calcularDistancia(
-            parseFloat(userLocation.geopoint._lat),
-            parseFloat(userLocation.geopoint._long),
-            parseFloat(businessLocation['geopoint'].latitude),
-            parseFloat(businessLocation['geopoint'].longitude)
+            parseFloat(userLocation.geopoint._lat || userLocation.geopoint.latitude),
+            parseFloat(userLocation.geopoint._long || userLocation.geopoint.longitude),
+            parseFloat(businessLocation['geopoint'].latitude) || parseFloat(businessLocation['geopoint']._lat),
+            parseFloat(businessLocation['geopoint'].longitude) || parseFloat(businessLocation['geopoint']._long)
           );
           this.distanciaKm = parseFloat(distancia.toFixed(2));
-          this.transportFee = this.calculateTransportFee(this.distanciaKm);
+          this.loadTransportFeeFromFirebase(this.distanciaKm);
         }
       });
     }
   }
 
+  private async loadTransportFeeFromFirebase(distance: number) {
+    try {
+      // First try to get distance-based tariffs
+      this.firebaseSvc.getCollectionData('tarifas_transporte').subscribe(tariffs => {
+        if (tariffs && tariffs.length > 0) {
+          const applicableTariff = tariffs.find(t => 
+            distance >= t['distancia_min'] && distance <= t['distancia_max'] && t['activo']
+          );
+          
+          if (applicableTariff) {
+            this.transportFee = applicableTariff['tarifa'];
+            return;
+          }
+        }
+        
+        // Fallback to fixed tariff
+        this.firebaseSvc.getCollectionData('tarifa_fija').subscribe(fixedTariffs => {
+          if (fixedTariffs && fixedTariffs.length > 0 && fixedTariffs[0]['activo']) {
+            this.transportFee = fixedTariffs[0]['precio'];
+          } else {
+            // Ultimate fallback to hardcoded calculation
+            this.transportFee = this.calculateTransportFee(distance);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error loading transport fee from Firebase:', error);
+      // Fallback to hardcoded calculation
+      this.transportFee = this.calculateTransportFee(distance);
+    }
+  }
+
   private calculateTransportFee(distanceKm: number): number {
+    // Keep as fallback
     if (distanceKm <= 0.5) return 30;
     if (distanceKm <= 1.0) return 35;
     if (distanceKm <= 1.5) return 50;
@@ -58,7 +91,7 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
     if (distanceKm <= 4.0) return 115;
     if (distanceKm <= 4.5) return 125;
     if (distanceKm <= 5.0) return 145;
-    return 145; // Para distancias mayores a 5km
+    return 145;
   }
 
   private async sendOrderConfirmationEmail(pedidoId: string, orderType: string) {
@@ -103,8 +136,12 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
                 amount: {
                   value: finalTotal.toFixed(2),
                 },
+                shipping_address: {
+                  country_code: 'MX'
+                }
               },
             ],
+            shipping_preference: 'SET_PROVIDED_ADDRESS'
           });
         },
         onApprove: async (data, actions) => {
@@ -136,7 +173,6 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
               const finalTransportFee = subtotalWithDiscount >= 140 ? 0 : this.transportFee;
               const serviceCharge = subtotalWithDiscount < 140 ? 5 : 0;
               const finalTotal = subtotalWithDiscount + finalTransportFee + serviceCharge;
-              
               const pedido = {
                 estatus: 'Pedido confirmado',
                 fecha: new Date(),
@@ -419,3 +455,4 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
   }
 
 }
+

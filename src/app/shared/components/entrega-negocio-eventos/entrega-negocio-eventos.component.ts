@@ -19,11 +19,31 @@ export class EntregaNegocioEventosComponent  implements OnInit {
   cart: any;
   discountAmount: number = 0;
   porcentaje: number = 0;
+  readonly MINIMUM_WEIGHT_FOR_FREE_DELIVERY = 60; // kg
+  totalWeight: number = 0;
 
   constructor() {}
 
   ngOnInit() {
     this.getCartDetails();
+    this.calculateTotalWeight();
+  }
+
+  calculateTotalWeight() {
+    this.totalWeight = 0;
+    if (this.cart && this.cart.detalle_carrito) {
+      this.totalWeight = this.cart.detalle_carrito.reduce((total, item) => {
+        return total + (item.cantidad || 0);
+      }, 0);
+    }
+  }
+
+  isEligibleForFreeDelivery(): boolean {
+    return this.totalWeight >= this.MINIMUM_WEIGHT_FOR_FREE_DELIVERY;
+  }
+
+  getRemainingWeightForFreeDelivery(): number {
+    return Math.max(0, this.MINIMUM_WEIGHT_FOR_FREE_DELIVERY - this.totalWeight);
   }
 
   private async sendOrderConfirmationEmail(pedidoId: string, orderType: string) {
@@ -34,21 +54,24 @@ export class EntregaNegocioEventosComponent  implements OnInit {
         customerEmail: user.email,
         customerName: user.name || user.email,
         fecha: new Date(),
+        fechaRecoleccion: new Date(this.cart.fecha_entrega), // Add pickup date
         estatus: 'Pedido confirmado',
         tipo_pago: orderType,
+        metodo_entrega: 'negocio', // Specify pickup method
+        es_recoleccion_negocio: true, // Flag for business pickup
         items: this.cart.detalle_carrito,
         subtotal: this.cart.total,
         discountAmount: this.cart.total * (this.porcentaje / 100),
         discountPercent: this.porcentaje,
-        transportFee: 0, // Sin tarifa de transporte para entrega en negocio
+        transportFee: 0, // No transport fee for pickup
         total: this.cart.total - (this.cart.total * (this.porcentaje / 100))
       };
 
-      await this.emailSvc.sendOrderConfirmationEmail(orderData);
-      console.log('Email de confirmación enviado exitosamente');
+      // Send pickup-specific email instead of regular order confirmation
+      await this.emailSvc.sendPickupScheduleEmail(orderData);
+      console.log('Email de confirmación de recolección enviado exitosamente');
     } catch (error) {
       console.error('Error al enviar email de confirmación:', error);
-      // No mostrar error al usuario para no interrumpir el flujo
     }
   }
 
@@ -64,8 +87,12 @@ export class EntregaNegocioEventosComponent  implements OnInit {
                 amount: {
                   value: this.cart.total-(this.cart.total*(this.porcentaje/100)), // Precio total del pago
                 },
+                shipping_address: {
+                  country_code: 'MX'
+                }
               },
             ],
+            shipping_preference: 'SET_PROVIDED_ADDRESS'
           });
         },
         onApprove: async (data, actions) => {
@@ -94,9 +121,12 @@ export class EntregaNegocioEventosComponent  implements OnInit {
                 estatus: 'Pedido confirmado',
                 fecha: new Date(),
                 fecha_entrega: this.cart.fecha_entrega,
+                hora_recoleccion: this.cart.fecha_entrega,
+                metodo_entrega: 'negocio',
+                es_recoleccion_negocio: true,
                 pago_confirmado: true,
                 tipo_pago: 'Tarjeta',
-                total: this.cart.total,
+                total: this.cart.total-(this.cart.total*(this.porcentaje/100)),
                 uid_cliente: userId
               };
               const detalle_pedido = this.cart.detalle_carrito.map(item => ({
@@ -200,6 +230,9 @@ export class EntregaNegocioEventosComponent  implements OnInit {
         estatus: 'Pedido confirmado',
         fecha: new Date(),
         fecha_entrega: this.cart.fecha_entrega,
+        hora_recoleccion: this.cart.fecha_entrega, // Add pickup time
+        metodo_entrega: 'negocio', // Add delivery method
+        es_recoleccion_negocio: true, // Flag for business pickup
         pago_confirmado: false,
         tipo_pago: 'Efectivo',
         total: this.cart.total-(this.cart.total*(this.porcentaje/100)),

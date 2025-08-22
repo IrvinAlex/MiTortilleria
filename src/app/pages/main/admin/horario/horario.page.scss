@@ -1,3 +1,302 @@
 .option-btn{
     margin-left: 0.5rem;
 }
+
+// Enhanced card styling
+.card {
+  --background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 4px 8px; // reducido el margen
+  padding: 8px;
+}
+
+// Pickup information styling
+.pickup-info {
+  background: rgba(var(--ion-color-success-rgb), 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  border-left: 4px solid var(--ion-color-success);
+  
+  .pickup-details, .pickup-schedule, .pickup-instructions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+    
+    ion-icon {
+      min-width: 20px;
+    }
+    
+    .pickup-text, .schedule-text, .instructions-text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .pickup-text {
+      font-weight: 600;
+      color: var(--ion-color-success);
+    }
+    
+    .schedule-text {
+      font-weight: 500;
+      color: var(--ion-color-success-shade);
+    }
+    
+    .instructions-text {
+      font-style: italic;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+// Delivery information styling
+.delivery-info {
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  border-left: 4px solid var(--ion-color-primary);
+  
+  .delivery-details, .delivery-schedule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+    
+    ion-icon {
+      min-width: 20px;
+    }
+    
+    .delivery-text, .schedule-text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .delivery-text {
+      font-weight: 600;
+      color: var(--ion-color-primary);
+    }
+    
+    .schedule-text {
+      font-weight: 500;
+      color: var(--ion-color-primary-shade);
+    }
+  }
+}
+
+// Chips container styling
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  
+  ion-chip {
+    font-size: 12px;
+    height: 28px;
+    
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+// Estilos responsivos para horarios
+.horario-item {
+  --padding-start: 12px; // reducido el padding
+  --padding-end: 12px;
+  --inner-padding-end: 8px;
+  margin-bottom: 4px; // reducido el margen inferior
+}
+
+.horario-label {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+}
+
+.name h2 {
+  display: flex;
+  align-items: center;
+  margin: 0 0 6px 0;
+}
+
+.data {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 6px 0;
+  flex-wrap: wrap;
+  
+  strong {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+// Estilos para pantallas grandes (Desktop/Tablet landscape)
+@media (min-width: 768px) {
+  .card {
+    margin: 6px 10px; // reducido el margen
+    padding: 12px;
+  }
+  .horario-item {
+    --padding-start: 14px; // reducido el padding
+    --padding-end: 14px;
+    margin-bottom: 6px; // reducido el margen inferior
+  }
+  
+  .horario-label {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+  }
+  
+  .name {
+    flex: 0 0 auto;
+    min-width: 180px;
+    
+    h2 {
+      font-size: 1.3rem;
+    }
+  }
+  
+  .horario-main-info {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    align-items: flex-start;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  
+  .data {
+    gap: 0.5rem;
+    margin: 4px 0;
+    min-width: 200px;
+    
+    strong {
+      gap: 0.35rem;
+    }
+  }
+  
+  .pickup-info, .delivery-info {
+    flex: 1;
+    min-width: 300px;
+    margin: 0;
+  }
+  
+  .chips-container {
+    flex: 0 0 auto;
+    margin-top: 0;
+    min-width: 200px;
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    margin: 8px 12px; // reducido el margen
+    padding: 16px;
+  }
+  
+  .horario-label {
+    gap: 24px;
+    padding: 16px 0;
+  }
+  
+  .name {
+    min-width: 200px;
+    
+    h2 {
+      font-size: 1.4rem;
+    }
+  }
+  
+  .horario-main-info {
+    gap: 30px;
+  }
+  
+  .data {
+    min-width: 220px;
+  }
+  
+  .pickup-info, .delivery-info {
+    min-width: 350px;
+  }
+  
+  .chips-container {
+    min-width: 220px;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .pickup-info, .delivery-info {
+    padding: 10px;
+    margin: 6px 0;
+    
+    .pickup-details, .pickup-schedule, .pickup-instructions,
+    .delivery-details, .delivery-schedule {
+      font-size: 13px;
+      
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+  }
+  
+  .chips-container {
+    gap: 6px;
+    
+    ion-chip {
+      font-size: 11px;
+      height: 26px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .horario-item {
+    --padding-start: 8px; // reducido el padding
+    --padding-end: 8px;
+  }
+  
+  .data {
+    gap: 0.5rem;
+    margin: 4px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .horario-label {
+    gap: 8px;
+  }
+  
+  .data {
+    gap: 6px;
+    margin: 4px 0;
+  }
+  
+  .chips-container {
+    gap: 4px;
+    
+    ion-chip {
+      font-size: 10px;
+      height: 24px;
+      
+      ion-label {
+        font-size: 0.7rem;
+      }
+    }
+  }
+}

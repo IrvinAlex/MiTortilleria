@@ -1,0 +1,78 @@
+<app-header [isModal]="true" [title]="tarifa ? 'Actualizar Tarifa' : 'Agregar Tarifa'"></app-header>
+
+<ion-content>
+  <form [formGroup]="form" class="form-tarifa ion-padding" (ngSubmit)="submit()">
+    <div class="form-section">
+      <h3>
+        <ion-icon name="location-outline"></ion-icon>
+        Rango de Distancia
+      </h3>
+      <div class="inputs-row">
+        <ion-item class="input-item" lines="none">
+          <ion-label position="stacked">Distancia mínima (km)</ion-label>
+          <ion-input type="number" [formControl]="form.controls.distancia_min" min="0" (ionInput)="setNumberInputs()" placeholder="Ej: 0"></ion-input>
+        </ion-item>
+        <ion-item class="input-item" lines="none">
+          <ion-label position="stacked">Distancia máxima (km)</ion-label>
+          <ion-input type="number" [formControl]="form.controls.distancia_max" min="0.1" (ionInput)="setNumberInputs()" placeholder="Ej: 0.5"></ion-input>
+        </ion-item>
+      </div>
+      <div class="validators">
+        <div *ngIf="form.controls.distancia_min.errors && form.controls.distancia_min.touched">
+          <span *ngIf="form.controls.distancia_min.errors?.['required']">Campo requerido</span>
+          <span *ngIf="form.controls.distancia_min.errors?.['min']">Debe ser ≥ 0</span>
+        </div>
+        <div *ngIf="form.controls.distancia_max.errors && form.controls.distancia_max.touched">
+          <span *ngIf="form.controls.distancia_max.errors?.['required']">Campo requerido</span>
+          <span *ngIf="form.controls.distancia_max.errors?.['min']">Debe ser &gt; 0</span>
+        </div>
+      </div>
+      <div class="range-preview" *ngIf="form.get('distancia_min')?.value >= 0 && form.get('distancia_max')?.value > 0">
+        <ion-chip color="primary" outline>
+          <ion-icon name="location-outline" slot="start"></ion-icon>
+          <ion-label>{{ form.get('distancia_min')?.value }} - {{ form.get('distancia_max')?.value }} km</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>
+        <ion-icon name="cash-outline"></ion-icon>
+        Tarifa
+      </h3>
+      <ion-item class="input-item" lines="none">
+        <ion-label position="stacked">Precio (MXN)</ion-label>
+        <ion-input type="number" [formControl]="form.controls.tarifa" min="1" (ionInput)="setNumberInputs()" placeholder="Ej: 30"></ion-input>
+      </ion-item>
+      <div class="validators">
+        <div *ngIf="form.controls.tarifa.errors && form.controls.tarifa.touched">
+          <span *ngIf="form.controls.tarifa.errors?.['required']">Campo requerido</span>
+          <span *ngIf="form.controls.tarifa.errors?.['min']">Debe ser &gt; 0</span>
+        </div>
+      </div>
+      <div class="price-preview" *ngIf="form.get('tarifa')?.value && form.get('tarifa')?.value > 0">
+        <ion-chip color="success" outline>
+          <ion-icon name="cash-outline" slot="start"></ion-icon>
+          <ion-label>{{ form.get('tarifa')?.value | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <ion-item class="checkbox-item" lines="none">
+        <ion-checkbox slot="start" formControlName="activo"></ion-checkbox>
+        <ion-label>
+          <h3>Tarifa activa</h3>
+          <p>Esta tarifa estará disponible para cálculos de entrega</p>
+        </ion-label>
+      </ion-item>
+    </div>
+
+    <div class="button-section">
+      <ion-button expand="block" size="large" type="submit" [disabled]="form.invalid" class="submit-btn">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        {{ tarifa ? 'Actualizar Tarifa' : 'Agregar Tarifa' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

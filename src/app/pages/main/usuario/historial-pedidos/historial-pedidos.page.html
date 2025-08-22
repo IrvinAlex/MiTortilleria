@@ -26,7 +26,7 @@
             <div class="name">
               <h2>
                 <ion-icon slot="start" style="margin-right: 2rem;" color="danger" name="cash-outline"></ion-icon>
-                ${{ pedido.total | number:'1.2-2' }}
+                {{ pedido.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN
               </h2>
             </div>
             <!-- Información del cliente y estado del pedido -->
@@ -38,7 +38,13 @@
             </div>
             <!-- Fecha de entrega solo se muestra si el estado es 'En espera de recolección' -->
             <div class="data" *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
-              <strong><ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de entrega: {{ pedido.fecha_entrega?.toDate() | date: 'dd/MM/yyyy HH:mm' }}</strong>
+              <strong>
+                <ion-icon slot="start" name="calendar-outline"></ion-icon>
+                Fecha de entrega:
+                {{
+                  (pedido.fecha_entrega?.toDate ? pedido.fecha_entrega.toDate() : pedido.fecha_entrega) | date: 'dd/MM/yyyy HH:mm'
+                }}
+              </strong>
             </div>
             <!-- Chip con el tipo de pago -->
             <ion-chip color="primary" mode="ios" outline="true">

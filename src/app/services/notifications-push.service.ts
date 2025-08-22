@@ -3,6 +3,7 @@ import { ActionPerformed, PushNotificationSchema, PushNotifications, Token } fro
 import { UtilsService } from './utils.service';
 import { User } from '../models/user.model';
 import { doc, getFirestore, updateDoc } from 'firebase/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 @Injectable({
   providedIn: 'root'
 })
@@ -12,6 +13,7 @@ export class NotificationsPushService{
   user: User;
   enabled: boolean = false;
   uid_user: string = '';
+  firestore = inject(AngularFirestore);
 
   
   constructor() { }
@@ -63,6 +65,13 @@ export class NotificationsPushService{
           color: 'primary',
           position: 'top'
         });
+        // Guardar en Firestore que el usuario recibió la notificación
+        const path = `users/${this.uid_user}/notifications`;
+        this.firestore.collection(path).add({
+          title: notification.title,
+          body: notification.body,
+          receivedAt: new Date()
+        });
       }
     );
 
@@ -110,5 +119,21 @@ export class NotificationsPushService{
     
 
     
+  }
+
+  // Envía notificación push a todos los usuarios con token
+  async sendPushNotification(title: string, message: string): Promise<void> {
+    // Obtiene todos los usuarios con token registrado
+    const snapshot = await this.firestore.collection('users', ref => ref.where('token', '!=', '')).get().toPromise();
+    const tokens: string[] = [];
+    snapshot?.forEach(doc => {
+      const data = doc.data() as { token?: string }; // <-- especifica el tipo aquí
+      if (data && typeof data.token === 'string' && data.token.length > 0) tokens.push(data.token);
+    });
+
+    // Envía la notificación a cada token
+    for (const token of tokens) {
+      await this.sendNotification(token, title, message);
+    }
   }
 }

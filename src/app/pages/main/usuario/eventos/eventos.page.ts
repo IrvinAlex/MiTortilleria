@@ -150,11 +150,10 @@ export class EventosPage implements OnInit {
   }
 
   // Verificar si un producto ya está en el carrito de eventos
-  isProductInCart(producto: Producto): boolean {
+  isProductInCart(producto: any): boolean {
     const carrito = this.carrito();
-    console.log(carrito);
     if (carrito[0].total > 0 && carrito[0] && Array.isArray(carrito[0].detalle_carrito)) {
-      return true;
+      return carrito[0].detalle_carrito.some((item: any) => item.uid_producto === producto.id);
     }
     return false;
   }

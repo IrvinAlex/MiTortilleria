@@ -12,7 +12,7 @@
       <p>Productos</p>
     </div>
     <div>
-      <h5>{{getProfits() | currency: 'USD'}}</h5>
+      <h5>{{getProfits() | currency:'MXN':'symbol':'1.2-2':'en-US'}}</h5>
       <p>Ganancias</p>
     </div>
   </ion-card>
@@ -27,12 +27,12 @@
         <ion-label>
           <div class="name">{{p.name}}</div>
           <div class="data">
-            <strong>Precio:</strong>{{p.price | currency: 'USD'}} <br>
+            <strong>Precio:</strong>{{p.price | currency:'MXN':'symbol':'1.2-2':'en-US'}} <br>
             <strong>Unidades Vendidas:</strong> {{p.soldUnits}}
           </div>
 
           <ion-chip color="primary" mode="ios" outline="true">
-            <ion-label>Ganancia: {{p.price * p.soldUnits | currency: 'USD'}}</ion-label>
+            <ion-label>Ganancia: {{p.price * p.soldUnits | currency:'MXN':'symbol':'1.2-2':'en-US'}}</ion-label>
           </ion-chip>
 
 

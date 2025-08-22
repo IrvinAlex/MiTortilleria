@@ -8,6 +8,7 @@ import { CustomInputComponent } from './components/custom-input/custom-input.com
 import { AddUpdateProductComponent } from './components/add-update-product/add-update-product.component';
 import { AddUpdateUserComponent } from './components/add-update-user/add-update-user.component';
 import { TermsComponent } from './components/terms/terms.component';
+import { Terms2Component } from './components/terms/terms2.component';
 import { AddProductCartComponent } from './components/add-product-cart/add-product-cart.component';
 import { FiltrosModalComponent } from './components/filtros-modal/filtros-modal.component';
 import { PedidoModalComponent } from './components/pedido-modal/pedido-modal.component';
@@ -39,6 +40,8 @@ import { EntregaNegocioNegocioComponent } from './components/entrega-negocio-neg
 import { EntregaDomicilioNegocioComponent } from './components/entrega-domicilio-negocio/entrega-domicilio-negocio.component';
 import { EntregaNegocioComponent } from './components/entrega-negocio/entrega-negocio.component';
 import { ConfirmarDireccionComponent } from './components/confirmar-direccion/confirmar-direccion.component';
+import { AddUpdateTarifaComponent } from './components/add-update-tarifa/add-update-tarifa.component';
+import { NotificationModalComponent } from './components/notification-modal/notification-modal.component';
 
 
 @NgModule({
@@ -75,7 +78,10 @@ import { ConfirmarDireccionComponent } from './components/confirmar-direccion/co
     AddProductNegocioComponent,
     EntregaNegocioNegocioComponent,
     EntregaDomicilioNegocioComponent,
-    ConfirmarDireccionComponent
+    ConfirmarDireccionComponent,
+    Terms2Component,
+    AddUpdateTarifaComponent,
+    NotificationModalComponent
   ],
 
   exports:  [HeaderComponent,
@@ -112,7 +118,10 @@ import { ConfirmarDireccionComponent } from './components/confirmar-direccion/co
     AddProductNegocioComponent,
     EntregaNegocioNegocioComponent,
     EntregaDomicilioNegocioComponent,
-    ConfirmarDireccionComponent
+    ConfirmarDireccionComponent,
+    Terms2Component,
+    AddUpdateTarifaComponent,
+    NotificationModalComponent
   ],
   imports: [
     CommonModule,

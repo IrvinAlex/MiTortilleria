@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, ViewChild, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { Timestamp } from 'firebase/firestore';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -22,6 +22,7 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
   @Input() pedido: any;
   fechaHoraRecoleccion: string = '';
   fechaMinima: string = '';
+  fechaMaxima: string = '';
 
   // Propiedades actualizadas para el nuevo sistema
   currentTime: Date = new Date();
@@ -50,16 +51,17 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
 
   constructor() { }
 
+  @ViewChild('sliderButton', { static: false }) sliderButton!: ElementRef;
+  sliderValue: number = 0;
+  showAnimation: boolean = false;
+
   ngOnInit() {
     this.setFechaMinima();
-    
-    if (!this.fechaHoraRecoleccion) {
-      this.fechaHoraRecoleccion = '';
-    }
-    
+    this.initializeDatetime();
     this.initializeTimeSystem();
     this.startAutoAssignment();
   }
+
 
   ngOnDestroy() {
     if (this.timeSubscription) {
@@ -70,13 +72,39 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
     }
   }
 
-  @ViewChild('sliderButton', { static: false }) sliderButton!: ElementRef;
-  sliderValue: number = 0;
-  showAnimation: boolean = false;
+  formatForIonDatetime(date: Date): string {
+    const pad = (n: number) => (n < 10 ? '0' + n : n);
+
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    const tzOffset = -date.getTimezoneOffset();
+    const sign = tzOffset >= 0 ? '+' : '-';
+    const offsetHours = pad(Math.floor(Math.abs(tzOffset) / 60));
+    const offsetMinutes = pad(Math.abs(tzOffset) % 60);
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetMinutes}`;
+  }
 
   setFechaMinima() {
     const now = new Date();
-    this.fechaMinima = now.toISOString();
+    this.fechaMinima = this.formatForIonDatetime(now);
+
+    const maxDate = new Date(now);
+    maxDate.setDate(now.getDate() + 7);
+    this.fechaMaxima = this.formatForIonDatetime(maxDate);
+
+    console.log("min:", this.fechaMinima);
+    console.log("max:", this.fechaMaxima);
+  }
+
+  initializeDatetime() {
+    // No asignar fecha/hora por defecto, dejar vacío para que el usuario elija
+    this.fechaHoraRecoleccion = '';
   }
 
   initializeTimeSystem() {
@@ -179,7 +207,7 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
               !isNaN(new Date(this.fechaHoraRecoleccion).getTime()));
   }
 
-  // Método actualizado para mostrar la hora asignada automáticamente
+  // Enhanced method to format assigned time
   formatAssignedTime(): string {
     // Si hay una hora asignada manualmente, mostrarla
     if (this.fechaHoraRecoleccion && this.fechaHoraRecoleccion.length > 0) {
@@ -197,6 +225,7 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
         
         return `${displayHour}:${minutes.toString().padStart(2, '0')} ${ampm}`;
       } catch (error) {
+        console.error('Error formatting assigned time:', error);
         return this.autoAssignedTime || 'No asignada';
       }
     }
@@ -210,9 +239,37 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
     return this.currentDemandLevel?.description || 'Calculando...';
   }
 
-  onDateTimeChange() {
+  onDateTimeChange(event?: any) {
+    // Si el evento viene de ion-datetime, extrae el valor
+    if (event && event.detail && event.detail.value) {
+      // Convertir a zona local para evitar problemas de día anterior
+      const isoString = event.detail.value;
+      const localDate = new Date(isoString);
+      // Guardar como ISO local (sin modificar la hora seleccionada)
+      this.fechaHoraRecoleccion = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    }
     console.log('Fecha/hora cambiada:', this.fechaHoraRecoleccion);
-    console.log('Hora asignada válida:', this.hasValidAssignedTime());
+
+    // MINIMAL validation - only basic checks
+    if (this.fechaHoraRecoleccion) {
+      const selectedDate = new Date(this.fechaHoraRecoleccion);
+      const now = new Date();
+      // Comparar solo la fecha (sin hora)
+      const selectedDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+      const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      if (selectedDay < nowDay) {
+        this.utilSvc.presentToast({
+          message: 'No puedes seleccionar una fecha anterior a hoy',
+          duration: 2500,
+          color: 'warning',
+          position: 'bottom',
+          icon: 'calendar-outline'
+        });
+        return;
+      }
+    }
+
+    console.log('Fecha válida:', this.validarFechaHora());
     console.log('Hora formateada:', this.formatAssignedTime());
   }
 
@@ -229,37 +286,47 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Asignación automática basada en la demanda actual
+  // Enhanced auto assignment method
   async performAutoAssignment() {
     this.isCountdownActive = false;
-    
-    const now = new Date();
-    // Usar el tiempo máximo del nivel de demanda actual
-    const preparationTime = this.currentDemandLevel.maxTime;
-    const deliveryTime = new Date(now.getTime() + preparationTime * 60000);
-    
-    this.fechaHoraRecoleccion = deliveryTime.toISOString();
-    
+
+    // Solo asignar automáticamente si el usuario NO seleccionó fecha/hora válida
+    if (!this.validarFechaHora()) {
+      const now = new Date();
+      const preparationTime = this.currentDemandLevel.maxTime;
+      const deliveryTime = new Date(now.getTime() + preparationTime * 60000);
+      this.fechaHoraRecoleccion = deliveryTime.toISOString();
+    }
+    // Si el usuario ya seleccionó fecha/hora válida, NO modificarla
+
     await this.executeAssignment();
   }
 
   async executeAssignment() {
     const loading = await this.utilSvc.loading();
     await loading.present();
-    
+
     this.isAssigned = true;
     this.showAnimation = true;
 
     let path = `pedidos/${this.pedido.id}`;
-    
-    const fechaRecoleccionDate = new Date(this.fechaHoraRecoleccion);
-    const fechaRecogerTimestamp = Timestamp.fromDate(fechaRecoleccionDate);
-    
-    this.firebaseSvc.updateDocumet(path, {
-      estatus: 'En espera de recolección', 
-      fecha_recoger: fechaRecogerTimestamp
-    }).then(async res => {
-      
+
+    try {
+      // Usar SIEMPRE la fecha/hora seleccionada por el usuario
+      const fechaRecoleccionDate = new Date(this.fechaHoraRecoleccion);
+
+      if (isNaN(fechaRecoleccionDate.getTime())) {
+        throw new Error('Fecha inválida seleccionada');
+      }
+
+      const fechaRecogerTimestamp = Timestamp.fromDate(fechaRecoleccionDate);
+
+      await this.firebaseSvc.updateDocumet(path, {
+        estatus: 'En espera de recolección',
+        fecha_recoger: fechaRecogerTimestamp,
+        hora_recoleccion: fechaRecogerTimestamp
+      });
+
       setTimeout(() => {
         this.showAnimation = false;
         this.isAssigned = false;
@@ -267,22 +334,23 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
         this.utilSvc.dismissModal({ success: true });
       }, 3000);
 
-    }).catch(error => {
-      
+    } catch (error) {
+      console.error('Error al asignar horario:', error);
+
       this.utilSvc.presentToast({
-        message: error.message,
+        message: 'Error al asignar horario. Por favor intenta de nuevo.',
         duration: 2500,
-        color: 'primary',
+        color: 'danger',
         position: 'middle',
         icon: 'alert-circle-outline'
       });
-      
+
       this.isAssigned = false;
       this.showAnimation = false;
 
-    }).finally(() => {
+    } finally {
       loading.dismiss();
-    });
+    }
   }
 
   restartCountdown() {
@@ -304,19 +372,42 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
     return ((5 - this.countdown) / 5) * 100;
   }
 
+  // Validación mejorada de fecha/hora
   validarFechaHora(): boolean {
     if (!this.fechaHoraRecoleccion) {
       return false;
     }
 
-    const fechaSeleccionada = new Date(this.fechaHoraRecoleccion);
-    const fechaActual = new Date();
+    try {
+      // Convertir a zona local para evitar errores de comparación
+      const fechaSeleccionada = new Date(this.fechaHoraRecoleccion);
+      const fechaActual = new Date();
 
-    if (fechaSeleccionada < fechaActual) {
+      if (isNaN(fechaSeleccionada.getTime())) {
+        return false;
+      }
+
+      // Comparar solo la fecha (sin hora)
+      const fechaSeleccionadaDia = new Date(fechaSeleccionada.getFullYear(), fechaSeleccionada.getMonth(), fechaSeleccionada.getDate());
+      const fechaActualDia = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), fechaActual.getDate());
+
+      if (fechaSeleccionadaDia < fechaActualDia) {
+        return false;
+      }
+
+      const sevenDaysFromNow = new Date();
+      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+      const sevenDaysFromNowDia = new Date(sevenDaysFromNow.getFullYear(), sevenDaysFromNow.getMonth(), sevenDaysFromNow.getDate());
+
+      if (fechaSeleccionadaDia > sevenDaysFromNowDia) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error validating date:', error);
       return false;
     }
-
-    return true;
   }
 
   async onSliderChange() {
@@ -326,7 +417,7 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
         if (!this.validarFechaHora()) {
           this.sliderValue = 0;
           this.utilSvc.presentToast({
-            message: `No se puede seleccionar una fecha y hora anterior a la actual`,
+            message: `No se puede seleccionar una fecha y hora anterior o inválida`,
             duration: 3000,
             color: 'danger',
             position: 'bottom',

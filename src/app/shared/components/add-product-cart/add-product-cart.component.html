@@ -75,9 +75,9 @@
         </ion-text>
         <h1 style="font-weight: bolder;">Total</h1>
         <div *ngIf="form.value.opcion">
-          <h2 class="buttotal" *ngIf="form.value.tipoCambio=='kg' || form.value.tipoCambio=='bolsa'">${{ (form.value.cantidad * buscarPrecioPorId(form.value.opcion)) | number:'1.2-2' }}</h2>
-          <h2 class="buttotal" *ngIf="form.value.tipoCambio == '$'">{{ actualizarTotal() | number:'1.2-2' }} {{ isTostadaOrTotopo() ? 'bolsa(s)' : 'kg' }}</h2>
-  
+          <h2 class="buttotal" *ngIf="form.value.tipoCambio=='kg' || form.value.tipoCambio=='bolsa'">${{ (form.value.cantidad * buscarPrecioPorId(form.value.opcion)) | number: '1.2-2' }}</h2>
+          <h2 class="buttotal" *ngIf="form.value.tipoCambio == '$'">{{ actualizarTotal() | number: '1.2-2' }} {{ isTostadaOrTotopo() ? 'bolsa(s)' : 'kg' }}</h2>
+
         </div>
         
         <h2 class="buttotal" *ngIf="!form.value.opcion">$0.00</h2>
@@ -137,7 +137,7 @@
         </ion-text>
         <h1 style="font-weight: bolder;">Total</h1>
         <div *ngIf="form.value.opcion">
-          <h2 class="buttotal" >${{ (form.value.cantidad * buscarPrecioPorId(form.value.opcion)) | number:'1.2-2' }}</h2>
+          <h2 class="buttotal" >{{ (form.value.cantidad * buscarPrecioPorId(form.value.opcion)) | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</h2>
   
         </div>
         

@@ -88,7 +88,7 @@
                       </p>
                       <p *ngIf="!isEligibleForFreeDelivery()" class="delivery-fee-info">
                         <ion-icon name="cash-outline"></ion-icon>
-                        Costo de envío: {{ DELIVERY_FEE | currency }}
+                        Costo de envío: {{ DELIVERY_FEE | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN
                       </p>
                     </div>
                   </div>
@@ -192,7 +192,7 @@
               
               <div class="detail-row">
                 <span class="detail-label">Subtotal</span>
-                <span class="detail-value">{{ cart?.total | currency }}</span>
+                <span class="detail-value">{{ cart?.total | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
               </div>
 
               <div class="detail-row" *ngIf="discountAmount > 0">
@@ -200,7 +200,7 @@
                   <ion-icon name="pricetag-outline"></ion-icon>
                   Descuento ({{porcentaje}}%)
                 </span>
-                <span class="detail-value discount-value">-{{ discountAmount | currency }}</span>
+                <span class="detail-value discount-value">-{{ discountAmount | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
               </div>
 
               <div class="detail-row" *ngIf="deliveryFee > 0">
@@ -208,7 +208,7 @@
                   <ion-icon name="bicycle-outline"></ion-icon>
                   Costo de envío
                 </span>
-                <span class="detail-value delivery-fee-value">{{ deliveryFee | currency }}</span>
+                <span class="detail-value delivery-fee-value">{{ deliveryFee | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
               </div>
             </div>
 
@@ -217,11 +217,11 @@
             <div class="total-section">
               <div class="total-row">
                 <span class="total-label">Total a pagar</span>
-                <span class="total-amount">{{ getTotalAmount() | currency }}</span>
+                <span class="total-amount">{{ getTotalAmount() | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
               </div>
               <div class="savings" *ngIf="discountAmount > 0">
                 <ion-icon name="happy-outline"></ion-icon>
-                <span>¡Ahorras {{ discountAmount | currency }}!</span>
+                <span>¡Ahorras {{ discountAmount | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN!</span>
               </div>
             </div>
           </div>

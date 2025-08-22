@@ -21,43 +21,44 @@ export class EntregaDomicilioEventosComponent implements OnInit {
   porcentaje: number = 0;
   distanciaKm: number = 0;
   transportFee: number = 0;
+  readonly MINIMUM_WEIGHT_FOR_FREE_DELIVERY = 60; // kg
+  readonly DELIVERY_FEE_EVENTOS = 50; // Envío fijo para eventos < 60kg
+  totalWeight: number = 0;
 
   constructor() { }
 
   ngOnInit() {
     this.getCartDetails();
     this.applyStoredCoupon();
-    // Calcular tarifa de transporte basada en la distancia
-    const userLocation = this.dir()[0];
-    if (userLocation) {
-      this.firebaseSvc.getCollectionData('direccionNegocio').subscribe(businessLocations => {
-        if (businessLocations && businessLocations.length > 0) {
-          const businessLocation = businessLocations[0];
-          const distancia = this.calcularDistancia(
-            parseFloat(userLocation.geopoint._lat),
-            parseFloat(userLocation.geopoint._long),
-            parseFloat(businessLocation['geopoint'].latitude),
-            parseFloat(businessLocation['geopoint'].longitude)
-          );
-          this.distanciaKm = parseFloat(distancia.toFixed(2));
-          this.transportFee = this.calculateTransportFee(this.distanciaKm);
-        }
-      });
+    this.calculateTotalWeight();
+  }
+
+  calculateTotalWeight() {
+    this.totalWeight = 0;
+    if (this.cart && this.cart.detalle_carrito) {
+      this.totalWeight = this.cart.detalle_carrito.reduce((total, item) => {
+        return total + (item.cantidad || 0);
+      }, 0);
     }
   }
 
-  private calculateTransportFee(distanceKm: number): number {
-    if (distanceKm <= 0.5) return 30;
-    if (distanceKm <= 1.0) return 35;
-    if (distanceKm <= 1.5) return 50;
-    if (distanceKm <= 2.0) return 65;
-    if (distanceKm <= 2.5) return 70;
-    if (distanceKm <= 3.0) return 80;
-    if (distanceKm <= 3.5) return 90;
-    if (distanceKm <= 4.0) return 115;
-    if (distanceKm <= 4.5) return 125;
-    if (distanceKm <= 5.0) return 145;
-    return 145; // Para distancias mayores a 5km
+  isEligibleForFreeDelivery(): boolean {
+    return this.totalWeight >= this.MINIMUM_WEIGHT_FOR_FREE_DELIVERY;
+  }
+
+  getRemainingWeightForFreeDelivery(): number {
+    return Math.max(0, this.MINIMUM_WEIGHT_FOR_FREE_DELIVERY - this.totalWeight);
+  }
+
+  getDeliveryFee(): number {
+    return this.isEligibleForFreeDelivery() ? 0 : this.DELIVERY_FEE_EVENTOS;
+  }
+
+  getTotalAmount(): number {
+    if (!this.cart) return 0;
+    let subtotal = this.cart.total - this.discountAmount;
+    let deliveryFee = this.getDeliveryFee();
+    return subtotal + deliveryFee;
   }
 
   private async sendOrderConfirmationEmail(pedidoId: string, orderType: string) {
@@ -92,19 +93,19 @@ export class EntregaDomicilioEventosComponent implements OnInit {
     if (paypalButtonContainer) {
       (window as any).paypal.Buttons({
         createOrder: (data, actions) => {
-          const subtotalWithDiscount = this.cart.total - (this.cart.total * (this.porcentaje / 100));
-          const finalTransportFee = subtotalWithDiscount >= 140 ? 0 : this.transportFee;
-          const serviceCharge = subtotalWithDiscount < 140 ? 5 : 0;
-          const finalTotal = subtotalWithDiscount + finalTransportFee + serviceCharge;
-          
+          const finalTotal = this.getTotalAmount();
           return actions.order.create({
             purchase_units: [
               {
                 amount: {
-                  value: finalTotal.toFixed(2), // Precio total del pago
+                  value: finalTotal.toFixed(2),
                 },
+                shipping_address: {
+                  country_code: 'MX'
+                }
               },
             ],
+            shipping_preference: 'SET_PROVIDED_ADDRESS'
           });
         },
         onApprove: async (data, actions) => {
@@ -130,11 +131,7 @@ export class EntregaDomicilioEventosComponent implements OnInit {
               // Guardar carrito y detalles en localStorage
               const userId = this.utilsSvc.getFromLocalStorage('user').uid;
               const direccionEntrega = this.dir()[0];
-              const subtotalWithDiscount = this.cart.total - (this.cart.total * (this.porcentaje / 100));
-              const finalTransportFee = subtotalWithDiscount >= 140 ? 0 : this.transportFee;
-              const serviceCharge = subtotalWithDiscount < 140 ? 5 : 0;
-              const finalTotal = subtotalWithDiscount + finalTransportFee + serviceCharge;
-              
+              const finalTotal = this.getTotalAmount();
               const pedido = {
                 estatus: 'Pedido confirmado',
                 fecha: new Date(),
@@ -248,10 +245,7 @@ export class EntregaDomicilioEventosComponent implements OnInit {
       // Guardar carrito y detalles en localStorage
       const userId = this.utilsSvc.getFromLocalStorage('user').uid;
       const direccionEntrega = this.dir()[0];
-      const subtotalWithDiscount = this.cart.total - (this.cart.total * (this.porcentaje / 100));
-      const finalTransportFee = subtotalWithDiscount >= 140 ? 0 : this.transportFee;
-      const serviceCharge = subtotalWithDiscount < 140 ? 5 : 0;
-      const finalTotal = subtotalWithDiscount + finalTransportFee + serviceCharge;
+      const finalTotal = this.getTotalAmount();
       
       const pedido = {
         estatus: 'Pedido confirmado',

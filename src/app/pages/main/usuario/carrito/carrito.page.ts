@@ -119,26 +119,26 @@ export class CarritoPage implements OnInit {
           text: 'Eliminar',
           handler: async () => {
             // Buscar el índice del producto en el carrito
-            const index = this.cartDetails.findIndex(
-              (product: any) => product.id === item.id
+            const index = this.cart.detalle_carrito.findIndex(
+              (product: any) => product.id === item.id || product.uid_producto === item.uid_producto
             );
-  
+
             if (index > -1) {
               // Eliminar el producto del array
               this.cart.detalle_carrito.splice(index, 1);
               this.cartDetails.splice(index, 1);
-  
+
               // Actualizar el total del carrito
               this.cart.total = this.cart.detalle_carrito.reduce((acc, curr) => acc + curr.subtotal, 0);
-  
+
               // Guardar los cambios en el localStorage
               this.utilsSvc.setElementInLocalstorage('carrito', [this.cart]);
-  
+
               // Eliminar el producto de Firebase
               const userId = this.utilsSvc.getFromLocalStorage('user').uid;
               const carritoId = this.cart.id;
               const detalleCarritoId = item.id;
-  
+
               try {
                 await this.firebaseSvc.deleteDocumet(`users/${userId}/carrito/${carritoId}/detalle_carrito/${detalleCarritoId}`);
                 console.log('Producto eliminado de Firebase:', item);
@@ -197,6 +197,7 @@ export class CarritoPage implements OnInit {
   applyStoredCoupon() {
     const storedCoupon = this.utilsSvc.getFromLocalStorage('appliedCoupon');
     if (storedCoupon) {
+      // Always recalculate discountAmount based on current cart total
       this.discountAmount = (this.cart.total * (storedCoupon['porcentaje'] / 100));
       this.porcentaje = storedCoupon['porcentaje'];
     }
@@ -232,6 +233,7 @@ export class CarritoPage implements OnInit {
         console.log('Número de compras:', orderCount);
   
         if (orderCount >= coupon['numero_compras']) {
+          // Always recalculate discountAmount based on current cart total
           this.discountAmount = (this.cart.total * (coupon['porcentaje']/100)) ;
           this.porcentaje = coupon['porcentaje'];
           usedCoupons.push(this.couponCode);

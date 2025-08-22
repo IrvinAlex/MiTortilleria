@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Enviar notificación push</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="notificationForm" (ngSubmit)="sendNotification()">
+    <ion-item>
+      <ion-label position="floating">Título</ion-label>
+      <ion-input formControlName="title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Mensaje</ion-label>
+      <ion-textarea formControlName="message"></ion-textarea>
+    </ion-item>
+    <ion-button expand="block" color="success" type="submit" [disabled]="!notificationForm.valid || loading" class="modern-send-btn">
+      <ion-icon name="send"></ion-icon>
+      <span *ngIf="!loading">Enviar</span>
+      <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+    </ion-button>
+  </form>
+</ion-content>

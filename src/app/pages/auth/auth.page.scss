@@ -300,53 +300,53 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 9999;
   padding: 20px;
   box-sizing: border-box;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .floating-card {
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   max-width: 400px;
   width: 100%;
   max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideInUp 0.3s ease-out;
   overflow: hidden;
-  animation: slideUp 0.4s ease-out;
-  position: relative;
 }
 
 .session-blocked-card {
   .card-header {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
     color: white;
-    padding: 25px 20px;
+    padding: 20px;
     text-align: center;
     position: relative;
+    flex-shrink: 0;
     
     .block-icon {
-      font-size: 3.5rem;
-      margin-bottom: 10px;
-      animation: pulse 2s infinite;
+      font-size: 40px;
+      margin-bottom: 8px;
     }
     
     h2 {
-      font-size: 1.4rem;
+      margin: 0 0 5px 0;
+      font-size: 20px;
       font-weight: bold;
-      margin: 8px 0;
     }
     
     p {
-      font-size: 0.9rem;
-      opacity: 0.9;
       margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
     }
     
     .close-btn {
@@ -357,28 +357,29 @@
       --color: white;
       
       ion-icon {
-        font-size: 1.5rem;
+        font-size: 24px;
       }
     }
   }
   
   .card-content {
     padding: 20px;
+    overflow-y: auto;
+    flex: 1;
     
     .warning-section {
-      text-align: center;
       margin-bottom: 20px;
       
       h3 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
         color: #2c3e50;
-        font-size: 1.1rem;
-        margin: 0 0 8px 0;
       }
       
       p {
-        color: #6c757d;
-        font-size: 0.9rem;
         margin: 0;
+        color: #7f8c8d;
+        font-size: 14px;
       }
     }
     
@@ -389,119 +390,158 @@
         background: #f8f9fa;
         border-radius: 12px;
         padding: 15px;
-        border-left: 4px solid #007bff;
+        border-left: 4px solid #e74c3c;
         
         .device-header {
           display: flex;
-          align-items: center;
           justify-content: space-between;
+          align-items: center;
           margin-bottom: 10px;
           
           .device-name {
             font-weight: bold;
+            font-size: 14px;
             color: #2c3e50;
-            font-size: 0.9rem;
           }
           
           .status-badge {
-            background: #28a745;
+            background: #e74c3c;
             color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
             font-weight: bold;
           }
         }
         
         .device-details {
           p {
-            margin: 4px 0;
-            font-size: 0.8rem;
-            color: #6c757d;
+            margin: 5px 0;
+            font-size: 12px;
+            color: #7f8c8d;
+            
+            strong {
+              color: #2c3e50;
+            }
           }
         }
       }
     }
     
     .security-warning {
-      background: #fff3cd;
-      border: 1px solid #ffeaa7;
+      background: rgba(255, 193, 7, 0.1);
+      border-left: 4px solid #ffc107;
+      padding: 15px;
       border-radius: 8px;
-      padding: 12px;
       margin-bottom: 20px;
       
       p {
         margin: 0;
-        font-size: 0.85rem;
+        font-size: 14px;
         color: #856404;
       }
     }
     
     .instructions {
       .instructions-title {
-        font-size: 0.9rem;
-        color: #495057;
         margin: 0 0 10px 0;
+        font-size: 14px;
+        color: #2c3e50;
       }
       
       .instructions-list {
-        background: #e3f2fd;
-        border-radius: 8px;
-        padding: 12px;
-        
         p {
-          margin: 6px 0;
-          font-size: 0.8rem;
-          color: #1976d2;
+          margin: 8px 0;
+          font-size: 13px;
+          color: #7f8c8d;
+          line-height: 1.4;
         }
       }
     }
   }
   
   .card-actions {
-    padding: 15px 20px 20px;
+    padding: 20px;
+    border-top: 1px solid #ecf0f1;
     display: flex;
     gap: 10px;
+    flex-shrink: 0;
     
     ion-button {
       flex: 1;
-      height: 44px;
-      font-weight: 600;
+      margin: 0;
       
       &[fill="outline"] {
-        --border-width: 2px;
+        --border-color: #bdc3c7;
+        --color: #7f8c8d;
+      }
+      
+      &[fill="solid"] {
+        --background: #3498db;
       }
     }
   }
 }
 
-// Animaciones
-@keyframes fadeIn {
+@keyframes slideInUp {
   from {
     opacity: 0;
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
     transform: translateY(0);
-    opacity: 1;
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
+// Responsive adjustments
+@media (max-height: 600px) {
+  .floating-card-overlay {
+    padding: 10px;
+    align-items: flex-start;
+    padding-top: 20px;
   }
-  50% {
-    transform: scale(1.1);
+  
+  .floating-card {
+    max-height: 95vh;
+  }
+  
+  .session-blocked-card {
+    .card-header {
+      padding: 15px;
+      
+      .block-icon {
+        font-size: 30px;
+      }
+      
+      h2 {
+        font-size: 18px;
+      }
+    }
+    
+    .card-content {
+      padding: 15px;
+    }
+    
+    .card-actions {
+      padding: 15px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-card-overlay {
+    padding: 10px;
+  }
+  
+  .session-blocked-card {
+    .card-actions {
+      flex-direction: column;
+      
+      ion-button {
+        width: 100%;
+      }
+    }
   }
 }
 

@@ -48,9 +48,8 @@
           </div>
 
           <div *ngIf="corte" class="amount-display start-amount">
-            <span class="currency-symbol">$</span>
-            <span class="amount-value">{{ form.get('monto_inicio')?.value | number:'1.2-2' }}</span>
-            <span class="currency-label">MXN</span>
+            <span class="amount-value">{{ form.get('monto_inicio')?.value | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
+            
           </div>
         </div>
 
@@ -93,12 +92,12 @@
           <div class="calc-body">
             <div class="calc-item">
               <span class="calc-label">Monto Final</span>
-              <span class="calc-value positive">{{ form.get('monto_final')?.value | currency:'MXN':'symbol':'1.2-2' }}</span>
+              <span class="calc-value positive">{{ form.get('monto_final')?.value | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
             </div>
             
             <div class="calc-item">
               <span class="calc-label">Monto Inicial</span>
-              <span class="calc-value">{{ form.get('monto_inicio')?.value | currency:'MXN':'symbol':'1.2-2' }}</span>
+              <span class="calc-value">{{ form.get('monto_inicio')?.value | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span>
             </div>
             
             <div class="calc-divider"></div>
@@ -106,7 +105,7 @@
             <div class="calc-item total">
               <span class="calc-label">Ganancias del Día</span>
               <span class="calc-value" [class.negative]="getCalculatedGanancias() < 0">
-                {{ getCalculatedGanancias() | currency:'MXN':'symbol':'1.2-2' }}
+                {{ getCalculatedGanancias() | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN
               </span>
             </div>
           </div>

@@ -73,28 +73,30 @@ export class EntregasPage implements OnInit {
 
     const sub = this.firebaseSvc.getCollectionData(path, []).subscribe({
       next: (res: any[]) => {
-        
         if (Array.isArray(res)) {
           console.log('Pedidos obtenidos:', res);
           this.pedidos = res;
 
           const targetStatus = this.normalizeText('En espera de recolección');
 
+          // Mostrar pedidos del día actual, en espera de recolección y pago en efectivo o tarjeta, tanto negocio como domicilio
           const pedidosHoy = res.filter((pedido: any) => {
             const estatus = this.normalizeText(pedido?.estatus);
-            // Acepta variaciones tipo: "en espera de recoleccion", "en espera de recolección   ", etc.
             const isWaiting = estatus.includes(targetStatus);
 
             const tipoPago = this.normalizeText(pedido?.tipo_pago);
-            const isCash = tipoPago.includes('efectivo');
+            // Cambiado: aceptar efectivo o tarjeta
+            const isCashOrCard = tipoPago.includes('efectivo') || tipoPago.includes('tarjeta');
 
-            // Considera como "hoy" si cualquiera de estas fechas cae hoy
+            const tipoEntrega = this.getEffectiveDeliveryType(pedido);
             const isToday =
               this.isTodayDateLike(pedido?.fecha_recoger) ||
+              this.isTodayDateLike(pedido?.hora_recoleccion) ||
               this.isTodayDateLike(pedido?.fecha_entrega) ||
               this.isTodayDateLike(pedido?.fecha);
 
-            return isWaiting && isCash && isToday;
+            // Mostrar pedidos de recolección en negocio o entrega a domicilio
+            return isWaiting && isCashOrCard && isToday && (tipoEntrega === 'negocio' || tipoEntrega === 'domicilio');
           });
 
           this.pedidos = pedidosHoy;
@@ -343,9 +345,38 @@ export class EntregasPage implements OnInit {
 
   // Tipo de entrega efectivo como en pedidos
   getEffectiveDeliveryType(pedido: any): string {
-    const t = (pedido?.tipo_entrega || '').toLowerCase();
-    if (!t) return this.hasUbicacion(pedido) ? 'domicilio' : 'negocio';
-    if (t === 'domicilio') return this.hasUbicacion(pedido) ? 'domicilio' : 'negocio';
+    // Si tiene geopoint_entrega válido, es domicilio
+    const gp = pedido?.geopoint_entrega;
+    if (
+      gp &&
+      typeof gp.latitude === 'number' &&
+      typeof gp.longitude === 'number' &&
+      !isNaN(gp.latitude) &&
+      !isNaN(gp.longitude)
+    ) {
+      return 'domicilio';
+    }
+
+    // Prioridad: explícito negocio
+    if (pedido?.es_recoleccion_negocio === true) return 'negocio';
+    if ((pedido?.metodo_entrega || '').toLowerCase() === 'negocio') return 'negocio';
+    if ((pedido?.tipo_entrega || '').toLowerCase() === 'negocio') return 'negocio';
+
+    // Si tiene hora_recoleccion o fecha_recoger, es negocio
+    if (pedido?.hora_recoleccion || pedido?.fecha_recoger) return 'negocio';
+
+    // Si tiene ubicación alternativa, también domicilio
+    if (
+      (typeof pedido?.lat === 'number' && typeof pedido?.lng === 'number') ||
+      (typeof pedido?.coordenadas?.lat === 'number' && typeof pedido?.coordenadas?.lng === 'number')
+    ) {
+      return 'domicilio';
+    }
+
+    // Si tipo_entrega explícito domicilio
+    if ((pedido?.tipo_entrega || '').toLowerCase() === 'domicilio') return 'domicilio';
+
+    // Fallback: si no hay ubicación, negocio
     return 'negocio';
   }
 
@@ -505,13 +536,18 @@ export class EntregasPage implements OnInit {
 
   // Fecha programada a mostrar (preferencia: fecha_recoger > fecha_entrega > fecha)
   getScheduledDate(pedido: any): Date | null {
-    const raw = pedido?.fecha_recoger ?? pedido?.fecha_entrega ?? pedido?.fecha;
+    const raw = pedido?.hora_recoleccion ?? pedido?.fecha_recoger ?? pedido?.fecha_entrega ?? pedido?.fecha;
     return this.toDateTime(raw);
   }
 
   // Etiqueta del horario según el tipo de entrega y el campo usado
   getScheduledLabel(pedido: any): string {
     const tipo = (this.getEffectiveDeliveryType(pedido) || '').toLowerCase();
+    if (tipo === 'negocio') {
+      if (pedido?.hora_recoleccion) return 'Horario de recolección';
+      if (pedido?.fecha_recoger) return 'Horario de recolección';
+      return 'Horario programado';
+    }
     if (tipo === 'domicilio') return 'Horario de entrega';
     if (pedido?.fecha_recoger) return 'Horario de recolección';
     if (pedido?.fecha_entrega) return 'Horario de entrega';
@@ -532,3 +568,4 @@ export class EntregasPage implements OnInit {
     return originalStatus;
   }
 }
+

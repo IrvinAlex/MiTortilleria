@@ -7,15 +7,22 @@
       <p><ion-icon name="storefront-outline"></ion-icon> Nombre del negocio: Tortilleria Plata Jaimes</p>
       <p><ion-icon name="person-outline"></ion-icon> Cliente: {{ pedido.nombre_cliente }}</p>
       <p><ion-icon name="calendar-outline"></ion-icon> Fecha: {{ pedido.fecha?.toDate() | date: 'dd/MM/yyyy' }}</p>
-      <p *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
-        <ion-icon slot="start" name="calendar-outline"></ion-icon> Fecha de entrega: {{ pedido.fecha?.toDate() | date: 'dd/MM/yyyy HH:mm' }}</p>
+      
+      <!-- Enhanced Scheduling Information -->
+      <div class="scheduling-info" *ngIf="getScheduledDate()">
+        <p>
+          <ion-icon [name]="isBusinessPickup() ? 'time-outline' : 'truck-outline'" [color]="getDeliveryTypeColor()"></ion-icon>
+          {{ getScheduledLabel() }}: {{ getScheduledDate() | date: 'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
       
       <!-- Delivery Type Information -->
       <p>
         <ion-icon [name]="getDeliveryTypeIcon()" [color]="getDeliveryTypeColor()"></ion-icon>
         Tipo de entrega: 
         <ion-chip [color]="getDeliveryTypeColor()" mode="ios">
-          <ion-label>{{ pedido.tipo_entrega || 'Negocio' }}</ion-label>
+          <ion-icon [name]="getDeliveryTypeIcon()" slot="start"></ion-icon>
+          <ion-label>{{ getDeliveryTypeDisplayName() }}</ion-label>
         </ion-chip>
       </p>
     </div>
@@ -75,19 +82,38 @@
           <ion-icon name="location-outline" color="primary"></ion-icon>
           Coordenadas: {{ pedido.geopoint_entrega.latitude | number:'1.6-6' }}, {{ pedido.geopoint_entrega.longitude | number:'1.6-6' }}
         </p>
+        <p *ngIf="getScheduledDate()">
+          <ion-icon name="truck-outline" color="primary"></ion-icon>
+          Entrega programada: {{ getScheduledDate() | date: 'EEEE, dd \'de\' MMMM \'a las\' HH:mm' }}
+        </p>
       </div>
     </div>
 
-    <!-- Business Pickup Information -->
-    <div class="ticket-section" *ngIf="!pedido.tipo_entrega">
+    <!-- Enhanced Business Pickup Information -->
+    <div class="ticket-section" *ngIf="isBusinessPickup()">
       <h3 class="ticket-subtitle">
         <ion-icon name="storefront-outline" color="success"></ion-icon>
-        Recolección en Negocio
+        Información de Recolección
       </h3>
+      
+      <!-- Pickup Scheduling -->
+      <div class="pickup-schedule" *ngIf="getScheduledDate()">
+        <div class="schedule-highlight">
+          <ion-icon name="alarm-outline" color="success"></ion-icon>
+          <div>
+            <h4>{{ getScheduledLabel() }}</h4>
+            <p class="schedule-time">{{ getScheduledDate() | date: 'EEEE, dd \'de\' MMMM \'a las\' HH:mm' }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Business Details -->
       <div class="pickup-info">
-        <p><ion-icon name="location-outline"></ion-icon> Dirección: Tortillería Plata Jaimes</p>
-        <p><ion-icon name="time-outline"></ion-icon> Horario de atención: 8:00 AM - 8:00 PM</p>
-        <p><ion-icon name="call-outline"></ion-icon> Teléfono: (555) 123-4567</p>
+        <h4>Datos del Negocio</h4>
+        <p><ion-icon name="storefront-outline"></ion-icon> {{ getBusinessInfo().name }}</p>
+        <p><ion-icon name="location-outline"></ion-icon> Avenida Benito No.103B colonia México 68, código postal o C.P: 51412</p>
+        <p><ion-icon name="call-outline"></ion-icon> 722 366 4325 </p>
+        <p><ion-icon name="time-outline"></ion-icon> {{ getBusinessInfo().hours }}</p>
       </div>
     </div>
 
@@ -102,7 +128,7 @@
           <h2>{{ producto.producto.nombre }}</h2>
           <p *ngIf="producto.tamano_tortilla">Tamaño de tortilla: <span class="subtotal">{{ producto.tamano_tortilla }}</span></p>
           <p>Cantidad: {{ producto.cantidad }}</p>
-          <p>Subtotal: <span class="subtotal">{{ producto.subtotal | currency }}</span></p>
+          <p>Subtotal: <span class="subtotal">{{ producto.subtotal | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</span></p>
         </ion-label>
         <ion-badge slot="end" color="tertiary">
           <ion-icon name="cube-outline"></ion-icon>
@@ -164,4 +190,5 @@
       </div>
     </div>
   </div>
+
 </ion-content>

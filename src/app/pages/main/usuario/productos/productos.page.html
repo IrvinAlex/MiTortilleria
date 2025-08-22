@@ -46,7 +46,7 @@
 
         <!-- Precio del producto -->
         <div class="precio">
-          <strong>${{ producto.precio_mostrador | number:'1.2-2' }}</strong>
+          <strong>{{ producto.precio_mostrador | currency:'MXN':'symbol-narrow':'1.2-2':'en-US' }} MXN</strong>
         </div>
 
         <!-- Botón dinámico: agregar al carrito o ver en carrito -->

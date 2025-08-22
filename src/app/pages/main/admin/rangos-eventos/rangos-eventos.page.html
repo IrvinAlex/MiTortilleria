@@ -1,101 +1,270 @@
 <app-header [showMenu]="true" title="Rango de productos para ventas"></app-header>
 
-<ion-content class="ion-padding-top ion-text-center">
-
-  <!-- Ion Refresher: Permite actualizar los datos al hacer "pull to refresh" -->
+<ion-content class="modern-content">
+  <!-- Ion Refresher -->
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <!-- Título de la página -->
-  <h2>Administración de rangos de productos</h2>
-
-  <!-- Barra de búsqueda y botón para agregar un rango -->
-  <ion-grid>
-    <ion-row>
-      <ion-col size="8">
-        <!-- Barra de búsqueda para filtrar rangos -->
-        <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar rango..." (ionInput)="filterItems($event)"></ion-searchbar>
-      </ion-col>
-      <ion-col size="4" class="ion-text-right">
-        <!-- Botón para abrir el modal de agregar un rango -->
-        <ion-button (click)="openAddRangoModal()" color="success">
-          <ion-icon name="add-circle-outline"></ion-icon>
-          Agregar rango
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <div class="table-header">
-    <h2></h2>
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Administración de Rangos</h1>
+      <p class="hero-subtitle">Gestiona los rangos de productos para diferentes tipos de clientes</p>
+    </div>
   </div>
 
-  <!-- Tabla de rangos -->
-  <ion-grid>
-    <!-- Fila de encabezado de la tabla donde se definen las columnas -->
-    <ion-row class="header-row">
-      <ion-col (click)="sortTable('producto')">Producto</ion-col>
-      <ion-col (click)="sortTable('tipo')">Tipo de cliente o actividad</ion-col>
-      <ion-col (click)="sortTable('min_producto')">Minimo de compra (Kg)</ion-col>
-      <ion-col (click)="sortTable('max_producto')">Maximo de compra (Kg)</ion-col>
-      <ion-col>Acciones</ion-col>
-    </ion-row>
+  <!-- Control Panel -->
+  <div class="control-panel">
+    <div class="search-container">
+      <ion-searchbar 
+        [(ngModel)]="searchTerm" 
+        placeholder="Buscar por producto, tipo o rango..." 
+        (ionInput)="filterItems($event)"
+        class="modern-searchbar">
+      </ion-searchbar>
+    </div>
+    <div class="action-container">
+      <ion-button 
+        (click)="openAddRangoModal()" 
+        class="add-button"
+        expand="block">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Nuevo Rango
+      </ion-button>
+    </div>
+  </div>
 
-    <!-- Fila para cada rango -->
-    <ion-row *ngFor="let item of paginatedData" class="data-row">
-      <ng-container *ngFor="let field of fields">
-        <!-- Fila de datos editable solo si el campo es visible y no es la imagen -->
-        <ion-col class="pointer-on" *ngIf="shouldShowField(field.key)">
-          <!-- Permite editar el campo al hacer click -->
-          <ion-input class="cololetra" *ngIf="editingFieldKey === field.key && editingField === item"
-                    [(ngModel)]="item[field.key]" 
-                    (keyup.enter)="finishEditing()" 
-                    (blur)="finishEditing()"></ion-input>
-          <!-- Muestra el valor si no está siendo editado -->
-          <span *ngIf="!(editingFieldKey === field.key && editingField === item)">
-            {{ item[field.key] }}
-          </span>
-        </ion-col>
-      </ng-container>
+  <!-- Data Container -->
+  <div class="data-container">
+    <!-- Desktop Table View -->
+    <div class="desktop-table" *ngIf="paginatedData.length > 0">
+      <div class="table-card">
+        <div class="table-header">
+          <div class="header-cell" (click)="sortTable('producto')">
+            <span>Producto</span>
+            <ion-icon name="swap-vertical-outline"></ion-icon>
+          </div>
+          <div class="header-cell" (click)="sortTable('tipo')">
+            <span>Tipo de Cliente</span>
+            <ion-icon name="swap-vertical-outline"></ion-icon>
+          </div>
+          <div class="header-cell" (click)="sortTable('min_producto')">
+            <span>Mínimo (Kg)</span>
+            <ion-icon name="swap-vertical-outline"></ion-icon>
+          </div>
+          <div class="header-cell" (click)="sortTable('max_producto')">
+            <span>Máximo (Kg)</span>
+            <ion-icon name="swap-vertical-outline"></ion-icon>
+          </div>
+          <div class="header-cell">
+            <span>Acciones</span>
+          </div>
+        </div>
+
+        <div class="table-body">
+          <div *ngFor="let item of paginatedData" class="table-row">
+            <div class="table-cell" [attr.data-label]="'Producto'">
+              <ion-input 
+                *ngIf="editingFieldKey === 'producto' && editingField === item"
+                [(ngModel)]="item['producto']" 
+                (keyup.enter)="finishEditing()" 
+                (blur)="finishEditing()"
+                class="editable-input">
+              </ion-input>
+              <span *ngIf="!(editingFieldKey === 'producto' && editingField === item)" 
+                    class="cell-content clickable"
+                    (click)="editField(item, 'producto')">
+                {{ item['producto'] }}
+              </span>
+            </div>
+
+            <div class="table-cell" [attr.data-label]="'Tipo'">
+              <ion-input 
+                *ngIf="editingFieldKey === 'tipo' && editingField === item"
+                [(ngModel)]="item['tipo']" 
+                (keyup.enter)="finishEditing()" 
+                (blur)="finishEditing()"
+                class="editable-input">
+              </ion-input>
+              <span *ngIf="!(editingFieldKey === 'tipo' && editingField === item)" 
+                    class="cell-content clickable"
+                    (click)="editField(item, 'tipo')">
+                {{ item['tipo'] }}
+              </span>
+            </div>
+
+            <div class="table-cell" [attr.data-label]="'Mínimo'">
+              <ion-input 
+                *ngIf="editingFieldKey === 'min_producto' && editingField === item"
+                [(ngModel)]="item['min_producto']" 
+                (keyup.enter)="finishEditing()" 
+                (blur)="finishEditing()"
+                class="editable-input">
+              </ion-input>
+              <span *ngIf="!(editingFieldKey === 'min_producto' && editingField === item)" 
+                    class="cell-content clickable"
+                    (click)="editField(item, 'min_producto')">
+                {{ item['min_producto'] }}
+              </span>
+            </div>
+
+            <div class="table-cell" [attr.data-label]="'Máximo'">
+              <ion-input 
+                *ngIf="editingFieldKey === 'max_producto' && editingField === item"
+                [(ngModel)]="item['max_producto']" 
+                (keyup.enter)="finishEditing()" 
+                (blur)="finishEditing()"
+                class="editable-input">
+              </ion-input>
+              <span *ngIf="!(editingFieldKey === 'max_producto' && editingField === item)" 
+                    class="cell-content clickable"
+                    (click)="editField(item, 'max_producto')">
+                {{ item['max_producto'] }}
+              </span>
+            </div>
+
+            <div class="table-cell actions-cell" [attr.data-label]="'Acciones'">
+              <div class="action-buttons">
+                <ion-button 
+                  (click)="editItem(item)" 
+                  fill="clear" 
+                  class="action-btn edit-btn">
+                  <ion-icon name="create-outline"></ion-icon>
+                </ion-button>
+                <ion-button 
+                  (click)="deleteItem(item)" 
+                  fill="clear" 
+                  class="action-btn delete-btn">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Cards View -->
+    <div class="mobile-cards" *ngIf="paginatedData.length > 0">
+      <div *ngFor="let item of paginatedData" class="mobile-card">
+        <div class="mobile-card-header">
+          <h3 class="mobile-card-title">{{ item['producto'] }}</h3>
+        </div>
+        
+        <div class="mobile-card-body">
+          <div class="mobile-field">
+            <span class="mobile-field-label">Tipo</span>
+            <ion-input 
+              *ngIf="editingFieldKey === 'tipo' && editingField === item"
+              [(ngModel)]="item['tipo']" 
+              (keyup.enter)="finishEditing()" 
+              (blur)="finishEditing()"
+              class="editable-input">
+            </ion-input>
+            <span *ngIf="!(editingFieldKey === 'tipo' && editingField === item)" 
+                  class="mobile-field-value"
+                  (click)="editField(item, 'tipo')">
+              {{ item['tipo'] }}
+            </span>
+          </div>
+          
+          <div class="mobile-field">
+            <span class="mobile-field-label">Mínimo</span>
+            <ion-input 
+              *ngIf="editingFieldKey === 'min_producto' && editingField === item"
+              [(ngModel)]="item['min_producto']" 
+              (keyup.enter)="finishEditing()" 
+              (blur)="finishEditing()"
+              class="editable-input">
+            </ion-input>
+            <span *ngIf="!(editingFieldKey === 'min_producto' && editingField === item)" 
+                  class="mobile-field-value"
+                  (click)="editField(item, 'min_producto')">
+              {{ item['min_producto'] }} Kg
+            </span>
+          </div>
+          
+          <div class="mobile-field">
+            <span class="mobile-field-label">Máximo</span>
+            <ion-input 
+              *ngIf="editingFieldKey === 'max_producto' && editingField === item"
+              [(ngModel)]="item['max_producto']" 
+              (keyup.enter)="finishEditing()" 
+              (blur)="finishEditing()"
+              class="editable-input">
+            </ion-input>
+            <span *ngIf="!(editingFieldKey === 'max_producto' && editingField === item)" 
+                  class="mobile-field-value"
+                  (click)="editField(item, 'max_producto')">
+              {{ item['max_producto'] }} Kg
+            </span>
+          </div>
+        </div>
+        
+        <div class="mobile-actions">
+          <ion-button 
+            (click)="editItem(item)" 
+            fill="outline" 
+            color="warning"
+            size="small">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar
+          </ion-button>
+          <ion-button 
+            (click)="deleteItem(item)" 
+            fill="outline" 
+            color="danger"
+            size="small">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="paginatedData.length === 0" class="empty-state">
+      <ion-icon name="document-outline" class="empty-icon"></ion-icon>
+      <h3>No hay rangos disponibles</h3>
+      <p>Comienza agregando tu primer rango de productos</p>
+      <ion-button (click)="openAddRangoModal()" class="empty-action-btn">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crear Primer Rango
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Modern Pagination -->
+  <div class="modern-pagination" *ngIf="paginatedData.length > 0">
+    <div class="pagination-container">
+      <ion-button 
+        fill="outline" 
+        [disabled]="currentPage === 1" 
+        (click)="previousPage()" 
+        class="pagination-btn">
+        <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+      </ion-button>
       
-      <!-- Acciones: Editar y eliminar -->
-      <ion-col>
-        <ion-button (click)="editItem(item)" color="warning">
-          <ion-icon name="create"></ion-icon>
-        </ion-button>
-        <ion-button (click)="deleteItem(item)" color="danger">
-          <ion-icon name="trash"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Paginación de la tabla -->
-  <div class="pagination">
-    <!-- Botón de "Anterior" para cambiar de página -->
-    <ion-button 
-      color="light" 
-      [disabled]="currentPage === 1" 
-      (click)="previousPage()" 
-      expand="full" 
-      class="pagination-button">
-      <ion-icon slot="start" name="arrow-back"></ion-icon>
-      Anterior
-    </ion-button>
+      <div class="pagination-info">
+        <span class="current-page">{{ currentPage }}</span>
+        <span class="separator">de</span>
+        <span class="total-pages">{{ totalPages }}</span>
+      </div>
+      
+      <ion-button 
+        fill="outline" 
+        [disabled]="currentPage === totalPages" 
+        (click)="nextPage()" 
+        class="pagination-btn">
+        <ion-icon name="chevron-forward" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
     
-    <!-- Información de la página actual -->
-    <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
-    
-    <!-- Botón de "Siguiente" para cambiar de página -->
-    <ion-button 
-      color="light" 
-      [disabled]="currentPage === totalPages" 
-      (click)="nextPage()" 
-      expand="full" 
-      class="pagination-button">
-      Siguiente
-      <ion-icon slot="end" name="arrow-forward"></ion-icon>
-    </ion-button>
+    <div class="pagination-details">
+      Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
+      {{ currentPage * itemsPerPage > (filteredData?.length || 0) ? (filteredData?.length || 0) : currentPage * itemsPerPage }} 
+      de {{ filteredData?.length || 0 }} elementos
+    </div>
   </div>
 </ion-content>

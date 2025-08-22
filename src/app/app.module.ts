@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -20,7 +20,10 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 // ngx-translate
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
 
+registerLocaleData(localeEs, 'es-MX');
 // Función para cargar archivos de traducción
 export function HttpLoaderFactory(http: HttpClient) {
 }
@@ -43,7 +46,8 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    FacebookAuthProvider
+    FacebookAuthProvider,
+    { provide: LOCALE_ID, useValue: 'es-MX' }
   ],
   bootstrap: [AppComponent],
 })

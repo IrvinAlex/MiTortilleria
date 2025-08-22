@@ -174,17 +174,20 @@ export class AddProductCartComponent implements OnInit {
   }
 
   actualizarTotal() {
+    // For granel products with tipoCambio == '$', calculate how much quantity is bought for the given money
     const dinero = this.form.value.cantidad;
     const precio = this.buscarPrecioPorId(this.form.value.opcion) || 0;
-    this.total = parseFloat((dinero / precio).toFixed(2));
-    this.form.value.total = this.carrito()[0].total + this.dinero;
-    return this.total;
+    if (precio > 0) {
+      this.total = parseFloat((dinero / precio).toFixed(2));
+      return this.total;
+    }
+    return 0;
   }
   
   actualizarTotalKg() {
-    let total=this.form.value.cantidad * this.buscarPrecioPorId(this.form.value.opcion);
-    this.form.value.total = this.carrito()[0].total + total;
-    return this.form.value.total;
+    // For kg or bolsa, calculate total price
+    let total = this.form.value.cantidad * this.buscarPrecioPorId(this.form.value.opcion);
+    return total;
   }
 
   isProductInCart(productId: string): boolean {
@@ -203,8 +206,9 @@ export class AddProductCartComponent implements OnInit {
         const oldSubtotal = carrito[0].detalle_carrito[productIndex].subtotal;
         carrito[0].detalle_carrito[productIndex].cantidad = cantidad;
         carrito[0].detalle_carrito[productIndex].subtotal = subtotal;
-        carrito[0].total = carrito[0].total - oldSubtotal + subtotal;
         carrito[0].detalle_carrito[productIndex].uid_opcion = this.form.value.opcion;
+        // Recalculate total
+        carrito[0].total = carrito[0].detalle_carrito.reduce((acc: number, curr: any) => acc + curr.subtotal, 0);
         this.utilsSvc.setElementInLocalstorage('carrito', carrito);
       }
     }
@@ -216,10 +220,26 @@ export class AddProductCartComponent implements OnInit {
     if (this.form.valid) {
       const productId = this.producto.id;
       const cantidad = this.form.value.cantidad;
-      const subtotal = this.form.value.cantidad * this.buscarPrecioPorId(this.form.value.opcion);
+      const opcionId = this.form.value.opcion;
+      const precio = this.buscarPrecioPorId(opcionId);
+
+      let subtotal = 0;
+      let cantidadFinal = cantidad;
+
+      if (this.producto.granel) {
+        if (this.form.value.tipoCambio === 'kg' || this.form.value.tipoCambio === 'bolsa') {
+          subtotal = cantidad * precio;
+        } else if (this.form.value.tipoCambio === '$') {
+          cantidadFinal = this.actualizarTotal();
+          subtotal = cantidad; // cantidad here is the money spent
+        }
+      } else {
+        subtotal = cantidad * precio;
+      }
 
       if (this.isProductInCart(productId)) {
-        this.cartService.updateProductInCart(productId, cantidad, subtotal);
+        // Update product in cart and recalculate total
+        this.updateProductInCart(productId, cantidadFinal, subtotal);
         this.utilsSvc.presentToast({
           message: 'Producto actualizado en el carrito',
           duration: 2500,
@@ -228,51 +248,15 @@ export class AddProductCartComponent implements OnInit {
           icon: 'cart-outline',
         });
       } else {
-        if (this.producto.granel) {
-          if (this.form.value.tipoCambio === 'kg' || this.form.value.tipoCambio === 'bolsa') {
-            // =========================CARRITO=========================
-            // Definir el valor de la cantidad en kg o bolsas
-            this.form_detalle_carrito.get('cantidad')?.setValue(cantidad);
+        // Add new product to cart
+        this.form_detalle_carrito.get('cantidad')?.setValue(cantidadFinal);
+        this.form_detalle_carrito.get('subtotal')?.setValue(subtotal);
+        this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
+        this.form_detalle_carrito.value.uid_opcion = opcionId;
+        const formDetalleCarrito = this.form_detalle_carrito.value;
+        const formCarritoTotal = subtotal;
 
-            // Definir el valor del subtotal
-            this.form_detalle_carrito.get('subtotal')?.setValue(subtotal);
-
-            this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
-            this.form_detalle_carrito.value.uid_opcion = this.form.value.opcion;
-            const formDetalleCarrito = this.form_detalle_carrito.value;
-            const formCarritoTotal = subtotal;
-
-            this.cartService.addToCart(formCarritoTotal, formDetalleCarrito);
-          } else if (this.form.value.tipoCambio === '$') {
-            // =========================DETALLE DEL CARRITO=========================
-            // Definir el valor de la cantidad en kg o bolsas
-            this.form_detalle_carrito.get('cantidad')?.setValue(this.actualizarTotal());
-
-            // Definir el valor del subtotal
-            this.form_detalle_carrito.get('subtotal')?.setValue(cantidad);
-
-            this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
-            this.form_detalle_carrito.value.uid_opcion = this.form.value.opcion;
-            const formDetalleCarrito = this.form_detalle_carrito.value;
-            const formCarritoTotal = cantidad;
-
-            this.cartService.addToCart(formCarritoTotal, formDetalleCarrito);
-          }
-        } else {
-          // =========================PRODUCTO NO GRANEL=========================
-          // Definir el valor de la cantidad
-          this.form_detalle_carrito.get('cantidad')?.setValue(cantidad);
-
-          // Definir el valor del subtotal
-          this.form_detalle_carrito.get('subtotal')?.setValue(subtotal);
-
-          this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
-          this.form_detalle_carrito.value.uid_opcion = this.form.value.opcion;
-          const formDetalleCarrito = this.form_detalle_carrito.value;
-          const formCarritoTotal = subtotal;
-
-          this.cartService.addToCart(formCarritoTotal, formDetalleCarrito);
-        }
+        this.cartService.addToCart(formCarritoTotal, formDetalleCarrito);
         this.utilsSvc.presentToast({
           message: `Producto agregado al carrito`,
           duration: 2500,
@@ -280,7 +264,6 @@ export class AddProductCartComponent implements OnInit {
           position: 'bottom',
           icon: 'cart-outline',
         });
-        
       }
       this.utilsSvc.dismissModal(true);
     }

@@ -1,0 +1,76 @@
+.terms-card {
+  box-shadow: 0 4px 16px rgba(39,174,96,0.10);
+  border-radius: 18px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  animation: fadeIn 0.5s;
+}
+
+.terms-icon {
+  font-size: 2em;
+  color: #27ae60;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.section-icon {
+  font-size: 1.2em;
+  color: #27ae60;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.terms-section {
+  margin-bottom: 20px;
+  h2 {
+    font-size: 1.1em;
+    color: #27ae60;
+    margin-top: 16px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  p {
+    font-size: 1em;
+    color: #222;
+    margin-bottom: 8px;
+  }
+  .privacy-link {
+    font-weight: 500;
+    color: #27ae60;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+    &:hover {
+      color: #219150;
+    }
+  }
+}
+
+.checkbox-item {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  --background: transparent;
+}
+
+.button-container {
+  margin-top: 18px;
+}
+
+ion-button {
+  font-size: 1.05em;
+  letter-spacing: 0.5px;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 0.95em;
+  margin-top: 8px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px);}
+  to { opacity: 1; transform: translateY(0);}
+}
