@@ -271,29 +271,39 @@ export class SignUpPage implements OnInit {
   // Actualiza el indicador de seguridad y valida requisitos mínimos
   onPasswordInput(event: any) {
     if (!event || !event.target) return;
-    
+
     let value = event.target.value || '';
-    
+
     // Limitar a 30 caracteres primero
     if (value.length > 30) {
       value = value.substring(0, 30);
-      event.target.value = value; // Actualizar el input visual inmediatamente
+      event.target.value = value;
     }
-    
-    // Remover espacios
+
     value = value.replace(/\s/g, '');
-    
-    // Aplicar límite nuevamente después de filtrar caracteres
+
     if (value.length > 30) {
       value = value.substring(0, 30);
     }
-    
+
     if (this.form && this.form.controls && this.form.controls.password) {
       this.form.controls.password.setValue(value);
     }
-    event.target.value = value; // Sincronizar el input visual
+    event.target.value = value;
 
     this.passwordStrength = this.validatePassword(value);
+
+    // Actualizar reglas visuales en tiempo real usando el valor actual
+    this.updatePasswordRules(value);
+  }
+
+  updatePasswordRules(value: string) {
+    this.rules.length = value.length >= 12; // mínimo 12 caracteres
+    this.rules.upper = /[A-Z]/.test(value);
+    this.rules.lower = /[a-z]/.test(value);
+    this.rules.number = /\d/.test(value);
+    // Símbolos permitidos exactamente como en la imagen
+    this.rules.symbol = /[!"#%()*+,\-\.\/:=\?@\[\]\^_`{}]/.test(value);
   }
 
   // Verificar si el email existe usando API externa
@@ -723,4 +733,35 @@ export class SignUpPage implements OnInit {
   openPrivacy() {
     this.navCtrl.navigateForward('/privacidad');
   }
+  rules = {
+    length: false,
+    upper: false,
+    lower: false,
+    number: false,
+    symbol: false
+  };
+
+  originalPassword(event: any) {
+    const value = event.target.value || '';
+
+    this.rules.length = value.length >= 12; 
+    this.rules.upper = /[A-Z]/.test(value);
+    this.rules.lower = /[a-z]/.test(value);
+    this.rules.number = /\d/.test(value);
+    this.rules.symbol = /[!"#%()*+,\-\.\/:=\?@\[\]\^_`{}]/.test(value);
+  }
+
+  getStrengthBarWidth(): string {
+    switch (this.passwordStrength) {
+      case 'Débil': return '25%';
+      case 'Media': return '50%';
+      case 'Aceptable': return '75%';
+      case 'Fuerte': return '100%';
+      default: return '0%';
+    }
+  }
+
 }
+
+
+
