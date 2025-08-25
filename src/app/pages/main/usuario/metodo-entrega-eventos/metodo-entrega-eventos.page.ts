@@ -15,13 +15,17 @@ import { ConfirmarDireccionComponent } from 'src/app/shared/components/confirmar
 })
 export class MetodoEntregaEventosPage implements OnInit {
   selectedMethod: string = '';
-  selectedDate: string = '';
-  selectedTime: string = '';
   cart: any;
   discountAmount: number = 0;
   porcentaje: number = 0;
   minDate: string = '';
   maxDate: string = '';
+  fechaRecoleccion: string = '';
+  horaRecoleccion: string = '';
+  horaEntrada: string = '09:00';
+  horaSalida: string = '20:00';
+  horaMinimaInput: string = '09:00';
+  horaOpciones: { value: string; label: string; enabled: boolean }[] = [];
 
   // Add new properties for delivery validation
   readonly MINIMUM_WEIGHT_FOR_FREE_DELIVERY = 60; // kg
@@ -29,12 +33,6 @@ export class MetodoEntregaEventosPage implements OnInit {
   totalWeight: number = 0;
   deliveryFee: number = 0;
   showMinimumOrderMessage: boolean = false;
-  fechaRecoleccion: string = '';
-  horaRecoleccion: string = '';
-  horaEntrada: string = '09:00';
-  horaSalida: string = '20:00';
-  horaMinimaInput: string = '09:00';
-  horaOpciones: { value: string; label: string; enabled: boolean }[] = [];
 
   constructor(
     private router: Router,
@@ -244,8 +242,8 @@ export class MetodoEntregaEventosPage implements OnInit {
   }
 
   async continue() {
-    if (this.selectedMethod && this.selectedDate && this.selectedTime) {
-      // Validate selected date is within allowed range
+    if (this.selectedMethod && this.fechaRecoleccion && this.horaRecoleccion) {
+      // Validación de fecha y hora
       if (!this.isValidDate()) {
         this.utilsSvc.presentToast({
           message: 'Por favor selecciona una fecha válida (desde hoy hasta 1 mes)',
@@ -256,8 +254,7 @@ export class MetodoEntregaEventosPage implements OnInit {
         return;
       }
 
-      // Validate business hours first
-      if (!this.isWithinBusinessHours()) {
+      if (!this.isHoraDentroHorario(this.horaRecoleccion)) {
         this.utilsSvc.presentToast({
           message: 'Horario de atención: Lunes a Domingo de 9:00 AM a 8:00 PM',
           duration: 4000,
@@ -267,33 +264,10 @@ export class MetodoEntregaEventosPage implements OnInit {
         return;
       }
 
-      // Validate selected time (including anticipation and past time check)
-      if (!this.isValidTime()) {
-        const selectedDate = new Date(this.selectedDate);
-        const now = new Date();
-
-        if (selectedDate.toDateString() === now.toDateString()) {
-          this.utilsSvc.presentToast({
-            message: 'Para hoy, la hora debe ser al menos 2 horas después de la hora actual',
-            duration: 4000,
-            color: 'warning',
-            position: 'top'
-          });
-        } else {
-          this.utilsSvc.presentToast({
-            message: 'Por favor selecciona una hora válida',
-            duration: 3000,
-            color: 'warning',
-            position: 'top'
-          });
-        }
-        return;
-      }
-
-      // Combine date and time
+      // Combina fecha y hora
       const combinedDateTime = this.combineDateTime();
 
-      // Save the selected method and date in local storage
+      // Guarda en localStorage
       this.utilsSvc.saveInLocalStorage('selectedMethod', this.selectedMethod);
       this.cart.fecha_entrega = combinedDateTime;
       this.utilsSvc.saveInLocalStorage('carrito_eventos', [this.cart]);
@@ -353,84 +327,49 @@ export class MetodoEntregaEventosPage implements OnInit {
   }
 
   isValidDate(): boolean {
-    if (!this.selectedDate) return false;
-
-    const selectedDate = new Date(this.selectedDate);
+    if (!this.fechaRecoleccion) return false;
+    const selectedDate = new Date(this.fechaRecoleccion);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to start of day
-
+    today.setHours(0, 0, 0, 0);
     const maxAllowedDate = new Date();
-    maxAllowedDate.setMonth(today.getMonth() + 1); // 1 month from today
-    maxAllowedDate.setHours(23, 59, 59, 999); // End of max day
-
-    // Selected date must be today or later, but not more than 1 month
+    maxAllowedDate.setMonth(today.getMonth() + 1);
+    maxAllowedDate.setHours(23, 59, 59, 999);
     return selectedDate >= today && selectedDate <= maxAllowedDate;
   }
 
   isValidTime(): boolean {
-    if (!this.selectedTime || !this.selectedDate) return false;
+    if (!this.horaRecoleccion || !this.fechaRecoleccion) return false;
 
-    const selectedDate = new Date(this.selectedDate);
-    const selectedTime = new Date(this.selectedTime);
+    const selectedDate = new Date(this.fechaRecoleccion);
+    const [h, m] = this.horaRecoleccion.split(':').map(Number);
     const now = new Date();
 
-    // Combine selected date and time
+    // Combina fecha y hora
     const combinedDateTime = new Date(selectedDate);
-    combinedDateTime.setHours(
-      selectedTime.getHours(),
-      selectedTime.getMinutes(),
-      0, // seconds
-      0  // milliseconds
-    );
+    combinedDateTime.setHours(h, m, 0, 0);
 
-    // If selected date is today
+    // Si la fecha seleccionada es hoy
     if (selectedDate.toDateString() === now.toDateString()) {
-      // The selected time must be at least 2 hours from now
       const minAllowedTime = new Date(now);
       minAllowedTime.setHours(minAllowedTime.getHours() + 2);
-
-      // Also ensure it's not in the past (even if less than 2 hours)
-      const currentTime = new Date(now);
-
-      // The combined datetime must be:
-      // 1. At least 2 hours from now
-      // 2. Not in the past
-      // 3. Within business hours
-      return combinedDateTime >= minAllowedTime && combinedDateTime > currentTime;
+      return combinedDateTime >= minAllowedTime && combinedDateTime > now;
     }
 
-    // For future dates, any time within business hours is valid
+    // Para fechas futuras, cualquier hora dentro del horario es válida
     return true;
   }
 
   isWithinBusinessHours(): boolean {
-    if (!this.selectedTime) return false;
-
-    const selectedTime = new Date(this.selectedTime);
-    const hours = selectedTime.getHours();
-    const minutes = selectedTime.getMinutes();
-
-    // Business hours: 9:00 AM to 8:00 PM (9:00 - 20:00)
-    const startHour = 9;  // 9 AM
-    const endHour = 22;   // 8 PM
-
-    // Convert time to minutes for easier comparison
-    const selectedTimeInMinutes = hours * 60 + minutes;
-    const startTimeInMinutes = startHour * 60;      // 9:00 AM = 540 minutes
-    const endTimeInMinutes = endHour * 60;          // 8:00 PM = 1200 minutes
-
-    return selectedTimeInMinutes >= startTimeInMinutes && selectedTimeInMinutes <= endTimeInMinutes;
+    if (!this.horaRecoleccion) return false;
+    const [h, m] = this.horaRecoleccion.split(':').map(Number);
+    const startHour = 9;
+    const endHour = 20;
+    return h >= startHour && h < endHour;
   }
 
   combineDateTime(): string {
     if (!this.fechaRecoleccion || !this.horaRecoleccion) return '';
     return `${this.fechaRecoleccion}T${this.horaRecoleccion}:00`;
-  }
-
-  // Add helper method to check if selected date is today
-  isSelectedDateToday(): boolean {
-    if (!this.selectedDate) return false;
-    return new Date(this.selectedDate).toDateString() === new Date().toDateString();
   }
 
   // Add method to get formatted date for display
@@ -481,21 +420,6 @@ export class MetodoEntregaEventosPage implements OnInit {
     total = total + this.deliveryFee;
 
     return total;
-  }
-
-  onTimeChange(event: any) {
-    this.selectedTime = event.detail.value;
-
-    // Auto-validate when time changes
-    if (this.isSelectedDateToday() && this.selectedTime) {
-      const isValid = this.isValidTime();
-      const isWithinHours = this.isWithinBusinessHours();
-
-      if (!isValid || !isWithinHours) {
-        // Show a subtle hint that the time might not be valid
-        console.log('Time validation:', { isValid, isWithinHours });
-      }
-    }
   }
 
   formatHoraAMPM(hora: string): string {
