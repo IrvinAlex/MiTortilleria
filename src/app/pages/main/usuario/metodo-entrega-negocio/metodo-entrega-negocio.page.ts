@@ -14,8 +14,6 @@ import { FirebaseService } from 'src/app/services/firebase.service';
 export class MetodoEntregaNegocioPage implements OnInit {
 
   selectedMethod: string = '';
-  selectedDate: string = '';
-  selectedTime: string = '';
   cart: any;
   discountAmount: number = 0;
   porcentaje: number = 0;
@@ -30,9 +28,9 @@ export class MetodoEntregaNegocioPage implements OnInit {
 
   constructor(private router: Router, private utilsSvc: UtilsService) { 
     // Initialize selectedDate with today's date
-    this.selectedDate = new Date().toISOString();
+    // this.selectedDate = new Date().toISOString();
     // Initialize selectedTime with current time
-    this.selectedTime = new Date().toISOString();
+    // this.selectedTime = new Date().toISOString();
   }
 
   ngOnInit() {
@@ -89,16 +87,17 @@ export class MetodoEntregaNegocioPage implements OnInit {
   }
 
   async continue() {
-    if (this.selectedMethod && this.selectedDate && this.selectedTime) {
-      // Save the selected method, date and time in local storage
+    if (this.selectedMethod && this.fechaRecoleccion && this.horaRecoleccion) {
+      // Verifica el valor antes de guardar
+      console.log('Fecha seleccionada por el usuario:', this.fechaRecoleccion);
+      console.log('Hora seleccionada por el usuario:', this.horaRecoleccion);
+      // Combina fecha y hora en formato ISO y guarda solo en fecha_entrega
+      this.cart.fecha_entrega = `${this.fechaRecoleccion}T${this.horaRecoleccion}:00`;
+      // Elimina hora_entrega si existe
+      if (this.cart.hora_entrega) delete this.cart.hora_entrega;
       this.utilsSvc.saveInLocalStorage('selectedMethod', this.selectedMethod);
-      this.cart.fecha_entrega = this.selectedDate;
-      this.cart.hora_entrega = this.selectedTime;
       this.utilsSvc.saveInLocalStorage('carrito_negocio', [this.cart]);
       console.log('Método seleccionado:', this.selectedMethod);
-      console.log('Fecha seleccionada:', this.selectedDate);
-      console.log('Hora seleccionada:', this.selectedTime);
-      console.log('Carrito:', this.cart);
       
       // Navigate to the appropriate page based on the selected method
       if (this.selectedMethod === 'negocio') {

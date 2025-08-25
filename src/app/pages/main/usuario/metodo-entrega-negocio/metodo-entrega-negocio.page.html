@@ -192,7 +192,7 @@
       <ion-button 
         expand="block" 
         size="large"
-        [disabled]="!selectedMethod || !selectedDate || !selectedTime" 
+        [disabled]="!selectedMethod || !fechaRecoleccion || !horaRecoleccion" 
         (click)="continue()"
         class="continue-button">
         <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>

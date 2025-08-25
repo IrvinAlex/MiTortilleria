@@ -98,7 +98,8 @@ export class EntregaNegocioNegocioComponent  implements OnInit {
               const pedido = {
                 estatus: 'Pedido confirmado',
                 fecha: new Date(),
-                fecha_entrega: new Date(this.cart.fecha_entrega),
+                // Usa la fecha y hora seleccionadas del carrito
+                fecha_entrega: this.cart.fecha_entrega, // único campo con fecha y hora
                 pago_confirmado: true,
                 tipo_pago: 'Tarjeta',
                 tipo_entrega: 'Negocio', // <-- Agregado para registrar el tipo de entrega
@@ -224,7 +225,7 @@ export class EntregaNegocioNegocioComponent  implements OnInit {
       const pedido = {
         estatus: 'Pedido confirmado',
         fecha: new Date(),
-        fecha_entrega: new Date(this.cart.fecha_entrega),
+        fecha_entrega: this.cart.fecha_entrega, // único campo con fecha y hora
         pago_confirmado: false,
         tipo_pago: 'Efectivo',
         total: this.cart.total-(this.cart.total*(this.porcentaje/100)),

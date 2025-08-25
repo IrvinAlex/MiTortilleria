@@ -176,7 +176,7 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
               const pedido = {
                 estatus: 'Pedido confirmado',
                 fecha: new Date(),
-                fecha_entrega: new Date(this.cart.fecha_entrega),
+                fecha_entrega: this.cart.fecha_entrega, // único campo con fecha y hora
                 pago_confirmado: true,
                 tipo_pago: 'Tarjeta',
                 tipo_entrega: 'Negocio',
@@ -314,7 +314,7 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
       const pedido = {
         estatus: 'Pedido confirmado',
         fecha: new Date(),
-        fecha_entrega: new Date(this.cart.fecha_entrega),
+        fecha_entrega: this.cart.fecha_entrega,
         pago_confirmado: false,
         tipo_pago: 'Efectivo',
         tipo_entrega: 'Negocio',
@@ -455,4 +455,6 @@ export class EntregaDomicilioNegocioComponent  implements OnInit {
   }
 
 }
+
+
 

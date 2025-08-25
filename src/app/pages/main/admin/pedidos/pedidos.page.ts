@@ -79,28 +79,30 @@ export class PedidosPage implements OnInit {
     this.loading = true;
 
     let sub = this.firebaseSvc.getCollectionData(path, []).subscribe({
-      next: (res: any) => {
+      next: async (res: any) => {
         if (Array.isArray(res)) {
           // Guarda todos los pedidos
           this.pedidos = res;
 
-          // Filtra solo los pedidos de hoy usando fecha_entrega o (fallback) fecha
-          const pedidosHoy = this.pedidos.filter((pedido: any) =>
-            this.isTodayDateLike(pedido?.fecha_entrega ?? pedido?.fecha)
-          );
-
-          // Enriquecer SOLO los pedidos de hoy
-          const promises = pedidosHoy.map((pedido: any) => {
+          // Enriquecer TODOS los pedidos con nombre_cliente
+          const promises = this.pedidos.map(async (pedido: any) => {
             let path2 = `users/${pedido.uid_cliente}`;
-            return this.firebaseSvc.getDocument(path2).then((user: User) => {
-              // Asigna el nombre según el tipo de pago
+            try {
+              // Quita la anotación de tipo en la asignación
+              const userData = await this.firebaseSvc.getDocument(path2);
+              const user = userData as User;
               if (pedido.tipo_pago === 'Tarjeta' && user.name) {
                 pedido.nombre_cliente = user.name;
               } else {
                 pedido.nombre_cliente =
                   user.name + " " + user.mother_Last_Name + " " + user.father_Last_Name;
               }
+            } catch (err) {
+              pedido.nombre_cliente = '';
+            }
 
+            // Enriquecer detalle_pedido solo para pedidos de hoy (opcional, para performance)
+            if (this.isTodayDateLike(pedido?.fecha_entrega ?? pedido?.fecha)) {
               const path3 = `pedidos/${pedido.id}/detalle_pedido`;
               this.firebaseSvc.getCollectionData(path3, []).subscribe({
                 next: (data) => {
@@ -118,23 +120,20 @@ export class PedidosPage implements OnInit {
                 },
                 error: (err) => console.error('Error al obtener datos:', err),
               });
-
-              return pedido;
-            });
+            }
+            return pedido;
           });
 
-          Promise.all(promises)
-            .then(() => {
-              // Ordenar pedidos por prioridad: activos -> entregados -> cancelados
-              this.pedidosFiltrados = this.sortOrdersByPriority(pedidosHoy);
-              this.loading = false;
-            })
-            .catch((error) => {
-              console.error('Error al procesar pedidos:', error);
-              this.pedidosFiltrados = this.sortOrdersByPriority(pedidosHoy);
-              this.loading = false;
-            });
+          await Promise.all(promises);
 
+          // Filtra solo los pedidos de hoy usando fecha_entrega o (fallback) fecha
+          const pedidosHoy = this.pedidos.filter((pedido: any) =>
+            this.isTodayDateLike(pedido?.fecha_entrega ?? pedido?.fecha)
+          );
+
+          // Ordenar pedidos por prioridad: activos -> entregados -> cancelados
+          this.pedidosFiltrados = this.sortOrdersByPriority(pedidosHoy);
+          this.loading = false;
         } else {
           this.pedidos = [];
           this.pedidosFiltrados = [];
@@ -379,9 +378,12 @@ export class PedidosPage implements OnInit {
         position: 'bottom',
         icon: 'refresh-circle-outline'
       });
-    };
-    this.filtersApplied = false;
-    this.getPedidos();
+      // Si el pedido fue modificado, refresca los pedidos (opcional)
+      this.getPedidos();
+    }
+    // Elimina la línea que cancela el filtro:
+    // this.filtersApplied = false;
+    // ...existing code...
   }
 
   // Mostrar términos y condiciones como modal
