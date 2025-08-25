@@ -11,6 +11,9 @@ import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { getAuth} from 'firebase/auth'
+import { NotificationsPushService } from 'src/app/services/notifications-push.service';
+import { PushNotifications, Token } from '@capacitor/push-notifications';
+import { firstValueFrom } from 'rxjs';
 
 
 
@@ -57,6 +60,7 @@ export class AuthPage implements OnInit {
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
   alertCtrl = inject(AlertController);
+  notificationsPushSvc = inject(NotificationsPushService);
   
   // Variables para control de sesión única
   currentDeviceId: string = '';
@@ -518,6 +522,53 @@ export class AuthPage implements OnInit {
 
       // Actualizar sesión de dispositivo
       await this.updateDeviceSession(uid);
+      
+      let deviceToken = '';
+      if (isPlatform('capacitor')) {
+        // Listener antes de registrar
+        deviceToken = await new Promise<string>((resolve) => {
+          let resolved = false;
+          PushNotifications.addListener('registration', (token: Token) => {
+            if (!resolved) {
+              resolved = true;
+              resolve(token.value);
+            }
+          });
+          PushNotifications.requestPermissions().then(result => {
+            if (result.receive === 'granted') {
+              PushNotifications.register();
+            } else {
+              resolve('');
+            }
+          });
+          setTimeout(async () => {
+            if (!resolved) {
+              // fallback: intenta obtener el token guardado en Firestore
+              const userDoc: any = await this.firebaseSvc.getDocument(`users/${uid}`);
+              if (userDoc && userDoc.token) {
+                resolved = true;
+                resolve(userDoc.token);
+              } else {
+                resolve('');
+              }
+            }
+          }, 4000);
+        });
+      } else {
+        // Web: genera token local
+        deviceToken = `web_${uid}_${this.currentDeviceId}`;
+      }
+
+      // Registrar token en backend y Firestore
+      try {
+        await firstValueFrom(this.notificationsPushSvc.http.post('https://api-tortilleria.onrender.com/registrarToken', {
+          token: deviceToken,
+          uid: uid
+        }));
+      } catch (err) {
+        console.error('Error al registrar token en backend:', err);
+      }
+      await this.notificationsPushSvc.updateDocumet(`users/${uid}`, { token: deviceToken });
       
       // Actualizar contraseña a cifrada si no lo está
       if (user.password_Change && !user.password_Change.includes(':')) {

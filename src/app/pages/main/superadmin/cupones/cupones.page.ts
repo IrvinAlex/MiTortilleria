@@ -9,6 +9,7 @@ import { Cupon } from 'src/app/models/cupon.model';
 import { AlertController } from '@ionic/angular';
 import { ModalController as IonicModalController } from '@ionic/angular';
 import { NotificationModalComponent } from 'src/app/shared/components/notification-modal/notification-modal.component';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-cupones',
@@ -52,7 +53,8 @@ export class CuponesPage implements OnInit {
     private cdr: ChangeDetectorRef,
     private firebaseService: FirebaseService,
     private alertController: AlertController,
-    private ionicModalCtrl: IonicModalController // NUEVO
+    private ionicModalCtrl: IonicModalController, // NUEVO
+    private http: HttpClient // NUEVO
   ) {
     this.setPage(1); // Inicializa en la página 1
     this.cuponForm = this.formBuilder.group({
@@ -273,32 +275,6 @@ export class CuponesPage implements OnInit {
 
   // NUEVO: Método para enviar la notificación push
   sendNotification() {
-    if (this.notificationForm.valid) {
-      const { title, message } = this.notificationForm.value;
-      // Suponiendo que existe un método en FirebaseService para enviar push
-      this.firebaseService.sendPushNotification({ title, message })
-        .then(() => {
-          this.utilsSvc.presentToast({
-            message: 'Notificación enviada exitosamente.',
-            duration: 1500,
-            color: 'success',
-            position: 'bottom',
-            icon: 'send-outline',
-          });
-          this.notificationForm.reset();
-          this.closeNotificationModal();
-        })
-        .catch(error => {
-          this.utilsSvc.presentToast({
-            message: 'Error al enviar la notificación.',
-            duration: 2500,
-            color: 'danger',
-            position: 'bottom',
-            icon: 'alert-circle-outline',
-          });
-          console.error("Error al enviar la notificación: ", error);
-        });
-    }
   }
 
   // NUEVO: Cerrar modal de notificación

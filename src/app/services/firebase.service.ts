@@ -475,7 +475,6 @@ export class FirebaseService {
 
   // ============= Enviar notificación push ==========================
   sendPushNotification(data: { title: string; message: string }) {
-    // Asegúrate de que NotificationsPushService tenga un método sendPushNotification
     return this.notificacionesSvc.sendPushNotification(data.title, data.message);
   }
 }

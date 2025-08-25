@@ -10,7 +10,8 @@ import { PushNotifications } from '@capacitor/push-notifications';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-  
+  notificationsPushSvc = new NotificationsPushService();
+
   constructor() {
     this.initializePush();
   }
@@ -22,6 +23,9 @@ export class AppComponent {
   }
 
   initializePush() {
+    // Solicitar permisos y registrar token en Android/iOS
+    this.notificationsPushSvc.init(''); // Si tienes el UID del usuario, pásalo aquí
+
     if (Capacitor.isNativePlatform) {
       // Solicitar permisos en plataforma nativa
       PushNotifications.requestPermissions().then(result => {

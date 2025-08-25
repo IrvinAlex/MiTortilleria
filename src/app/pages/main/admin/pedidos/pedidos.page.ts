@@ -93,8 +93,13 @@ export class PedidosPage implements OnInit {
           const promises = pedidosHoy.map((pedido: any) => {
             let path2 = `users/${pedido.uid_cliente}`;
             return this.firebaseSvc.getDocument(path2).then((user: User) => {
-              pedido.nombre_cliente =
-                user.name + " " + user.mother_Last_Name + " " + user.father_Last_Name;
+              // Asigna el nombre según el tipo de pago
+              if (pedido.tipo_pago === 'Tarjeta' && user.name) {
+                pedido.nombre_cliente = user.name;
+              } else {
+                pedido.nombre_cliente =
+                  user.name + " " + user.mother_Last_Name + " " + user.father_Last_Name;
+              }
 
               const path3 = `pedidos/${pedido.id}/detalle_pedido`;
               this.firebaseSvc.getCollectionData(path3, []).subscribe({

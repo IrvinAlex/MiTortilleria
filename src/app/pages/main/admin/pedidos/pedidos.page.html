@@ -40,7 +40,9 @@
               <div class="pedido-info">
                 <div class="info-row">
                   <ion-icon name="person-outline"></ion-icon>
-                  <span class="info-text">{{ pedido.nombre_cliente }}</span>
+                  <span class="info-text">
+                    {{ pedido.tipo_pago === 'Tarjeta' && pedido.nombre_tarjeta ? pedido.nombre_tarjeta : pedido.nombre_cliente }}
+                  </span>
                 </div>
                 <div class="info-row">
                   <ion-icon [color]="getColorIcon(pedido.estatus)" [name]="getStatusIcon(pedido.estatus)"></ion-icon>

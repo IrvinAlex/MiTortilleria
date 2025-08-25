@@ -4,6 +4,7 @@ import { UtilsService } from './utils.service';
 import { User } from '../models/user.model';
 import { doc, getFirestore, updateDoc } from 'firebase/firestore';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +15,7 @@ export class NotificationsPushService{
   enabled: boolean = false;
   uid_user: string = '';
   firestore = inject(AngularFirestore);
+  http = inject(HttpClient);
 
   
   constructor() { }
@@ -91,9 +93,20 @@ export class NotificationsPushService{
   saveToken(token: string) {
     console.log('Saving token to server:', token);
     const path = `users/${this.uid_user}`;
-    this.updateDocumet(path, { token }).finally(() => {
-      
+    // Registrar SIEMPRE en el backend
+    this.http.post('https://api-tortilleria.onrender.com/registrarToken', {
+      token,
+      uid: this.uid_user
+    }).subscribe({
+      next: (res) => {
+        console.log('Token registrado en API externa:', res);
+      },
+      error: (err) => {
+        console.error('Error registrando token en API externa:', err);
+      }
     });
+    // También actualiza en Firestore
+    this.updateDocumet(path, { token }).finally(() => {});
   }
 
   async removeToken() {
@@ -108,32 +121,30 @@ export class NotificationsPushService{
     return updateDoc(doc(getFirestore(), path), data);
   }
 
-  async sendNotification(token: string, title: string, body: string) {
-    const message = {
-      notification: {
-        title: title,
-        body: body,
-      },
-      token: token,
+  async sendNotification(title: string, body: string) {
+    // Envía la notificación push usando tu endpoint backend/Firebase Function
+    // Reemplaza la URL con tu endpoint real
+    const url = 'https://api-tortilleria.onrender.com/enviarNotificacion';
+    const payload = {
+      titulo: title, // Título de la notificación
+      cuerpo: body,  // Cuerpo de la notificación
+      data: {}       // Opcional: datos extra (puedes omitir o enviar un objeto)
     };
-    
-
-    
+    return this.http.post(url, payload).toPromise();
   }
 
   // Envía notificación push a todos los usuarios con token
   async sendPushNotification(title: string, message: string): Promise<void> {
-    // Obtiene todos los usuarios con token registrado
     const snapshot = await this.firestore.collection('users', ref => ref.where('token', '!=', '')).get().toPromise();
     const tokens: string[] = [];
     snapshot?.forEach(doc => {
-      const data = doc.data() as { token?: string }; // <-- especifica el tipo aquí
+      const data = doc.data() as { token?: string };
       if (data && typeof data.token === 'string' && data.token.length > 0) tokens.push(data.token);
     });
 
     // Envía la notificación a cada token
     for (const token of tokens) {
-      await this.sendNotification(token, title, message);
+      await this.sendNotification(title, message);
     }
   }
 }
