@@ -174,30 +174,36 @@ export class HistorialPedidosPage implements OnInit {
           return false;
         }
       }
-  
-      // Filtrar por rango de fechas
-      if (filterParams.fechaInicio && filterParams.fechaFin) {
-        const pedidoFecha = new Date(pedido.fecha_entrega.toDate());
-        const fechaInicio = new Date(filterParams.fechaInicio);
-        const fechaFin = new Date(filterParams.fechaFin);
-        if (pedidoFecha < fechaInicio || pedidoFecha > fechaFin) {
+
+      // Filtrar por rango de fechas (acepta solo inicio, solo fin, o ambos)
+      if (filterParams.fechaInicio || filterParams.fechaFin) {
+        let pedidoFecha = pedido.fecha_entrega?.toDate ? pedido.fecha_entrega.toDate() : new Date(pedido.fecha_entrega);
+        // Normaliza a formato YYYY-MM-DD
+        const pedidoFechaStr = pedidoFecha.toISOString().slice(0, 10);
+        if (filterParams.fechaInicio && pedidoFechaStr < filterParams.fechaInicio) {
+          return false;
+        }
+        if (filterParams.fechaFin && pedidoFechaStr > filterParams.fechaFin) {
           return false;
         }
       }
-  
+
       // Filtrar por rango de precio
-      if (filterParams.precioMin !== null && filterParams.precioMax !== null) {
-        if (pedido.total < filterParams.precioMin || pedido.total > filterParams.precioMax) {
+      if (filterParams.precioMin !== null && filterParams.precioMin !== undefined) {
+        if (pedido.total < filterParams.precioMin) {
           return false;
         }
       }
-      
-      
+      if (filterParams.precioMax !== null && filterParams.precioMax !== undefined) {
+        if (pedido.total > filterParams.precioMax) {
+          return false;
+        }
+      }
+
       return true;
-      
-      
     });
-   console.log(this.pedidosFiltrados);
+    // Si no hay resultados, desactiva loading
+    this.loading = false;
   }
   
 

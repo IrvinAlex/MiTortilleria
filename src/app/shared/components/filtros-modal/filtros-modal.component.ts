@@ -9,8 +9,8 @@ import { ModalController } from '@ionic/angular';
 export class FiltrosModalComponent {
   estatusOptions = ['Pedido confirmado', 'En preparación', 'En espera de recolección', 'Entregado', 'Cancelado'];
   selectedStatus: { [key: string]: boolean } = {};
-  fechaInicio: string | null = null;
-  fechaFin: string | null = null;
+  fechaInicio: string | null = null; // formato YYYY-MM-DD
+  fechaFin: string | null = null;    // formato YYYY-MM-DD
   precioMin: number | null = null;
   precioMax: number | null = null;
   mostrarEstatus: boolean = true;
@@ -30,8 +30,8 @@ export class FiltrosModalComponent {
     const selectedStatusArray = Object.keys(this.selectedStatus).filter(status => this.selectedStatus[status]);
     const filterParams = {
       selectedStatus: selectedStatusArray,
-      fechaInicio: this.fechaInicio,
-      fechaFin: this.fechaFin,
+      fechaInicio: this.fechaInicio ? this.fechaInicio : null,
+      fechaFin: this.fechaFin ? this.fechaFin : null,
       precioMin: this.precioMin,
       precioMax: this.precioMax
     };

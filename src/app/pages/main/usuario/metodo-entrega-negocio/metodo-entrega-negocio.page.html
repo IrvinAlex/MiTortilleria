@@ -67,36 +67,66 @@
           </div>
         </div>
 
-        <!-- Date Selection -->
+        <!-- Date & Time Selection (unificado en un solo card) -->
         <div class="date-section">
           <div class="date-card">
             <div class="date-header">
               <ion-icon name="calendar-outline" class="date-icon"></ion-icon>
-              <h3>Fecha de entrega</h3>
+              <h3>Fecha y hora de entrega</h3>
             </div>
-            <ion-datetime 
-              presentation="date"
-              [(ngModel)]="selectedDate"
-              class="custom-datetime"
-              [min]="minDate"
-              locale="es-ES">
-            </ion-datetime>
-          </div>
-        </div>
-
-        <!-- Time Selection -->
-        <div class="time-section">
-          <div class="time-card">
-            <div class="time-header">
-              <ion-icon name="time-outline" class="time-icon"></ion-icon>
-              <h3>Hora de entrega</h3>
+            <div class="datetime-container">
+              <div class="datetime-field">
+                <label class="datetime-label">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  Fecha
+                </label>
+                <div class="input-icon-wrapper">
+                  <ion-input
+                    type="date"
+                    [(ngModel)]="fechaRecoleccion"
+                    [min]="minDate"
+                    (ionChange)="onDateOrTimeChange()"
+                    class="custom-datetime"
+                    placeholder="Selecciona la fecha">
+                  </ion-input>
+                  <ion-icon name="calendar-outline" class="input-suffix-icon"></ion-icon>
+                </div>
+                <small class="datetime-hint">
+                  <ion-icon name="information-circle-outline"></ion-icon>
+                  Disponible desde hoy hasta 1 mes
+                </small>
+              </div>
+              <div class="datetime-field">
+                <label class="datetime-label">
+                  <ion-icon name="time-outline"></ion-icon>
+                  Hora
+                </label>
+                <div class="input-icon-wrapper">
+                  <ion-select
+                    [(ngModel)]="horaRecoleccion"
+                    (ionChange)="onDateOrTimeChange()"
+                    placeholder="Selecciona la hora"
+                    interface="popover"
+                    class="custom-datetime"
+                  >
+                    <ion-select-option *ngFor="let op of horaOpciones" [value]="op.value" [disabled]="!op.enabled">
+                      {{ op.label }}
+                    </ion-select-option>
+                  </ion-select>
+                  <ion-icon name="time-outline" class="input-suffix-icon"></ion-icon>
+                </div>
+                <small class="datetime-hint">
+                  <ion-icon name="information-circle-outline"></ion-icon>
+                  Mínimo 2 horas de anticipación (9:00 AM - 8:00 PM)
+                </small>
+              </div>
             </div>
-            <ion-datetime 
-              presentation="time"
-              [(ngModel)]="selectedTime"
-              class="custom-datetime"
-              locale="es-ES">
-            </ion-datetime>
+            <div class="selected-datetime" *ngIf="fechaRecoleccion && horaRecoleccion">
+              <div class="datetime-preview">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>{{ getFormattedDateTime() }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

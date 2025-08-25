@@ -59,19 +59,28 @@
     <ion-card-content>
       <!-- Fecha y Hora SIN RESTRICCIONES PARA HOY -->
       <ion-item>
-        <ion-label>Fecha y Hora de Recolección</ion-label>
-        <ion-datetime
-          [(ngModel)]="fechaHoraRecoleccion"
-          [min]="fechaMinima"
-          [max]="fechaMaxima"
-          placeholder="Selecciona fecha y hora"
-          locale="es-MX"
-          (ionChange)="onDateTimeChange()"
-          [showDefaultButtons]="true"
-          [showClearButton]="false"
-          presentation="date-time"
-          preferWheel="false">
-        </ion-datetime>
+        <ion-label>Fecha de Recolección</ion-label>
+        <ion-input
+          type="date"
+          [(ngModel)]="fechaRecoleccion"
+          [min]="fechaMinima.split('T')[0]"
+          [max]="fechaMaxima.split('T')[0]"
+          (ionChange)="onDateOrTimeChange()"
+          placeholder="Selecciona la fecha">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Hora de Recolección</ion-label>
+        <ion-select
+          [(ngModel)]="horaRecoleccion"
+          (ionChange)="onDateOrTimeChange()"
+          placeholder="Selecciona la hora"
+          interface="popover"
+        >
+          <ion-select-option *ngFor="let op of horaOpciones" [value]="op.value" [disabled]="!op.enabled">
+            {{ op.label }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
 
 
@@ -92,7 +101,11 @@
         <ion-label class="ion-text-wrap">
           <h3>Horarios Disponibles</h3>
           <p>✅ Puedes elegir desde HOY cualquier hora que necesites</p>
-          <p>💡 Horario sugerido: 9:00 AM - 8:00 PM</p>
+          <p>
+            <ion-icon name="bulb-outline" color="warning" style="vertical-align: middle;"></ion-icon>
+            Horario sugerido: 
+            {{ formatHoraAMPM(horaEntrada) }} - {{ formatHoraAMPM(horaSalida) }}
+          </p>
         </ion-label>
       </ion-item>
 

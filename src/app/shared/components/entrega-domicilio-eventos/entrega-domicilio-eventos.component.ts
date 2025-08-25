@@ -121,7 +121,6 @@ export class EntregaDomicilioEventosComponent implements OnInit {
               this.paymentConfirmed = true;
             }, 3000); // Duración de la animación
 
-            // Asegura que el color vuelva al original después de la animación
             setTimeout(async () => {
               const button = document.querySelector('.confirm-button') as HTMLElement;
               if (button) {
@@ -159,8 +158,6 @@ export class EntregaDomicilioEventosComponent implements OnInit {
               const carritoId = this.cart.id;
               for (let item of this.cart.detalle_carrito) {
                 await this.firebaseSvc.deleteDocumet(`users/${userId}/carrito_eventos/${carritoId}/detalle_carrito/${item.id}`);
-                
-                
               }
 
               // Agregar información a la colección "pedidos"
@@ -185,7 +182,7 @@ export class EntregaDomicilioEventosComponent implements OnInit {
               // Eliminar elementos del carrito en localStorage
               this.cart.detalle_carrito = [];
               this.cart.total = 0;
-              this.utilsSvc.setElementInLocalstorage('carrito', [this.cart]);
+              this.utilsSvc.setElementInLocalstorage('carrito_eventos', [this.cart]); // <-- corregido aquí
 
               // Eliminar elemento de localstorage
               localStorage.removeItem('selectedMethod');
@@ -274,8 +271,6 @@ export class EntregaDomicilioEventosComponent implements OnInit {
       const carritoId = this.cart.id;
       for (let item of this.cart.detalle_carrito) {
         await this.firebaseSvc.deleteDocumet(`users/${userId}/carrito_eventos/${carritoId}/detalle_carrito/${item.id}`);
-        
-        
       }
 
       // Agregar información a la colección "pedidos"

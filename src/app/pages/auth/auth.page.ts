@@ -486,7 +486,6 @@ export class AuthPage implements OnInit {
 
   async getUserInfo(uid: string) {
     const loading = await this.utilsSvc.loading();
-    
     try {
       let path = `users/${uid}`;
       console.log(uid);
@@ -609,12 +608,38 @@ export class AuthPage implements OnInit {
         if (user.isBusiness) {
           let path5 = `users/${uid}/carrito_negocio`;
           let sub5 = this.firebaseSvc.getCollectionData(path5, []).subscribe({
-            next: (res: any) => {
+            next: async (res: any) => {
               this.carrito_negocio = res;
-              if (this.carrito_negocio) {
-                //OBTENER LOS DETALLES DEL CARRITO
+              if (!this.carrito_negocio || this.carrito_negocio.length === 0) {
+                // Si no existe, crear carrito_negocio
+                // Forzar el valor de total a 0 si está nulo
+                if (
+                  this.form_carrito_negocio.value.total === null ||
+                  this.form_carrito_negocio.value.total === undefined
+                ) {
+                  this.form_carrito_negocio.patchValue({ total: 0 });
+                }
+                await this.firebaseSvc.addDocument(path5, this.form_carrito_negocio.value);
+                // Volver a consultar después de crear
+                let subNew = this.firebaseSvc.getCollectionData(path5, []).subscribe({
+                  next: (resNew: any) => {
+                    this.carrito_negocio = resNew;
+                    if (this.carrito_negocio && this.carrito_negocio.length > 0) {
+                      let path6 = `users/${uid}/carrito_negocio/${this.carrito_negocio[0].id}/detalle_carrito`;
+                      let sub6 = this.firebaseSvc.obtenerColeccion(path6).subscribe({
+                        next: (detalle: any) => {
+                          this.carrito_negocio[0].detalle_carrito = detalle;
+                          this.utilsSvc.setElementInLocalstorage("carrito_negocio", this.carrito_negocio);
+                          sub6.unsubscribe();
+                        }
+                      });
+                    }
+                    subNew.unsubscribe();
+                  }
+                });
+              } else {
+                // Si existe, obtener detalles
                 let path6 = `users/${uid}/carrito_negocio/${this.carrito_negocio[0].id}/detalle_carrito`;
-                
                 let sub6 = this.firebaseSvc.obtenerColeccion(path6).subscribe({
                   next: (detalle: any) => {
                     this.carrito_negocio[0].detalle_carrito = detalle;
@@ -622,9 +647,8 @@ export class AuthPage implements OnInit {
                     sub6.unsubscribe();
                   }
                 });
-
-                sub5.unsubscribe();
               }
+              sub5.unsubscribe();
             }
           });
           
@@ -806,6 +830,13 @@ export class AuthPage implements OnInit {
           this.carrito = res;
           //OBTENER LOS DETALLES DEL CARRITO
           let pathc = `users/${uid}/carrito`;
+          // Forzar el valor de total a 0 si está nulo
+          if (
+            this.form_carrito.value.total === null ||
+            this.form_carrito.value.total === undefined
+          ) {
+            this.form_carrito.patchValue({ total: 0 });
+          }
           this.firebaseSvc.addDocument(pathc, this.form_carrito.value).then(async (res) => {
 
             this.utilsSvc.saveInLocalStorage('carrito', this.form_carrito.value);
@@ -827,6 +858,13 @@ export class AuthPage implements OnInit {
 
 
        let path5 = `users/${uid}/carrito_eventos`;
+       // Forzar el valor de total a 0 si está nulo
+       if (
+         this.form_carrito_eventos.value.total === null ||
+         this.form_carrito_eventos.value.total === undefined
+       ) {
+         this.form_carrito_eventos.patchValue({ total: 0 });
+       }
        await this.firebaseSvc.addDocument(path5, this.form_carrito_eventos.value).then(async (res) => {
          let path5 = `users/${uid}/carrito_eventos`;
          let sub5 = this.firebaseSvc.getCollectionData(path5, []).subscribe({
@@ -950,12 +988,38 @@ export class AuthPage implements OnInit {
         if (user.isBusiness) {
           let path5 = `users/${uid}/carrito_negocio`;
           let sub5 = this.firebaseSvc.getCollectionData(path5, []).subscribe({
-            next: (res: any) => {
+            next: async (res: any) => {
               this.carrito_negocio = res;
-              if (this.carrito_negocio) {
-                //OBTENER LOS DETALLES DEL CARRITO
+              if (!this.carrito_negocio || this.carrito_negocio.length === 0) {
+                // Si no existe, crear carrito_negocio
+                // Forzar el valor de total a 0 si está nulo
+                if (
+                  this.form_carrito_negocio.value.total === null ||
+                  this.form_carrito_negocio.value.total === undefined
+                ) {
+                  this.form_carrito_negocio.patchValue({ total: 0 });
+                }
+                await this.firebaseSvc.addDocument(path5, this.form_carrito_negocio.value);
+                // Volver a consultar después de crear
+                let subNew = this.firebaseSvc.getCollectionData(path5, []).subscribe({
+                  next: (resNew: any) => {
+                    this.carrito_negocio = resNew;
+                    if (this.carrito_negocio && this.carrito_negocio.length > 0) {
+                      let path6 = `users/${uid}/carrito_negocio/${this.carrito_negocio[0].id}/detalle_carrito`;
+                      let sub6 = this.firebaseSvc.obtenerColeccion(path6).subscribe({
+                        next: (detalle: any) => {
+                          this.carrito_negocio[0].detalle_carrito = detalle;
+                          this.utilsSvc.setElementInLocalstorage("carrito_negocio", this.carrito_negocio);
+                          sub6.unsubscribe();
+                        }
+                      });
+                    }
+                    subNew.unsubscribe();
+                  }
+                });
+              } else {
+                // Si existe, obtener detalles
                 let path6 = `users/${uid}/carrito_negocio/${this.carrito_negocio[0].id}/detalle_carrito`;
-                
                 let sub6 = this.firebaseSvc.obtenerColeccion(path6).subscribe({
                   next: (detalle: any) => {
                     this.carrito_negocio[0].detalle_carrito = detalle;
@@ -963,12 +1027,10 @@ export class AuthPage implements OnInit {
                     sub6.unsubscribe();
                   }
                 });
-
-                sub5.unsubscribe();
               }
+              sub5.unsubscribe();
             }
           });
-          
           this.form_carrito_negocio.reset();
       }
       

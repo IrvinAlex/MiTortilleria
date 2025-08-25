@@ -26,7 +26,9 @@ export class EntregaNegocioEventosComponent  implements OnInit {
 
   ngOnInit() {
     this.getCartDetails();
-    this.calculateTotalWeight();
+    // El cálculo del peso total se debe hacer después de cargar el carrito
+    // Se elimina la llamada aquí y se pone después de cargar el carrito
+    // this.calculateTotalWeight();
   }
 
   calculateTotalWeight() {
@@ -305,6 +307,8 @@ export class EntregaNegocioEventosComponent  implements OnInit {
       item.opcion = option ? option : {};
     }
     loading.dismiss();
+    // Calcular el peso total después de cargar los detalles
+    this.calculateTotalWeight();
   }
 
   applyStoredCoupon() {
@@ -316,6 +320,8 @@ export class EntregaNegocioEventosComponent  implements OnInit {
         this.porcentaje = storedCoupon['porcentaje'];
         this.cart.total -= this.discountAmount;
       }
+      // Calcular el peso total después de aplicar el cupón
+      this.calculateTotalWeight();
     }
   }
 

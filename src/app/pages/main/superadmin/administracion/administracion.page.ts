@@ -7,6 +7,7 @@ import { AddUpdateProductComponent } from 'src/app/shared/components/add-update-
 import { AddUpdateUserComponent } from 'src/app/shared/components/add-update-user/add-update-user.component';
 import { User } from 'src/app/models/user.model';
 import { AlertController } from '@ionic/angular';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-administracion',
@@ -46,7 +47,8 @@ export class AdministracionPage implements OnInit {
     private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef,
     private firebaseService: FirebaseService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private http: HttpClient // Agrega HttpClient
   ) {
     this.setPage(1); // Inicializa en la página 1
     this.userForm = this.formBuilder.group({
@@ -117,7 +119,7 @@ export class AdministracionPage implements OnInit {
         message: 'Solo se pueden eliminar clientes de perfil 3.',
         duration: 2000,
         color: 'warning',
-        position: 'middle',
+        position: 'bottom',
         icon: 'alert-circle-outline',
       });
       return;
@@ -136,14 +138,7 @@ export class AdministracionPage implements OnInit {
           text: 'Cancelar',
           role: 'cancel',
           handler: () => {
-            // No hacer nada, solo cerrar la alerta
-            this.utilsSvc.presentToast({
-              message: 'Eliminación cancelada.',
-              duration: 1500,
-              color: 'warning',
-              position: 'middle',
-              icon: 'alert-circle-outline',
-            });
+            
           }
         },
         {
@@ -161,45 +156,60 @@ export class AdministracionPage implements OnInit {
 
   // Método para confirmar y proceder con la eliminación
   confirmDeleteItem(item: any) {
-    // Buscar el índice del elemento en el arreglo por el uid
     const index = this.data.findIndex(d => d.uid === item.uid);
 
     if (index > -1) {
       // Eliminar el elemento de la lista local
       this.data.splice(index, 1);
-      this.paginatedData = [...this.data]; // Actualizamos la lista filtrada
+      this.paginatedData = [...this.data];
       this.setPage(1);
-      this.cdr.detectChanges(); // Aseguramos que los cambios se detecten
+      this.cdr.detectChanges();
 
-      // Llamar al servicio para eliminar el documento de Firestore
-      const path = `users/${item.uid}`;  // Ruta del documento en Firestore
-      this.firebaseSvc.deleteDocumet(path)
-        .then(() => {
+      // Llamar al endpoint de la API para eliminar el usuario
+      const url = `https://api-tortilleria.onrender.com/deleteUser/${item.uid}`;
+      const token = localStorage.getItem('token'); // Ajusta si tu token está en otro lugar
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      });
+
+      this.http.delete(url, { headers }).subscribe({
+        next: (resp: any) => {
+          if (resp.success) {
+            this.utilsSvc.presentToast({
+              message: `Usuario ${item.name} eliminado correctamente.`,
+              duration: 1500,
+              color: 'success',
+              position: 'bottom',
+              icon: 'checkmark-circle-outline',
+            });
+          } else {
+            this.utilsSvc.presentToast({
+              message: `No se pudo eliminar el usuario ${item.name}.`,
+              duration: 2500,
+              color: 'danger',
+              position: 'bottom',
+              icon: 'alert-circle-outline',
+            });
+          }
+        },
+        error: (error) => {
           this.utilsSvc.presentToast({
-            message: 'Usuario eliminado exitosamente.',
-            duration: 1500,
-            color: 'success',
-            position: 'middle',
-            icon: 'checkmark-circle-outline',
-          });
-          console.log("Documento eliminado de Firestore");
-        })
-        .catch(error => {
-          this.utilsSvc.presentToast({
-            message: 'Error al eliminar el usuario.',
+            message: `Error al eliminar el usuario ${item.name}.`,
             duration: 2500,
             color: 'danger',
-            position: 'middle',
+            position: 'bottom',
             icon: 'alert-circle-outline',
           });
-          console.error("Error al eliminar el documento: ", error);
-        });
+          console.error("Error al eliminar el usuario: ", error);
+        }
+      });
     } else {
       this.utilsSvc.presentToast({
         message: 'Usuario no encontrado en la lista.',
         duration: 2500,
         color: 'danger',
-        position: 'middle',
+        position: 'bottom',
         icon: 'alert-circle-outline',
       });
     }

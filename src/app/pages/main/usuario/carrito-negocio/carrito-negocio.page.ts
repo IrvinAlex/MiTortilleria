@@ -33,17 +33,28 @@ export class CarritoNegocioPage implements OnInit {
     this.cart = [];
     this.cartDetails = [];
     this.cart = this.utilsSvc.getFromLocalStorage('carrito_negocio')[0];
+
+    // Obtener rangos de productos
+    const rango_productos = this.utilsSvc.getFromLocalStorage('rango_productos') || [];
+
     for (let item of this.cart.detalle_carrito) {
       const product = await this.firebaseSvc.getDocument(`productos/${item.uid_producto}`);
       const option = await this.firebaseSvc.getDocument(`productos/${item.uid_producto}/opciones/${item.uid_opcion}`);
+
+      // Asignar rango si existe
+      const rango = rango_productos.find((r: any) => r.producto === product['nombre']);
+      if (rango) {
+        product['minimo'] = Number(rango.min_producto);
+        product['maximo'] = Number(rango.max_producto);
+      }
+
       this.cartDetails.push({ ...item, product, option });
     }
     console.log('Detalles del carrito:', this.cartDetails);
-    
+
     this.loading = true;
     setTimeout(async () => {
       this.loading = false;
-      
     }, 500);
   }
   
@@ -55,6 +66,15 @@ export class CarritoNegocioPage implements OnInit {
         if (detalle && detalle.length > 0) { // Aseguramos que 'detalle' tenga datos
           item.product.opciones = detalle;
           item.product.id = item.uid_producto;
+
+          // Obtener rangos de productos y asignar mínimo y máximo
+          const rango_productos = this.utilsSvc.getFromLocalStorage('rango_productos') || [];
+          const rango = rango_productos.find((r: any) => r.producto === item.product.nombre);
+          if (rango) {
+            item.product.minimo = Number(rango.min_producto);
+            item.product.maximo = Number(rango.max_producto);
+          }
+
           console.log('Opciones del producto:', item.product);
           try {
             // Mostrar el modal y esperar el resultado
@@ -63,7 +83,7 @@ export class CarritoNegocioPage implements OnInit {
               cssClass: 'app-product-cart-events',
               componentProps: { producto: item.product },
             });
-    
+
             if (success) {
               // Actualizar el carrito con los nuevos detalles
               this.doRefresh({ target: { complete: () => {} } });
@@ -72,7 +92,7 @@ export class CarritoNegocioPage implements OnInit {
           } catch (error) {
             console.error("Error al presentar el modal:", error);
           }
-    
+
           // Finalmente, nos desuscribimos
           sub4.unsubscribe();
         } else {

@@ -11,7 +11,7 @@ import { UtilsService } from 'src/app/services/utils.service';
 })
 export class AddProductNegocioComponent  implements OnInit {
 
-  @Input() producto: any; // Recibe el producto con 'stock' incluido
+  @Input() producto: any; // Recibe el producto con 'minimo' y 'maximo' incluido
   form: FormGroup;
   form_detalle_carrito: FormGroup;
   selectedOption: string = 'kg';
@@ -42,6 +42,8 @@ export class AddProductNegocioComponent  implements OnInit {
       uid_producto: ['', Validators.required],
       uid_opcion: ['', Validators.required],
       tamano_tortilla: [''],
+      minimo: [0],
+      maximo: [0],
     });
 
   }
@@ -63,27 +65,58 @@ export class AddProductNegocioComponent  implements OnInit {
   }
 
   ngOnInit() {
-
-    const productInCart = this.getProductFromCart(this.producto.id);
+    let min = Number(this.producto.minimo);
+    let max = Number(this.producto.maximo);
     console.log(this.producto);
+    if (isNaN(min) || min < 1) min = 1;
+    if (isNaN(max) || max < min) max = 9999;
+    this.producto.minimo = min;
+    this.producto.maximo = max;
+
+    this.filteredOpciones = Array.isArray(this.producto.opciones) ? this.producto.opciones : [];
+    if (this.filteredOpciones.length > 0 && !this.form.value.opcion) {
+      this.form.patchValue({ opcion: this.filteredOpciones[0].id });
+    }
+    let precio = Number(this.buscarPrecioPorId(this.form.value.opcion)) || 0;
+    const productInCart = this.getProductFromCart(this.producto.id);
     if (productInCart) {
+      let cantidad = Number(productInCart.cantidad);
+      if (isNaN(cantidad)) cantidad = min;
+      cantidad = Math.max(min, Math.min(Number(this.producto.maximo), cantidad));
       this.form.patchValue({
         tipoCambio: 'kg',
-        cantidad: productInCart.cantidad,
+        cantidad: cantidad,
         opcion: productInCart.uid_opcion,
         total: productInCart.subtotal,
         tamano_tortilla: productInCart.tamano_tortilla,
       });
-      this.quantity = productInCart.cantidad;
+      this.quantity = cantidad;
+      if (this.producto.granel && this.form.value.tipoCambio === '$') {
+        this.dinero = cantidad * precio;
+        this.form.get('cantidad')?.setValue(this.dinero);
+      }
     } else {
+      this.quantity = min;
+      this.form.patchValue({
+        cantidad: min
+      });
       const defaultOption = this.producto.opciones.find((opcion: any) => opcion.nombre === 'Con aluminio');
       if (defaultOption) {
         this.form.patchValue({
           opcion: defaultOption.id
         });
+        precio = Number(this.buscarPrecioPorId(defaultOption.id)) || 0;
+      }
+      if (this.producto.granel && this.form.value.tipoCambio === '$') {
+        this.dinero = min * precio;
+        this.form.get('cantidad')?.setValue(this.dinero);
       }
     }
-    this.filteredOpciones = this.producto.opciones;
+    if (this.producto.granel && this.form.value.tipoCambio === '$') {
+      this.dinero = min * precio;
+      this.quantity = min;
+      this.form.get('cantidad')?.setValue(this.dinero);
+    }
     if (this.producto.nombre === 'Tortillas') {
       this.showTortillaSize = true;
     }
@@ -91,6 +124,24 @@ export class AddProductNegocioComponent  implements OnInit {
 
   onSelectChange(event: any) {
     this.prefix = event.detail.value === 'kg' ? 'kg' : '$';
+    let min = Number(this.producto.minimo);
+    let precio = Number(this.buscarPrecioPorId(this.form.value.opcion)) || 0;
+    this.filteredOpciones = Array.isArray(this.producto.opciones) ? this.producto.opciones : [];
+    if (this.filteredOpciones.length > 0 && !this.form.value.opcion) {
+      this.form.patchValue({ opcion: this.filteredOpciones[0].id });
+      precio = Number(this.buscarPrecioPorId(this.form.value.opcion)) || 0;
+    }
+    if (event.detail.value === 'kg') {
+      if (Number(this.quantity) < min) {
+        this.quantity = min;
+        this.form.get('cantidad')?.setValue(this.quantity);
+      }
+    } else if (event.detail.value === '$') {
+      // Siempre muestra el mínimo en pesos al cambiar a granel
+      this.dinero = min * precio;
+      this.quantity = min;
+      this.form.get('cantidad')?.setValue(this.dinero);
+    }
   }
 
   carrito(): Carrito {
@@ -108,15 +159,23 @@ export class AddProductNegocioComponent  implements OnInit {
   }
 
   increment() {
-    if (this.quantity < this.producto.maximo) {
-      this.quantity=this.quantity+1;
+    let min = Number(this.producto.minimo);
+    let max = Number(this.producto.maximo);
+    let current = Number(this.quantity);
+    if (isNaN(min) || min < 1) min = 1;
+    if (isNaN(max) || max < min) max = 9999;
+    if (isNaN(current)) current = min;
+    if (current < max) {
+      this.quantity = current + 1;
       this.form.get('cantidad')?.setValue(this.quantity);
     } else {
+      this.quantity = max;
+      this.form.get('cantidad')?.setValue(this.quantity);
       this.utilsSvc.presentToast({
-        message: 'Cantidad excede el máximo disponible',
+        message: `Cantidad máxima permitida es ${max} kg`,
         duration: 2500,
         color: 'primary',
-        position: 'middle',
+        position: 'bottom',
         icon: 'alert-circle-outline',
       });
     }
@@ -139,29 +198,95 @@ export class AddProductNegocioComponent  implements OnInit {
   
 
   decrement() {
-    if (this.quantity > this.producto.minimo) {
-      this.quantity=this.quantity-1;
+    let min = Number(this.producto.minimo);
+    let current = Number(this.quantity);
+    if (isNaN(min) || min < 1) min = 1;
+    if (isNaN(current)) current = min;
+    if (current > min) {
+      this.quantity = current - 1;
       this.form.get('cantidad')?.setValue(this.quantity);
+    } else {
+      this.quantity = min;
+      this.form.get('cantidad')?.setValue(this.quantity);
+      this.utilsSvc.presentToast({
+        message: `La cantidad mínima permitida es ${min} kg`,
+        duration: 2000,
+        color: 'warning',
+        position: 'bottom',
+        icon: 'remove-circle-outline',
+      });
     }
   }
 
   onInputChange(event: any) {
-    const inputValue = event.target.value;
-    if (inputValue > this.producto.maximo) {
-      this.utilsSvc.presentToast({
-        message: 'Cantidad ingresada excede el máximo disponible',
-        duration: 2500,
-        color: 'primary',
-        position: 'middle',
-        icon: 'alert-circle-outline',
-      });
-      this.quantity = this.producto.maximo; // Corrige la cantidad al máximo permitido
-      this.form.get('cantidad')?.setValue(this.quantity);
-    } else if (inputValue < 0) {
-      this.quantity = 0; // Evita valores negativos
-      this.form.get('cantidad')?.setValue(this.quantity);
+    let inputValue = Number(event.target.value);
+    let min = Number(this.producto.minimo);
+    let max = Number(this.producto.maximo);
+    let precio = Number(this.buscarPrecioPorId(this.form.value.opcion)) || 0;
+
+    if (isNaN(min) || min < 1) min = 1;
+    if (isNaN(max) || max < min) max = 9999;
+    if (isNaN(inputValue)) inputValue = min * precio;
+
+    if (this.form.value.tipoCambio === '$') {
+      // El usuario ingresa pesos, convertir a kg
+      let minPesos = min * precio;
+      let kg = precio ? parseFloat((inputValue / precio).toFixed(2)) : min;
+      if (inputValue < minPesos) {
+        kg = min;
+        inputValue = minPesos;
+        this.form.get('cantidad')?.setValue(inputValue);
+        this.quantity = kg;
+        this.utilsSvc.presentToast({
+          message: `El monto mínimo permitido es $${minPesos} (${min} kg)`,
+          duration: 2000,
+          color: 'warning',
+          position: 'bottom',
+          icon: 'remove-circle-outline',
+        });
+        return;
+      } else if (kg > max) {
+        kg = max;
+        inputValue = max * precio;
+        this.form.get('cantidad')?.setValue(inputValue);
+        this.quantity = kg;
+        this.utilsSvc.presentToast({
+          message: `Cantidad máxima permitida es ${max} kg`,
+          duration: 2500,
+          color: 'primary',
+          position: 'bottom',
+          icon: 'alert-circle-outline',
+        });
+        return;
+      }
+      this.quantity = kg;
+      this.form.get('cantidad')?.setValue(inputValue);
     } else {
-      this.quantity = inputValue; // Actualiza con un valor válido
+      // Modo kg normal
+      if (inputValue > max) {
+        this.quantity = max;
+        this.form.get('cantidad')?.setValue(max);
+        this.utilsSvc.presentToast({
+          message: `Cantidad máxima permitida es ${max} kg`,
+          duration: 2500,
+          color: 'primary',
+          position: 'bottom',
+          icon: 'alert-circle-outline',
+        });
+      } else if (inputValue < min) {
+        this.quantity = min;
+        this.form.get('cantidad')?.setValue(min);
+        this.utilsSvc.presentToast({
+          message: `Cantidad mínima permitida es ${min} kg`,
+          duration: 2000,
+          color: 'warning',
+          position: 'bottom',
+          icon: 'remove-circle-outline',
+        });
+      } else {
+        this.quantity = inputValue;
+        this.form.get('cantidad')?.setValue(this.quantity);
+      }
     }
   }
 
@@ -185,20 +310,28 @@ export class AddProductNegocioComponent  implements OnInit {
   }
 
   actualizarTotal() {
-    const dinero = this.form.value.cantidad;
-    const precio = this.buscarPrecioPorId(this.form.value.opcion) || 0;
-    this.total = parseFloat((dinero / precio).toFixed(2));
-    const carrito = this.carrito();
-    this.form.value.total = (carrito && carrito[0] ? carrito[0].total : 0) + this.dinero;
-    
-    return this.total;
+    // Calcula el total en modo granel ($)
+    let dinero = Number(this.form.value.cantidad);
+    let precio = Number(this.buscarPrecioPorId(this.form.value.opcion)) || 0;
+    if (precio === 0) return 0;
+    let kg = parseFloat((dinero / precio).toFixed(2));
+    let min = Number(this.producto.minimo);
+    let max = Number(this.producto.maximo);
+    if (kg < min) kg = min;
+    if (kg > max) kg = max;
+    return kg;
   }
-  
+
   actualizarTotalKg() {
-    let total = this.form.value.cantidad * this.buscarPrecioPorId(this.form.value.opcion);
-    const carrito = this.carrito();
-    this.form.value.total = (carrito && carrito[0] ? carrito[0].total : 0) + total;
-    return this.form.value.total;
+    // Calcula el total en modo kg
+    let cantidad = Number(this.form.value.cantidad);
+    let precio = Number(this.buscarPrecioPorId(this.form.value.opcion)) || 0;
+    let total = cantidad * precio;
+    let min = Number(this.producto.minimo);
+    let max = Number(this.producto.maximo);
+    if (cantidad < min) cantidad = min;
+    if (cantidad > max) cantidad = max;
+    return total;
   }
 
   isProductInCart(productId: string): boolean {
@@ -230,9 +363,27 @@ export class AddProductNegocioComponent  implements OnInit {
   submit() {
     if (this.form.valid) {
       const productId = this.producto.id;
-      const cantidad = this.form.value.cantidad;
-      const subtotal = this.form.value.cantidad * this.buscarPrecioPorId(this.form.value.opcion);
+      let cantidad = this.form.value.cantidad;
+      const precio = Number(this.buscarPrecioPorId(this.form.value.opcion)) || 0;
       const tamano_tortilla = this.form.value.tamano_tortilla;
+
+      if (this.producto.granel && this.form.value.tipoCambio === '$') {
+        // En granel, cantidad es pesos, convertir a kg
+        let minPesos = Number(this.producto.minimo) * precio;
+        if (cantidad < minPesos) {
+          this.utilsSvc.presentToast({
+            message: `El monto mínimo permitido es $${minPesos} (${this.producto.minimo} kg)`,
+            duration: 2000,
+            color: 'warning',
+            position: 'bottom',
+            icon: 'remove-circle-outline',
+          });
+          return;
+        }
+        cantidad = precio ? parseFloat((cantidad / precio).toFixed(2)) : 0;
+      }
+
+      const subtotal = cantidad * precio;
 
       if (this.isProductInCart(productId)) {
         this.cartNegocioService.updateProductInCart(productId, cantidad, subtotal, tamano_tortilla);
@@ -245,39 +396,17 @@ export class AddProductNegocioComponent  implements OnInit {
         });
       } else {
         if (this.producto.granel) {
-          if (this.form.value.tipoCambio === 'kg') {
-            // =========================CARRITO=========================
-            // Definir el valor de la cantidad en kg
-            this.form_detalle_carrito.get('cantidad')?.setValue(cantidad);
-
-            // Definir el valor del subtotal
-            this.form_detalle_carrito.get('subtotal')?.setValue(subtotal);
-
-            this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
-
-            
-            this.form_detalle_carrito.value.uid_opcion = this.form.value.opcion;
-            if (this.showTortillaSize) { this.form_detalle_carrito.value.tamano_tortilla = tamano_tortilla; }
-            const formDetalleCarrito = this.form_detalle_carrito.value;
-            const formCarritoTotal = subtotal;
-
-            this.cartNegocioService.addToCart(formCarritoTotal, formDetalleCarrito);
-          } else if (this.form.value.tipoCambio === '$') {
-            // =========================DETALLE DEL CARRITO=========================
-            // Definir el valor de la cantidad en kg
-            this.form_detalle_carrito.get('cantidad')?.setValue(this.actualizarTotal());
-
-            // Definir el valor del subtotal
-            this.form_detalle_carrito.get('subtotal')?.setValue(cantidad);
-
-            this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
-            this.form_detalle_carrito.value.uid_opcion = this.form.value.opcion;
-            if (this.showTortillaSize) { this.form_detalle_carrito.value.tamano_tortilla = tamano_tortilla; }
-            const formDetalleCarrito = this.form_detalle_carrito.value;
-            const formCarritoTotal = cantidad;
-
-            this.cartNegocioService.addToCart(formCarritoTotal, formDetalleCarrito);
-          }
+          // =========================CARRITO=========================
+          this.form_detalle_carrito.get('cantidad')?.setValue(cantidad);
+          this.form_detalle_carrito.get('subtotal')?.setValue(subtotal);
+          this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
+          this.form_detalle_carrito.get('minimo')?.setValue(this.producto.minimo);
+          this.form_detalle_carrito.get('maximo')?.setValue(this.producto.maximo);
+          this.form_detalle_carrito.value.uid_opcion = this.form.value.opcion;
+          if (this.showTortillaSize) { this.form_detalle_carrito.value.tamano_tortilla = tamano_tortilla; }
+          const formDetalleCarrito = this.form_detalle_carrito.value;
+          const formCarritoTotal = subtotal;
+          this.cartNegocioService.addToCart(formCarritoTotal, formDetalleCarrito);
         } else {
           // =========================PRODUCTO NO GRANEL=========================
           // Definir el valor de la cantidad
@@ -287,6 +416,8 @@ export class AddProductNegocioComponent  implements OnInit {
           this.form_detalle_carrito.get('subtotal')?.setValue(subtotal);
 
           this.form_detalle_carrito.get('uid_producto')?.setValue(productId);
+          this.form_detalle_carrito.get('minimo')?.setValue(this.producto.minimo);
+          this.form_detalle_carrito.get('maximo')?.setValue(this.producto.maximo);
           this.form_detalle_carrito.value.uid_opcion = this.form.value.opcion;
           const formDetalleCarrito = this.form_detalle_carrito.value;
           const formCarritoTotal = subtotal;
@@ -300,7 +431,6 @@ export class AddProductNegocioComponent  implements OnInit {
           position: 'bottom',
           icon: 'cart-outline',
         });
-        
       }
       this.utilsSvc.dismissModal(true);
     }

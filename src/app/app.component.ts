@@ -22,35 +22,54 @@ export class AppComponent {
   }
 
   initializePush() {
-  // Solicitar permisos
-  PushNotifications.requestPermissions().then(result => {
-    if (result.receive === 'granted') {
-      // Registrar el dispositivo
-      PushNotifications.register();
+    if (Capacitor.isNativePlatform) {
+      // Solicitar permisos en plataforma nativa
+      PushNotifications.requestPermissions().then(result => {
+        if (result.receive === 'granted') {
+          PushNotifications.register();
+        } else {
+          console.log('No se otorgaron permisos de notificación');
+        }
+      });
+
+      // Obtener token de registro
+      PushNotifications.addListener('registration', token => {
+        console.log('Device token:', token.value);
+        // Guarda este token en tu backend o Firebase
+      });
+
+      // Manejar errores
+      PushNotifications.addListener('registrationError', err => {
+        console.error('Error en registro push:', err.error);
+      });
+
+      // Notificación recibida en foreground
+      PushNotifications.addListener('pushNotificationReceived', notification => {
+        console.log('Notificación recibida:', notification);
+      });
+
+      // Cuando el usuario toca la notificación
+      PushNotifications.addListener('pushNotificationActionPerformed', notification => {
+        console.log('Notificación abierta:', notification.notification);
+      });
     } else {
-      console.log('No se otorgaron permisos de notificación');
+      // Implementación para web
+      if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            console.log('Permiso de notificación web concedido');
+            // Ejemplo: mostrar una notificación
+            new Notification('Bienvenido', {
+              body: 'Las notificaciones web están activadas.',
+              icon: 'assets/icon/favicon.png'
+            });
+          } else {
+            console.log('Permiso de notificación web denegado');
+          }
+        });
+      } else {
+        console.log('Las notificaciones web no son soportadas en este navegador');
+      }
     }
-  });
-
-  // Obtener token de registro
-  PushNotifications.addListener('registration', token => {
-    console.log('Device token:', token.value);
-    // Guarda este token en tu backend o Firebase
-  });
-
-  // Manejar errores
-  PushNotifications.addListener('registrationError', err => {
-    console.error('Error en registro push:', err.error);
-  });
-
-  // Notificación recibida en foreground
-  PushNotifications.addListener('pushNotificationReceived', notification => {
-    console.log('Notificación recibida:', notification);
-  });
-
-  // Cuando el usuario toca la notificación
-  PushNotifications.addListener('pushNotificationActionPerformed', notification => {
-    console.log('Notificación abierta:', notification.notification);
-  });
-}
+  }
 }

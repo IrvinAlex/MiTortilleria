@@ -43,6 +43,7 @@
             *ngIf="form.value.tipoCambio=='$'"
             [value]="dinero" 
             placeholder="Cantidad"
+            (ionChange)="onInputChange($event)"
             (keypress)="onKeyPress($event)">
             <ion-label slot="start">{{ prefix }}</ion-label>
           </ion-input>

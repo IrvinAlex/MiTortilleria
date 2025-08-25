@@ -104,12 +104,15 @@ export class ProductosNegocioPage implements OnInit {
         return;
       }
 
+      // Solo pasa producto, ya tiene minimo y maximo
       let success = await this.utilsSvc.presentModal({
         component: AddProductNegocioComponent,
         cssClass: 'add-product-negocio',
-        componentProps: { producto },
+        componentProps: { 
+          producto
+        },
       });
-      
+
       if (success) {
         // Mostrar toast de éxito
         this.utilsSvc.presentToast({
@@ -143,76 +146,50 @@ export class ProductosNegocioPage implements OnInit {
 
   async getProductos() {
     const loading = await this.utilsSvc.loading();
-      await loading.present();
+    await loading.present();
 
     let path = `rango_productos`;
     let sub3 = this.firebaseSvc.getCollectionData(path, [where("tipo","==","Taqueria")]).subscribe({
       next: (res:any) => {
         this.rango_productos = res;
         this.utilsSvc.setElementInLocalstorage('rango_productos', res);
-              
         sub3.unsubscribe();
       }
-    })
-    let query = [];
-    setTimeout(() => {
-      
-      console.log(this.rango_productos);
-      
-      console.log(query);
+    });
 
-      //OBTENER LA DIRECCION DEL USUARIO
+    setTimeout(() => {
       let path2 = `productos`;
       let sub = this.firebaseSvc.getCollectionData(path2, []).subscribe({
         next: (res:any) => {
-          // Store all products
-          res.forEach((producto: any) => {
-            this.rango_productos.forEach((rango: any) => {
-              if(rango.producto == producto.nombre){
-                this.productos.push(producto);
-                this.allProductos.push(producto);
-              }
-            
-            });
-          });
-          
-          
+          // Filtrar solo productos con nombre "Masa" o "Tortillas"
+          const productosNegocio = res.filter((producto: any) =>
+            producto.nombre === 'Masa' || producto.nombre === 'Tortillas'
+          );
+          this.productos = productosNegocio;
+          this.allProductos = [...this.productos];
 
-          console.log(this.productos);
-  
-          //OBTENER OPCIONES POR CADA UNO DE LOS PRODUCTOS
+          // Asignar rango y opciones solo a los productos de negocio
           this.productos.forEach(async (producto: any) => {
-            this.rango_productos.forEach((rango: any) => {
-              if(rango.producto == producto.nombre){
-                producto.minimo = rango.min_producto;
-                producto.maximo = rango.max_producto;
-              }
-            });
+            const rango = this.rango_productos.find((r: any) => r.producto === producto.nombre);
+            if (rango) {
+              producto.minimo = Number(rango.min_producto);
+              producto.maximo = Number(rango.max_producto);
+            }
             const opcionesPath = `productos/${producto.id}/opciones`;
             try {
               let sub2 = this.firebaseSvc.getCollectionData(opcionesPath, []).subscribe({
-                next: (res:any) => {
-                  let opciones = res;
+                next: (opciones:any) => {
                   producto.opciones = opciones;
-                  
-                  // También actualizar en allProductos
-                  const productoInAll = this.allProductos.find(p => p.id === producto.id);
-                  if (productoInAll) {
-                    productoInAll.opciones = opciones;
-                  }
-                  
                   sub2.unsubscribe();
-
-                  
                 }
-              })
-            } catch (err) {
-            }
-          });       
-          loading.dismiss(); // Dismiss loading after all products and options are fetched
-           sub.unsubscribe();
+              });
+            } catch (err) {}
+          });
+
+          loading.dismiss();
+          sub.unsubscribe();
         }
-      })
+      });
     }, 1000);
     
     

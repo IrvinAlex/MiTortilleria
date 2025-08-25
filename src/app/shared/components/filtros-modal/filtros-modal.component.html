@@ -21,12 +21,16 @@
       <ion-label><strong>Fecha</strong></ion-label>
     </ion-item-divider>
     <ion-item>
+      <div class="input-date-wrapper">
+        <ion-input type="date" [(ngModel)]="fechaInicio"></ion-input>
+      </div>
       <ion-label>Desde</ion-label>
-      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="fechaInicio"></ion-datetime>
     </ion-item>
     <ion-item>
+      <div class="input-date-wrapper">
+        <ion-input type="date" [(ngModel)]="fechaFin"></ion-input>
+      </div>
       <ion-label>Hasta</ion-label>
-      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="fechaFin"></ion-datetime>
     </ion-item>
 
     <!-- Filtros por Precio -->

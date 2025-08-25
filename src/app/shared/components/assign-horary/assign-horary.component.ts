@@ -21,6 +21,8 @@ interface DemandLevel {
 export class AssignHoraryComponent implements OnInit, OnDestroy {
   @Input() pedido: any;
   fechaHoraRecoleccion: string = '';
+  fechaRecoleccion: string = ''; // Nueva propiedad para la fecha
+  horaRecoleccion: string = '';  // Nueva propiedad para la hora
   fechaMinima: string = '';
   fechaMaxima: string = '';
 
@@ -55,13 +57,35 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
   sliderValue: number = 0;
   showAnimation: boolean = false;
 
+  // Nueva propiedad para el horario de trabajo
+  horaEntrada: string = '07:00'; // Valor por defecto
+  horaSalida: string = '20:00';  // Valor por defecto
+  horaMinimaInput: string = '07:00'; // Nuevo: mínimo dinámico para input de hora
+  horaOpciones: { value: string, label: string, enabled: boolean }[] = [];
+
   ngOnInit() {
     this.setFechaMinima();
     this.initializeDatetime();
     this.initializeTimeSystem();
+    this.getHorarioTrabajo();
     this.startAutoAssignment();
+    this.generarOpcionesHora(); // Inicializa opciones al cargar
   }
 
+  async getHorarioTrabajo() {
+    try {
+      const horarioDoc = await this.firebaseSvc.getDocument('horario/waeYL5UAeC3YyZ8BW3KT');
+      if (horarioDoc) {
+        this.horaEntrada = horarioDoc['hora_entrada'] || '07:00';
+        this.horaSalida = horarioDoc['hora_salida'] || '20:00';
+      }
+      this.generarOpcionesHora(); // Actualiza opciones cuando se obtiene el horario
+    } catch (err) {
+      this.horaEntrada = '07:00';
+      this.horaSalida = '20:00';
+      this.generarOpcionesHora();
+    }
+  }
 
   ngOnDestroy() {
     if (this.timeSubscription) {
@@ -105,6 +129,8 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
   initializeDatetime() {
     // No asignar fecha/hora por defecto, dejar vacío para que el usuario elija
     this.fechaHoraRecoleccion = '';
+    this.fechaRecoleccion = '';
+    this.horaRecoleccion = '';
   }
 
   initializeTimeSystem() {
@@ -239,22 +265,41 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
     return this.currentDemandLevel?.description || 'Calculando...';
   }
 
-  onDateTimeChange(event?: any) {
-    // Si el evento viene de ion-datetime, extrae el valor
-    if (event && event.detail && event.detail.value) {
-      // Convertir a zona local para evitar problemas de día anterior
-      const isoString = event.detail.value;
-      const localDate = new Date(isoString);
-      // Guardar como ISO local (sin modificar la hora seleccionada)
-      this.fechaHoraRecoleccion = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    }
-    console.log('Fecha/hora cambiada:', this.fechaHoraRecoleccion);
+  // Nuevo método para manejar cambios en fecha/hora
+  onDateOrTimeChange() {
+    this.updateHoraMinimaInput();
+    this.generarOpcionesHora(); // <-- Genera las opciones válidas
 
-    // MINIMAL validation - only basic checks
+    this.updateHoraMinimaInput(); // <-- Actualiza el mínimo antes de validar
+
+    if (this.fechaRecoleccion && this.horaRecoleccion) {
+      // Validar que la hora esté dentro del rango permitido
+      if (!this.isHoraDentroHorario(this.horaRecoleccion)) {
+        this.utilSvc.presentToast({
+          message: `La hora debe estar entre ${this.horaMinimaInput} y ${this.horaSalida}`,
+          duration: 2500,
+          color: 'warning',
+          position: 'bottom',
+          icon: 'time-outline'
+        });
+        this.fechaHoraRecoleccion = '';
+        return;
+      }
+      // Construir fechaHoraRecoleccion en formato ISO local
+      const fecha = this.fechaRecoleccion;
+      const hora = this.horaRecoleccion;
+      // Unir fecha y hora, agregar segundos y zona local
+      const isoString = `${fecha}T${hora}:00`;
+      // Ajustar a zona local
+      const localDate = new Date(isoString);
+      this.fechaHoraRecoleccion = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    } else {
+      this.fechaHoraRecoleccion = '';
+    }
+    // Validaciones mínimas
     if (this.fechaHoraRecoleccion) {
       const selectedDate = new Date(this.fechaHoraRecoleccion);
       const now = new Date();
-      // Comparar solo la fecha (sin hora)
       const selectedDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
       const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       if (selectedDay < nowDay) {
@@ -268,9 +313,118 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
         return;
       }
     }
+  }
 
-    console.log('Fecha válida:', this.validarFechaHora());
-    console.log('Hora formateada:', this.formatAssignedTime());
+  generarOpcionesHora() {
+    // Genera opciones de hora cada 15 minutos dentro del rango permitido
+    let opciones: { value: string, label: string, enabled: boolean }[] = [];
+    if (!this.horaEntrada || !this.horaSalida) {
+      this.horaOpciones = [];
+      return;
+    }
+
+    const [hE, mE] = this.horaEntrada.split(':').map(Number);
+    const [hS, mS] = this.horaSalida.split(':').map(Number);
+
+    let hoy = new Date();
+    let fechaSel: Date | null = null;
+    if (this.fechaRecoleccion) {
+      fechaSel = new Date(this.fechaRecoleccion);
+      // Ajusta el desfase de zona horaria sumando los minutos del offset
+      fechaSel.setMinutes(fechaSel.getMinutes() + fechaSel.getTimezoneOffset());
+      // Corrige el día sumando 1
+      fechaSel.setDate(fechaSel.getDate());
+    }
+    let esHoy = fechaSel &&
+      fechaSel.getFullYear() === hoy.getFullYear() &&
+      fechaSel.getMonth() === hoy.getMonth() &&
+      fechaSel.getDate() === hoy.getDate();
+
+    let minHour = hE;
+    let minMin = mE;
+    console.log(fechaSel?.getDate() + "-----" + hoy.getDate());
+    if (esHoy) {
+      // Si es hoy, el mínimo es el mayor entre horaEntrada y la hora actual redondeada a siguiente múltiplo de 15
+      const nowHour = hoy.getHours();
+      const nowMin = hoy.getMinutes();
+      let actualMin = Math.ceil(nowMin / 15) * 15;
+      let actualHour = nowHour;
+      if (actualMin === 60) { actualHour++; actualMin = 0; }
+      // Si la hora actual es menor que la hora de entrada, usar horaEntrada
+      if (actualHour < hE || (actualHour === hE && actualMin < mE)) {
+        minHour = hE;
+        minMin = mE;
+      } else {
+        minHour = actualHour;
+        minMin = actualMin;
+      }
+    }
+
+    let start = minHour * 60 + minMin;
+    let end = hS * 60 + mS;
+
+    // Solo muestra las opciones válidas (no solo deshabilitadas)
+    for (let min = hE * 60 + mE; min <= end; min += 15) {
+      if (min < start) continue; // Oculta las horas anteriores al mínimo permitido
+      const hour = Math.floor(min / 60);
+      const minute = min % 60;
+      const value = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+      const label = this.formatHoraAMPM(value);
+
+      opciones.push({ value, label, enabled: true });
+    }
+    this.horaOpciones = opciones;
+    // Si la hora seleccionada ya no es válida, límpiala
+    if (this.horaRecoleccion && !opciones.find(o => o.value === this.horaRecoleccion)) {
+      this.horaRecoleccion = '';
+    }
+  }
+
+  // Nuevo: actualiza el mínimo de hora permitido según la fecha seleccionada
+  updateHoraMinimaInput() {
+    if (!this.fechaRecoleccion) {
+      this.horaMinimaInput = this.horaEntrada;
+      return;
+    }
+    const hoy = new Date();
+    const fechaSel = new Date(this.fechaRecoleccion);
+    if (
+      fechaSel.getFullYear() === hoy.getFullYear() &&
+      fechaSel.getMonth() === hoy.getMonth() &&
+      fechaSel.getDate() === hoy.getDate()
+    ) {
+      // Si es hoy, el mínimo es el mayor entre horaEntrada y la hora actual
+      const nowHour = hoy.getHours();
+      const nowMin = hoy.getMinutes();
+      const [hE, mE] = this.horaEntrada.split(':').map(Number);
+
+      let minHour = Math.max(hE, nowHour);
+      let minMin = minHour === nowHour ? nowMin : mE;
+
+      // Si la hora actual es menor que la hora de entrada, usar horaEntrada
+      if (nowHour < hE || (nowHour === hE && nowMin < mE)) {
+        minHour = hE;
+        minMin = mE;
+      }
+
+      this.horaMinimaInput = `${minHour.toString().padStart(2, '0')}:${minMin.toString().padStart(2, '0')}`;
+    } else {
+      // Otro día, el mínimo es la hora de entrada
+      this.horaMinimaInput = this.horaEntrada;
+    }
+  }
+
+  // Modifica la validación para usar el mínimo dinámico
+  isHoraDentroHorario(hora: string): boolean {
+    const [h, m] = hora.split(':').map(Number);
+    const [hE, mE] = this.horaMinimaInput.split(':').map(Number);
+    const [hS, mS] = this.horaSalida.split(':').map(Number);
+
+    const minutos = h * 60 + m;
+    const minutosEntrada = hE * 60 + mE;
+    const minutosSalida = hS * 60 + mS;
+
+    return minutos >= minutosEntrada && minutos <= minutosSalida;
   }
 
   startAutoAssignment() {
@@ -439,5 +593,13 @@ export class AssignHoraryComponent implements OnInit, OnDestroy {
         });
       }
     }
+  }
+
+  formatHoraAMPM(hora: string): string {
+    if (!hora) return '';
+    const [h, m] = hora.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const displayHour = h % 12 || 12;
+    return `${displayHour}:${m.toString().padStart(2, '0')} ${ampm}`;
   }
 }
