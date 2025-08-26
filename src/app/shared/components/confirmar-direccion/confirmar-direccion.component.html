@@ -32,12 +32,8 @@
     <div class="map-preview-section" *ngIf="userLocation">
       <div class="map-container">
         <!-- Map Element -->
-        <capacitor-google-map 
-          id="confirmMap" 
-          class="map-element"
-          style="width: 100%; height: 250px; display: block;"
-          [style.visibility]="isLoading || hasMapError ? 'hidden' : 'visible'">
-        </capacitor-google-map>
+        <div id="confirmMap" class="map-element"></div>
+
         
         <!-- Loading overlay -->
         <div *ngIf="isLoading" class="loading-overlay">

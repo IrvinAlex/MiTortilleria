@@ -156,27 +156,25 @@ export class ConfirmarDireccionComponent implements OnInit, AfterViewInit, OnDes
 
   // Inicializar el mapa
   async initializeMap() {
-    this.isLoading = true;
-    this.hasMapError = false;
-    
-    try {
-      if (this.userLocation) {
-        // Siempre usar Capacitor Google Maps para mejor compatibilidad
-        await this.initializeCapacitorMap();
-      }
-    } catch (error) {
-      console.error('Error al inicializar el mapa:', error);
-      this.hasMapError = true;
-      this.utilsSvc.presentToast({
-        message: 'Error al cargar el mapa',
-        duration: 2000,
-        color: 'danger',
-        icon: 'warning-outline',
-      });
-    } finally {
-      this.isLoading = false;
+  if (!this.userLocation) return;
+  this.isLoading = true;
+  this.hasMapError = false;
+
+  try {
+    if (isPlatform('hybrid')) {
+      // 👇 Forzar web map si estamos en modal
+      await this.initializeWebMap();
+    } else {
+      await this.initializeWebMap();
     }
+  } catch (error) {
+    console.error('Error al inicializar el mapa:', error);
+    this.hasMapError = true;
+  } finally {
+    this.isLoading = false;
   }
+}
+
 
   // Inicializar mapa para móvil (Capacitor)
   async initializeCapacitorMap() {
@@ -196,7 +194,7 @@ export class ConfirmarDireccionComponent implements OnInit, AfterViewInit, OnDes
       console.log('Creando mapa con ubicación:', this.userLocation);
 
       const mymap = await GoogleMap.create({
-        id: 'confirm-map-modal',
+        id: 'confirmMap',
         element: mapRef,
         apiKey: apiKey,
         config: {
