@@ -9,7 +9,6 @@ import { EmailService } from 'src/app/services/email.service';
   styleUrls: ['./entrega-negocio-eventos.component.scss'],
 })
 export class EntregaNegocioEventosComponent  implements OnInit {
-
   selectedPayment: string | null = null;
   confirming: boolean = false;
   paymentConfirmed: boolean = false;
@@ -21,10 +20,14 @@ export class EntregaNegocioEventosComponent  implements OnInit {
   porcentaje: number = 0;
   readonly MINIMUM_WEIGHT_FOR_FREE_DELIVERY = 60; // kg
   totalWeight: number = 0;
+  minDate: string = ''; // Nueva propiedad para la fecha mínima
 
   constructor() {}
 
   ngOnInit() {
+    // Establecer la fecha mínima como hoy (formato YYYY-MM-DD)
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
     this.getCartDetails();
     // El cálculo del peso total se debe hacer después de cargar el carrito
     // Se elimina la llamada aquí y se pone después de cargar el carrito
@@ -87,7 +90,8 @@ export class EntregaNegocioEventosComponent  implements OnInit {
             purchase_units: [
               {
                 amount: {
-                  value: this.cart.total-(this.cart.total*(this.porcentaje/100)), // Precio total del pago
+                  // Solo el total menos el descuento, sin sumar ningún fee extra
+                  value: this.cart.total-(this.cart.total*(this.porcentaje/100)),
                 },
                 shipping_address: {
                   country_code: 'MX'
@@ -128,6 +132,7 @@ export class EntregaNegocioEventosComponent  implements OnInit {
                 es_recoleccion_negocio: true,
                 pago_confirmado: true,
                 tipo_pago: 'Tarjeta',
+                // Solo el total menos el descuento, sin sumar ningún fee extra
                 total: this.cart.total-(this.cart.total*(this.porcentaje/100)),
                 uid_cliente: userId
               };
@@ -210,6 +215,18 @@ export class EntregaNegocioEventosComponent  implements OnInit {
   }
 
   async confirmPayment() {
+    // Validar fecha de entrega antes de continuar
+    if (!this.cart.fecha_entrega || this.cart.fecha_entrega < this.minDate) {
+      await this.utilsSvc.presentToast({
+        message: 'Por favor selecciona una fecha válida de entrega.',
+        duration: 2500,
+        color: 'danger',
+        position: 'bottom',
+        icon: 'alert-circle-outline'
+      });
+      return;
+    }
+
     const loading = await this.utilsSvc.loading();
     await loading.present();
 
@@ -237,6 +254,7 @@ export class EntregaNegocioEventosComponent  implements OnInit {
         es_recoleccion_negocio: true, // Flag for business pickup
         pago_confirmado: false,
         tipo_pago: 'Efectivo',
+        // Solo el total menos el descuento, sin sumar ningún fee extra
         total: this.cart.total-(this.cart.total*(this.porcentaje/100)),
         uid_cliente: userId
       };
@@ -300,6 +318,10 @@ export class EntregaNegocioEventosComponent  implements OnInit {
     const loading = await this.utilsSvc.loading();
     await loading.present();
     this.cart = this.utilsSvc.getFromLocalStorage('carrito_eventos')[0];
+    // Inicializar fecha de entrega si está vacía
+    if (!this.cart.fecha_entrega) {
+      this.cart.fecha_entrega = this.minDate;
+    }
     for (let item of this.cart.detalle_carrito) {
       const product = await this.firebaseSvc.getDocument(`productos/${item.uid_producto}`);
       const option = await this.firebaseSvc.getDocument(`productos/${item.uid_producto}/opciones/${item.uid_opcion}`);

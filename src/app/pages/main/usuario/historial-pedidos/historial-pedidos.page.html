@@ -40,9 +40,9 @@
             <div class="data" *ngIf="pedido.estatus.toLowerCase() === 'en espera de recolección'">
               <strong>
                 <ion-icon slot="start" name="calendar-outline"></ion-icon>
-                Fecha de entrega:
+                Hora de recolección:
                 {{
-                  (pedido.fecha_entrega?.toDate ? pedido.fecha_entrega.toDate() : pedido.fecha_entrega) | date: 'dd/MM/yyyy HH:mm'
+                  (pedido.hora_recoleccion?.toDate ? pedido.hora_recoleccion.toDate() : pedido.hora_recoleccion) | date: 'dd/MM/yyyy HH:mm'
                 }}
               </strong>
             </div>

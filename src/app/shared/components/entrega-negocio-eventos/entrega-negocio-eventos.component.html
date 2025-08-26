@@ -26,6 +26,24 @@
     </ion-card-content>
   </ion-card>
 
+  <!-- Selector de fecha de entrega -->
+  <ion-card class="date-card">
+    <ion-card-header>
+      <h2 class="title">Fecha de entrega</h2>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Selecciona la fecha</ion-label>
+        <ion-input
+          type="date"
+          [min]="minDate"
+          [(ngModel)]="cart.fecha_entrega"
+          required
+        ></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
   <!-- Resumen de Compra -->
   <ion-card class="summary-card">
     <ion-card-header>

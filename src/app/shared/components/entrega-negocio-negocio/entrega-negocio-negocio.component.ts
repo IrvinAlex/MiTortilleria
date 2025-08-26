@@ -63,7 +63,8 @@ export class EntregaNegocioNegocioComponent  implements OnInit {
             purchase_units: [
               {
                 amount: {
-                  value: this.cart.total-(this.cart.total*(this.porcentaje/100)), // Precio total del pago
+                  // Solo el total menos el descuento, sin sumar ningún fee extra
+                  value: this.cart.total-(this.cart.total*(this.porcentaje/100)),
                 },
                 shipping_address: {
                   country_code: 'MX'
@@ -228,6 +229,7 @@ export class EntregaNegocioNegocioComponent  implements OnInit {
         fecha_entrega: this.cart.fecha_entrega, // único campo con fecha y hora
         pago_confirmado: false,
         tipo_pago: 'Efectivo',
+        // Solo el total menos el descuento, sin sumar ningún fee extra
         total: this.cart.total-(this.cart.total*(this.porcentaje/100)),
         uid_cliente: userId
       };

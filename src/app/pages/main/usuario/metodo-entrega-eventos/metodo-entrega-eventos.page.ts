@@ -331,9 +331,12 @@ export class MetodoEntregaEventosPage implements OnInit {
     const selectedDate = new Date(this.fechaRecoleccion);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0); // <-- Asegura que solo se compare la fecha, no la hora
     const maxAllowedDate = new Date();
     maxAllowedDate.setMonth(today.getMonth() + 1);
     maxAllowedDate.setHours(23, 59, 59, 999);
+    selectedDate.setDate(selectedDate.getDate() + 1);
+    // Permitir hoy como fecha válida
     return selectedDate >= today && selectedDate <= maxAllowedDate;
   }
 
@@ -348,11 +351,10 @@ export class MetodoEntregaEventosPage implements OnInit {
     const combinedDateTime = new Date(selectedDate);
     combinedDateTime.setHours(h, m, 0, 0);
 
-    // Si la fecha seleccionada es hoy
+    // Elimina la condición de dos horas de anticipación
+    // Solo valida que la hora seleccionada sea posterior al momento actual si es hoy
     if (selectedDate.toDateString() === now.toDateString()) {
-      const minAllowedTime = new Date(now);
-      minAllowedTime.setHours(minAllowedTime.getHours() + 2);
-      return combinedDateTime >= minAllowedTime && combinedDateTime > now;
+      return combinedDateTime > now;
     }
 
     // Para fechas futuras, cualquier hora dentro del horario es válida

@@ -42,8 +42,8 @@ export class EntregaNegocioComponent implements OnInit {
         discountAmount: this.cart.total * (this.porcentaje / 100),
         discountPercent: this.porcentaje,
         transportFee: 0, // Sin tarifa de transporte para entrega en negocio
-        serviceFee: this.serviceFee, // Agrega el cargo de servicio al email
-        total: (this.cart.total - (this.cart.total * (this.porcentaje / 100))) + this.serviceFee
+        // serviceFee: this.serviceFee, // Elimina el cargo de servicio del email
+        total: this.cart.total - (this.cart.total * (this.porcentaje / 100)) // Solo subtotal menos descuento
       };
 
       await this.emailSvc.sendOrderConfirmationEmail(orderData);
@@ -64,7 +64,7 @@ export class EntregaNegocioComponent implements OnInit {
             purchase_units: [
               {
                 amount: {
-                  value: (this.cart.total - (this.cart.total * (this.porcentaje / 100))) + this.serviceFee,
+                  value: this.cart.total - (this.cart.total * (this.porcentaje / 100)), // Solo subtotal menos descuento
                 },
                 shipping_address: {
                   country_code: 'MX'
@@ -124,8 +124,8 @@ export class EntregaNegocioComponent implements OnInit {
                 fecha_entrega: new Date(),
                 pago_confirmado: true,
                 tipo_pago: 'Tarjeta',
-                total: (this.cart.total - (this.cart.total * (this.porcentaje / 100))) + this.serviceFee,
-                serviceFee: this.serviceFee,
+                total: this.cart.total - (this.cart.total * (this.porcentaje / 100)), // Solo subtotal menos descuento
+                // serviceFee: this.serviceFee, // Elimina el cargo de servicio del pedido
                 uid_cliente: userId
               };
               const detalle_pedido = this.cart.detalle_carrito.map(item => ({
@@ -260,8 +260,8 @@ export class EntregaNegocioComponent implements OnInit {
         fecha_entrega: new Date(),
         pago_confirmado: false,
         tipo_pago: 'Efectivo',
-        total: (this.cart.total - (this.cart.total * (this.porcentaje / 100))) + this.serviceFee, // Suma el cargo de servicio
-        serviceFee: this.serviceFee, // Guarda el cargo de servicio en el pedido
+        total: this.cart.total - (this.cart.total * (this.porcentaje / 100)), // Solo subtotal menos descuento
+        // serviceFee: this.serviceFee, // Elimina el cargo de servicio del pedido
         uid_cliente: userId
       };
       const detalle_pedido = this.cart.detalle_carrito.map(item => ({
@@ -349,8 +349,8 @@ export class EntregaNegocioComponent implements OnInit {
         this.porcentaje = storedCoupon['porcentaje'];
         this.cart.total -= this.discountAmount;
       }
-      // Suma el cargo de servicio al total después de aplicar el cupón
-      this.cart.total += this.serviceFee;
+      // Elimina la suma del cargo de servicio
+      // this.cart.total += this.serviceFee;
     }
   }
 }
